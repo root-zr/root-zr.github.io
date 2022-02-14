@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>KMP算法 - Albert Wang</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Albert Wang" /><meta name="description" content="KMP算法是用来解决字符串的匹配问题的。对于字符串匹配问题，我们首先想到的就是暴力破解法。 用指针i,j来说明，第一个位置下标以0开始。如果匹" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.92.1 with theme even" />
+
+
+<link rel="canonical" href="http://localhost:1313/post/kmp%E7%AE%97%E6%B3%95/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.f92fd13721ddf72129410fd8250e73152cc6f2438082b6c0208dc24ee7c13fc4.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="KMP算法" />
+<meta property="og:description" content="KMP算法是用来解决字符串的匹配问题的。对于字符串匹配问题，我们首先想到的就是暴力破解法。 用指针i,j来说明，第一个位置下标以0开始。如果匹" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/post/kmp%E7%AE%97%E6%B3%95/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2021-07-23T01:53:34+08:00" />
+<meta property="article:modified_time" content="2021-07-23T01:53:34+08:00" />
+
+<meta itemprop="name" content="KMP算法">
+<meta itemprop="description" content="KMP算法是用来解决字符串的匹配问题的。对于字符串匹配问题，我们首先想到的就是暴力破解法。 用指针i,j来说明，第一个位置下标以0开始。如果匹"><meta itemprop="datePublished" content="2021-07-23T01:53:34+08:00" />
+<meta itemprop="dateModified" content="2021-07-23T01:53:34+08:00" />
+<meta itemprop="wordCount" content="2704">
+<meta itemprop="keywords" content="算法,技术," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="KMP算法"/>
+<meta name="twitter:description" content="KMP算法是用来解决字符串的匹配问题的。对于字符串匹配问题，我们首先想到的就是暴力破解法。 用指针i,j来说明，第一个位置下标以0开始。如果匹"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Albert Wang</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+
+  
+
+
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Albert Wang</a>
+</div>
+
+
+
+
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">KMP算法</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2021-07-23 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E6%A1%A3/"> 技术文档 </a>
+            </div>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#参考">参考</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>KMP算法是用来解决字符串的匹配问题的。对于字符串匹配问题，我们首先想到的就是暴力破解法。</p>
+<p>用指针i,j来说明，第一个位置下标以0开始。如果匹配则继续比较下一位。否则将j的值清0，i的值也要回到最开始匹配成功的位置重新开始比较，如下图。</p>
+<p><img src="/img/past/KMP/1.png" alt="img"></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">public static int violentMatch(String source,String target){
+        int i, j = 0;
+        for( i = 0 ; i &lt; source.length() &amp;&amp; j &lt; target.length(); i++){
+            if (source.charAt(i) == target.charAt(j)){ //如果当前字符匹配成功
+                j++;
+            }
+
+            else {//匹配失败
+                i = i - j;
+                j = 0;
+            }
+        }
+
+        if (j == target.length()) //匹配成功，返回首字符的位置
+            return i - j;
+        else
+            return -1;
+}
+</code></pre></td></tr></table>
+</div>
+</div><p>暴力算法有一个很严重的问题就是一旦不匹配就要从目标字符串的第一个字符开始从头计算。如果是人为来寻找的话，我们肯定不会这样做，因为主串匹配失败的位置(i=3)前面除了第一个A之外再也没有A了，我们为什么能知道主串前面只有一个A？因为我们已经知道前面三个字符都是匹配的[<a href="https://www.zhihu.com/people/gu-yu-50-55/posts?page=2#ref_1">1]</a>。换句话说是我们知道匹配失败位置之前的元素都不是A，所以我们可以直接将i指针移动到下图所示的位置：</p>
+<p><img src="/img/past/KMP/2.png" alt="img"></p>
+<p>这样就避免了回退的问题，其实前面的例子中要匹配的字符串（ABCE）中并没有出现相同的字符，所以多少会有一点巧合的意思。现在我们用另外一个例子来说明。假设文档的字符串source = &ldquo;abaabaabca&rdquo;, 目标字符串target = &ldquo;abaabca&rdquo;</p>
+<p><img src="https://pic1.zhimg.com/80/v2-6ba1975a40eb2a2fc74489be34eecb98_720w.png" alt="img"></p>
+<p>匹配到高亮显示的位置就需要重新调整j的值，这时自然不能像最开始的例子那样直接跳到不匹配的位置,这样最终会返回匹配失败。其实应该跳到的位置如下图所示：</p>
+<p><img src="https://pic4.zhimg.com/80/v2-7c05f8666e56f4e7ce19909bf3a0d523_720w.png" alt="img"></p>
+<p>但其实按照上面所描述的这样，如果不匹配，其实原字符串的指针和目标字符串的指针也都向后回退了，虽然回退的步数有所减少。我们能不能想到一个办法让指针不发生回退呢，即直接从匹配失败的位置处继续往下扫描，如下图所示：</p>
+<p><img src="https://pic3.zhimg.com/80/v2-b4f105e8c5b65672846a428174f77a22_720w.png" alt="img"></p>
+<p>从上面的图可以看出指针i依然停留在原来的位置，指针j则跳回了它对应的位置。我们可以通过下图来比较前后两种不同的差异：</p>
+<p><img src="https://pic1.zhimg.com/80/v2-4d25aa42c18e40d3c8c23665cb703370_720w.png" alt="img"></p>
+<p>那怎么确保让指针j跳到合适的位置呢，在解释这个问题之前我们先来了解一个字符串的前缀和后缀的概念：</p>
+<p><strong>前缀集合</strong>就是不包括最后一个字符，从头往后遍历的子字符串的集合；同样的<strong>后缀集合</strong>是不包括第一个字符，从后往前遍历的子字符串的集合。</p>
+<p>例如：字符串：&ldquo;hello&rdquo;</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">前缀集合: [ h, he,hel, hell]
+后缀集合：[ o,lo,llo,ello ]
+集合的共有元素的长度为0.
+</code></pre></td></tr></table>
+</div>
+</div><p>同样，“A”的前缀和后缀都为空集，共有元素的长度为0. target = &ldquo;abaabca&quot;的前后缀集合具体可参考下表：</p>
+<p><img src="/img/past/KMP/3.png" alt="img"></p>
+<p>这样，公共前后缀最长长度就会和串P的每个字符产生一种对应关系.</p>
+<p>这个表最后一列的含义是当前子串所拥有的公共前后缀最长长度。例如&quot;abaabc&quot;并没有公共前后缀。</p>
+<p>那我们现在回到之前第一次匹配失败的位置，就是因为&rsquo;a&rsquo;和&rsquo;c&rsquo;不匹配，我们先把匹配失败的字符&rsquo;c&rsquo;去掉，target之前的子串就是&quot;abaab&rdquo;，这个串的最大公共前后缀长度为2，也就是说这个字符串最前面的两个字符和最后面的两个字符是一样的。</p>
+<p>我们在&rsquo;c&rsquo;处虽然匹配失败了，但是我们可以肯定在之前都是匹配成功的。这也就是说最开始的两个字符和最后的两个字符都能匹配，而恰好它们又都相同，那我们直接把j指针移到第三个元素那里，让i和它进行匹配不就行了，反正我们知道前两个是成功匹配的。</p>
+<p>但是虽然理论上这个可行了，实际上我们怎么操作呢，最主要的就是这个最大公共前后缀怎么计算和存储的问题。只要知道了这个，我们一旦出现不匹配，就把指针j赋值为最大公共前后缀的数就可以了。</p>
+<p>于是就出现了一个和要匹配的字符串“abaabce”对应的数组next来指明这样的信息。Next里面存的值称为<strong>部分匹配值</strong>，部分匹配值就是前缀和后缀的最长的共有元素的长度</p>
+<p><img src="https://pic3.zhimg.com/80/v2-141339062ccbc5a1f517f115653eb4a2_720w.png" alt="img"></p>
+<p>next数组的具体的值计算如下。</p>
+<ul>
+<li>首先我们可以肯定假如字符串的长度为1，那最大公共子串长就是0</li>
+<li>否则，我们就假设任意一个子串k(0&lt;k&lt;target.length), 它的最大公共子串长为：</li>
+</ul>
+<p><img src="https://www.zhihu.com/equation?tex=maxLength%28i%29+%3D+%5Cleft%5C%7B++++++++++++++++%5Cbegin%7Barray%7D%7B%2A%2Alr%2A%2A%7D++++++++++++++++maxLength%28j+-+1%29+%2C++while%28dest%5Bi%5D+++%21%3D+++dest%5Bj%5D+and+j+%3E+0+%29%26++%5C%5C++++++++++++++++++++++j%2B%2B+%2C+other%26++++++++++++++++++%5Cend%7Barray%7D+++%5Cright.++" alt="[公式]"></p>
+<p>这里的i指向后缀末尾，所以i只能从1开始；j指向前缀末尾，同时j还代表了最大公共前后缀的长度。</p>
+<p>这个公式的大致意思是说，只要前后缀末尾的字符不相等，那就把前缀的下标值-1，然后继续匹配，直到对应的值相等。同样这里要保证j&gt;0, 因为0是初始位置，到初始位置就不能再回退了；相等的话就表示成功匹配，将最大公共字符串长度+1，也即让前后缀下标+1继续匹配下一个（只不过后缀下标+1是在循环体里实现的）。</p>
+<p>代码实现如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java">    <span class="c1">//获取到一个字符串(子串) 的部分匹配值表
+</span><span class="c1"></span>    <span class="kd">public</span>  <span class="kt">int</span><span class="o">[]</span> <span class="nf">kmpNext</span><span class="o">(</span><span class="n">String</span> <span class="n">dest</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">//创建一个next 数组保存部分匹配值
+</span><span class="c1"></span>        <span class="kt">int</span><span class="o">[]</span> <span class="n">next</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="n">dest</span><span class="o">.</span><span class="na">length</span><span class="o">()];</span>
+        <span class="n">next</span><span class="o">[</span><span class="n">0</span><span class="o">]</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="c1">//如果字符串是长度为1 部分匹配值就是0
+</span><span class="c1"></span>        <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">1</span><span class="o">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">dest</span><span class="o">.</span><span class="na">length</span><span class="o">();</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="c1">//当dest.charAt(i) != dest.charAt(j) ，我们需要从next[j-1]获取新的j	
+</span><span class="c1"></span>            <span class="k">while</span><span class="o">(</span><span class="n">j</span> <span class="o">&gt;</span> <span class="n">0</span> <span class="o">&amp;&amp;</span> <span class="n">dest</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">!=</span> <span class="n">dest</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">j</span><span class="o">))</span> <span class="o">{</span>
+                <span class="n">j</span> <span class="o">=</span> <span class="n">next</span><span class="o">[</span><span class="n">j</span><span class="o">-</span><span class="n">1</span><span class="o">];</span>
+            <span class="o">}</span>
+
+            <span class="c1">//当dest.charAt(i) == dest.charAt(j) 满足时，部分匹配值就是+1
+</span><span class="c1"></span>            <span class="k">if</span><span class="o">(</span><span class="n">dest</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">==</span> <span class="n">dest</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">j</span><span class="o">))</span> <span class="o">{</span>
+                <span class="n">j</span><span class="o">++;</span>
+            <span class="o">}</span>
+            <span class="n">next</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">j</span><span class="o">;</span> 
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">next</span><span class="o">;</span>
+    <span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>到这一步我们就已经得到了next数组所对应的值，可以进行下一步的操作了。</p>
+<p>下一步就是要实现整个KMP算法了，我们继续完成前面的问题：</p>
+<p>source = &ldquo;abaabaabca&rdquo;,target = &ldquo;abaabca&rdquo;</p>
+<p>代码如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span>  <span class="kd">static</span>  <span class="kt">int</span>  <span class="nf">match</span><span class="o">(</span><span class="n">String</span> <span class="n">source</span><span class="o">,</span><span class="n">String</span> <span class="n">target</span><span class="o">){</span>
+        <span class="kt">int</span><span class="o">[]</span> <span class="n">next</span> <span class="o">=</span> <span class="n">kmpNext</span><span class="o">(</span><span class="n">target</span><span class="o">);</span> <span class="c1">//先得到next数组
+</span><span class="c1"></span>        <span class="kt">int</span> <span class="n">i</span><span class="o">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>
+        <span class="k">for</span><span class="o">(</span> <span class="n">i</span> <span class="o">=</span> <span class="n">0</span> <span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">source</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">target</span><span class="o">.</span><span class="na">length</span><span class="o">();</span> <span class="n">i</span><span class="o">++){</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">source</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">==</span> <span class="n">target</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">j</span><span class="o">)){</span> <span class="c1">//如果当前字符匹配成功
+</span><span class="c1"></span>                <span class="n">j</span><span class="o">++;</span>
+            <span class="o">}</span>
+
+            <span class="k">else</span> <span class="o">{</span><span class="c1">//匹配失败
+</span><span class="c1"></span>                <span class="n">j</span> <span class="o">=</span> <span class="n">j</span> <span class="o">&gt;</span> <span class="n">0</span> <span class="o">?</span> <span class="n">next</span><span class="o">[</span><span class="n">j</span><span class="o">-</span><span class="n">1</span><span class="o">]:</span> <span class="n">next</span><span class="o">[</span><span class="n">0</span><span class="o">];</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="n">i</span><span class="o">-</span><span class="n">1</span> <span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">j</span> <span class="o">==</span> <span class="n">target</span><span class="o">.</span><span class="na">length</span><span class="o">())</span> <span class="c1">//匹配成功，返回首字符的位置
+</span><span class="c1"></span>            <span class="k">return</span> <span class="n">i</span> <span class="o">-</span> <span class="n">j</span><span class="o">;</span>
+        <span class="k">else</span>
+            <span class="k">return</span> <span class="o">-</span><span class="n">1</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>比较暴力匹配算法我们可以看到，基本只有当匹配失败之后j指针的变化需要根据next指针进行修改，并且因为i在循环体中还要+1，这样就跳到匹配失败后的下一个位置了，所以我们还要再-1来消除这部分。其余部分都是一致的。通过这里我们可以看到整个原字符串的指针几乎没有发生回退，不像暴力匹配中需要连续回退目标字符串的长度，大大提高了效率。</p>
+<p>上面代码需要注意的是当匹配失败的时候对j赋值的语句是</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"> <span class="n">j</span> <span class="o">=</span> <span class="n">j</span> <span class="o">&gt;</span><span class="n">0</span><span class="o">?</span> <span class="n">next</span><span class="o">[</span><span class="n">j</span><span class="o">-</span><span class="n">1</span><span class="o">]:</span> <span class="n">next</span><span class="o">[</span><span class="n">0</span><span class="o">];</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这是因为我们要获取的值是匹配失败的字符之前的子串的值，所以对应的下标是j-1，同样假如是最开始的字符的话就直接用初始值就可以，所以这里用了三路运算符。为了简化这个过程，有时候在实现next数组的过程中有人会<strong>把整个数组的值向右右移一位</strong>，然后将第0位赋值为-1，这样就可以直接使用匹配失败的下标，而不用再-1了。</p>
+<p>到这里KMP算法基本就完成了，还有一种解释方法是用有限状态自动机来解释，如果想更深入地了解KMP算法，可以参考这篇博客[<a href="https://www.zhihu.com/people/gu-yu-50-55/posts?page=2#ref_2">2]</a> 或者是人民邮电出版社出版的<strong>算法（第四版）第5章</strong>的部分，这些都涉及到了有限状态自动机的部分。</p>
+<h2 id="参考">参考</h2>
+<ol>
+<li><a href="https://www.zhihu.com/people/gu-yu-50-55/posts?page=2#ref_1_0">^</a><a href="https://www.cnblogs.com/dusf/p/kmp.html">https://www.cnblogs.com/dusf/p/kmp.html</a></li>
+<li><a href="https://www.zhihu.com/people/gu-yu-50-55/posts?page=2#ref_2_0">^</a><a href="https://www.cnblogs.com/zzuuoo666/p/9028287.html">https://www.cnblogs.com/zzuuoo666/p/9028287.html</a></li>
+</ol>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">Albert Wang</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2021-07-23
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/%E7%AE%97%E6%B3%95/">算法</a>
+          <a href="/tags/%E6%8A%80%E6%9C%AF/">技术</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%BC%80%E5%A7%8B%E5%86%99%E5%8D%9A%E5%AE%A2/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">为什么要开始写博客</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://github.com/root-zr" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.zhihu.com/people/gu-yu-50-55/posts" class="iconfont icon-zhihu" title="zhihu"></a>
+      <a href="http://localhost:1313" class="iconfont icon-bilibili" title="bilibili"></a>
+  <a href="http://localhost:1313/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2017 - 
+    2022<span class="heart"><i class="iconfont icon-heart"></i></span><span>Albert Wang</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
