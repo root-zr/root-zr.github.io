@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Fabric on Albert Wang</title>
+    <link>http://localhost:1313/tags/fabric/</link>
+    <description>Recent content in Fabric on Albert Wang</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 23 Oct 2021 01:53:34 +0800</lastBuildDate><atom:link href="http://localhost:1313/tags/fabric/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Hyperledger Fabric安装与部署</title>
+      <link>http://localhost:1313/post/hyperledger-fabric%E5%AE%89%E8%A3%85%E4%B8%8E%E9%83%A8%E7%BD%B2/</link>
+      <pubDate>Sat, 23 Oct 2021 01:53:34 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/hyperledger-fabric%E5%AE%89%E8%A3%85%E4%B8%8E%E9%83%A8%E7%BD%B2/</guid>
+      <description>本文中用到的宿主环境是Ubuntu18.04。 目前Fabric采用Docker容器作为链码执行环境，因此即使在本地运行，链码服务器上也必须要</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>java on Albert Wang</title>
+    <link>http://localhost:1313/tags/java/</link>
+    <description>Recent content in java on Albert Wang</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sun, 03 Oct 2021 01:53:34 +0800</lastBuildDate><atom:link href="http://localhost:1313/tags/java/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>HashMap源码学习</title>
+      <link>http://localhost:1313/post/hashmap%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link>
+      <pubDate>Sun, 03 Oct 2021 01:53:34 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/hashmap%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid>
+      <description>HashMap近年来是Java面试经常会被问到的知识点，现在也有很多的博客对这个做了介绍，但是我个人感觉这些博客的关注点都倾向于面试问答，看</description>
+    </item>
+    
+  </channel>
+</rss>

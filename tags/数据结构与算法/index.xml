@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>数据结构与算法 on Albert Wang</title>
+    <link>http://localhost:1313/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/</link>
+    <description>Recent content in 数据结构与算法 on Albert Wang</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Thu, 23 Dec 2021 01:53:34 +0800</lastBuildDate><atom:link href="http://localhost:1313/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>KMP算法</title>
+      <link>http://localhost:1313/post/c&#43;&#43;-stl%E4%B8%AD%E7%9A%84map%E5%AE%B9%E5%99%A8/</link>
+      <pubDate>Thu, 23 Dec 2021 01:53:34 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/c&#43;&#43;-stl%E4%B8%AD%E7%9A%84map%E5%AE%B9%E5%99%A8/</guid>
+      <description>c++的map容器有4种，它们都保存了键值对类型的元素。map容器的元素是pair&amp;lt;const K,T&amp;gt;类型的对象，以K为键，T为</description>
+    </item>
+    
+    <item>
+      <title>HashMap源码学习</title>
+      <link>http://localhost:1313/post/hashmap%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link>
+      <pubDate>Sun, 03 Oct 2021 01:53:34 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/hashmap%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid>
+      <description>HashMap近年来是Java面试经常会被问到的知识点，现在也有很多的博客对这个做了介绍，但是我个人感觉这些博客的关注点都倾向于面试问答，看</description>
+    </item>
+    
+    <item>
+      <title>LinkedList源码学习</title>
+      <link>http://localhost:1313/post/linkedlist%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link>
+      <pubDate>Mon, 26 Jul 2021 01:53:34 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/linkedlist%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid>
+      <description>LinkedList是Java对线性表的一种实现，它实现的接口有List, Deque, Cloneable, java.io.Serializable，同时它也继承了uti</description>
+    </item>
+    
+    <item>
+      <title>红黑树</title>
+      <link>http://localhost:1313/post/%E7%BA%A2%E9%BB%91%E6%A0%91/</link>
+      <pubDate>Sat, 24 Jul 2021 01:53:34 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/%E7%BA%A2%E9%BB%91%E6%A0%91/</guid>
+      <description>我们先从二叉查找树开始谈起，在足够理想的情况下，二叉查找树和快速排序非常类似，树的根节点就是快排的第一个切分元素pivot，并且满足左子结点</description>
+    </item>
+    
+    <item>
+      <title>KMP算法</title>
+      <link>http://localhost:1313/post/kmp%E7%AE%97%E6%B3%95/</link>
+      <pubDate>Fri, 23 Jul 2021 01:53:34 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/kmp%E7%AE%97%E6%B3%95/</guid>
+      <description>KMP算法是用来解决字符串的匹配问题的。对于字符串匹配问题，我们首先想到的就是暴力破解法。 用指针i,j来说明，第一个位置下标以0开始。如果匹</description>
+    </item>
+    
+    <item>
+      <title>快速排序和归并排序的非递归实现</title>
+      <link>http://localhost:1313/post/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F%E5%92%8C%E5%BD%92%E5%B9%B6%E6%8E%92%E5%BA%8F%E7%9A%84%E9%9D%9E%E9%80%92%E5%BD%92%E5%AE%9E%E7%8E%B0/</link>
+      <pubDate>Fri, 07 May 2021 01:53:34 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F%E5%92%8C%E5%BD%92%E5%B9%B6%E6%8E%92%E5%BA%8F%E7%9A%84%E9%9D%9E%E9%80%92%E5%BD%92%E5%AE%9E%E7%8E%B0/</guid>
+      <description>目前网络上和教材种对这两种排序算法大多是采用递归的方式来实现的，但是非递归的方式较少。另外这两种排序算法也各有特点，像是一对孪生兄弟。首先快</description>
+    </item>
+    
+  </channel>
+</rss>
