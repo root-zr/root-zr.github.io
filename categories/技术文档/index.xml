@@ -6,7 +6,16 @@
     <description>Recent content in 技术文档 on Albert Wang</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 23 Dec 2021 01:53:34 +0800</lastBuildDate><atom:link href="http://localhost:1313/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E6%A1%A3/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 24 Feb 2022 13:39:37 +0800</lastBuildDate><atom:link href="http://localhost:1313/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E6%A1%A3/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>背包问题</title>
+      <link>http://localhost:1313/post/%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98/</link>
+      <pubDate>Thu, 24 Feb 2022 13:39:37 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98/</guid>
+      <description>01背包问题 有N 件物品和一个容量为bag 的背包。第i 件物品的重量是w[i]，价值是v[i]。 求解将哪些物品装入背包可使价值总和最大。 暴力算法</description>
+    </item>
+    
     <item>
       <title>c&#43;&#43; STL中的map容器</title>
       <link>http://localhost:1313/post/c&#43;&#43;-stl%E4%B8%AD%E7%9A%84map%E5%AE%B9%E5%99%A8/</link>
