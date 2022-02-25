@@ -9,19 +9,19 @@
     <lastBuildDate>Thu, 24 Feb 2022 13:39:37 +0800</lastBuildDate><atom:link href="http://localhost:1313/tags/java/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>背包问题</title>
-      <link>http://localhost:1313/post/%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98/</link>
+      <link>http://localhost:1313/post/2022/%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98/</link>
       <pubDate>Thu, 24 Feb 2022 13:39:37 +0800</pubDate>
       
-      <guid>http://localhost:1313/post/%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98/</guid>
+      <guid>http://localhost:1313/post/2022/%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98/</guid>
       <description>01背包问题 有N 件物品和一个容量为bag 的背包。第i 件物品的重量是w[i]，价值是v[i]。 求解将哪些物品装入背包可使价值总和最大。 暴力算法</description>
     </item>
     
     <item>
       <title>HashMap源码学习</title>
-      <link>http://localhost:1313/post/hashmap%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link>
+      <link>http://localhost:1313/post/2021/hashmap%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link>
       <pubDate>Sun, 03 Oct 2021 01:53:34 +0800</pubDate>
       
-      <guid>http://localhost:1313/post/hashmap%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid>
+      <guid>http://localhost:1313/post/2021/hashmap%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid>
       <description>HashMap近年来是Java面试经常会被问到的知识点，现在也有很多的博客对这个做了介绍，但是我个人感觉这些博客的关注点都倾向于面试问答，看</description>
     </item>
     

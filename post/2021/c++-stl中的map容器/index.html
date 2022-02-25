@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>c&#43;&#43; STL中的map容器 - Albert Wang</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Albert Wang" /><meta name="description" content="c&#43;&#43;的map容器有4种，它们都保存了键值对类型的元素。map容器的元素是pair&amp;lt;const K,T&amp;gt;类型的对象，以K为键，T为" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.92.1 with theme even" />
+
+
+<link rel="canonical" href="http://localhost:1313/post/2021/c&#43;&#43;-stl%E4%B8%AD%E7%9A%84map%E5%AE%B9%E5%99%A8/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.f92fd13721ddf72129410fd8250e73152cc6f2438082b6c0208dc24ee7c13fc4.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="c&#43;&#43; STL中的map容器" />
+<meta property="og:description" content="c&#43;&#43;的map容器有4种，它们都保存了键值对类型的元素。map容器的元素是pair&lt;const K,T&gt;类型的对象，以K为键，T为" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/post/2021/c&#43;&#43;-stl%E4%B8%AD%E7%9A%84map%E5%AE%B9%E5%99%A8/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2021-12-23T01:53:34+08:00" />
+<meta property="article:modified_time" content="2021-12-23T01:53:34+08:00" />
+
+<meta itemprop="name" content="c&#43;&#43; STL中的map容器">
+<meta itemprop="description" content="c&#43;&#43;的map容器有4种，它们都保存了键值对类型的元素。map容器的元素是pair&lt;const K,T&gt;类型的对象，以K为键，T为"><meta itemprop="datePublished" content="2021-12-23T01:53:34+08:00" />
+<meta itemprop="dateModified" content="2021-12-23T01:53:34+08:00" />
+<meta itemprop="wordCount" content="2633">
+<meta itemprop="keywords" content="数据结构与算法,技术,C&#43;&#43;," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="c&#43;&#43; STL中的map容器"/>
+<meta name="twitter:description" content="c&#43;&#43;的map容器有4种，它们都保存了键值对类型的元素。map容器的元素是pair&lt;const K,T&gt;类型的对象，以K为键，T为"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Albert Wang</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+
+  
+
+
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Albert Wang</a>
+</div>
+
+
+
+
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">c&#43;&#43; STL中的map容器</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2021-12-23 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E6%A1%A3/"> 技术文档 </a>
+            </div>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#1-mapkt">1. map&lt;K,T&gt;</a>
+          <ul>
+            <li><a href="#11-创建容器">1.1 创建容器</a></li>
+            <li><a href="#12-插入元素">1.2 插入元素</a></li>
+            <li><a href="#13-删除元素">1.3 删除元素</a></li>
+            <li><a href="#14-更新元素">1.4 更新元素</a></li>
+            <li><a href="#15-查找元素">1.5 查找元素</a></li>
+            <li><a href="#16-其他操作">1.6 其他操作</a></li>
+          </ul>
+        </li>
+        <li><a href="#2-multimapkt">2. multimap&lt;K,T&gt;</a></li>
+        <li><a href="#3-unordered_mapkt">3. unordered_map&lt;K,T&gt;</a></li>
+        <li><a href="#4-unordered_multimapkt">4. unordered_multimap&lt;K,T&gt;</a></li>
+        <li><a href="#参考">参考</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>c++的map容器有4种，它们都保存了键值对类型的元素。map容器的元素是pair&lt;const K,T&gt;类型的对象，以K为键，T为值。pair实际上可以看作一个内部有两个元素的结构体，且这两个元素的类型是可以指定的[<a href="https://zhuanlan.zhihu.com/p/427646437#ref_1">1]</a>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">struct</span> <span class="nc">pair</span>
+<span class="p">{</span>
+	<span class="n">typeName1</span> <span class="n">first</span><span class="p">;</span>
+	<span class="n">typeName2</span> <span class="n">second</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>同时我们注意到pair元素中的键是const指针来修饰的，这表明我们不能去修改它，因为如果修改的话会扰乱容器中元素的顺序。下面我们来具体了解一下这四种容器的具体实现。</p>
+<h2 id="1-mapkt">1. map&lt;K,T&gt;</h2>
+<p>这个容器中的元素是有序的，通过less<K>对象按照键来对所有元素排序。map&lt;K,T&gt;中不允许有重复的键。对于每一个pair&lt;const K,T&gt;节点，map&lt;K,T&gt;中一般是以平衡二叉树的形式来存储的，这样可以保证检索一个随机元素所需的时间是 <img src="https://www.zhihu.com/equation?tex=O%28log_2n%29" alt="[公式]"> 。</p>
+<h3 id="11-创建容器">1.1 创建容器</h3>
+<p>创建一个map容器的方法如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">map</span><span class="o">&lt;</span><span class="n">string</span><span class="p">,</span> <span class="kt">int</span><span class="o">&gt;</span> <span class="n">people</span><span class="p">;</span>
+
+<span class="n">map</span><span class="o">&lt;</span><span class="n">string</span><span class="p">,</span> <span class="kt">int</span><span class="o">&gt;</span> <span class="n">people</span><span class="p">{</span> <span class="p">{</span><span class="s">&#34;Alice&#34;</span><span class="p">,</span><span class="mi">20</span><span class="p">},{</span><span class="s">&#34;Bob&#34;</span><span class="p">,</span><span class="mi">25</span><span class="p">}</span> <span class="p">};</span>
+
+<span class="n">map</span><span class="o">&lt;</span><span class="n">string</span><span class="p">,</span> <span class="kt">int</span><span class="o">&gt;</span> <span class="n">people</span><span class="p">{</span> <span class="n">pair</span><span class="o">&lt;</span><span class="n">string</span><span class="p">,</span> <span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&#34;Alice&#34;</span><span class="p">,</span><span class="mi">20</span><span class="p">),</span>
+                         <span class="n">pair</span><span class="o">&lt;</span><span class="n">string</span><span class="p">,</span> <span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&#34;Bob&#34;</span><span class="p">,</span><span class="mi">25</span><span class="p">)</span>
+                        <span class="p">};</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>可以先创建对象，后续再往里面加元素，也可以在初始化的时候添加一些元素。</p>
+<h3 id="12-插入元素">1.2 插入元素</h3>
+<p>具体添加元素的api是insert函数，插入的元素类型可以有以下几种，第一种很容易理解，因为map里存放的就是pair类型的对象，第二种在保证类型正确的情况下也能保证正确插入，第三种方式则是根据map的value_type方式来插入。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">people</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">string</span><span class="p">,</span> <span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&#34;Tom&#34;</span><span class="p">,</span> <span class="mi">20</span><span class="p">));</span>
+<span class="n">people</span><span class="p">.</span><span class="n">insert</span><span class="p">({</span> <span class="s">&#34;John&#34;</span><span class="p">,</span> <span class="mi">21</span> <span class="p">});</span>
+<span class="n">people</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">map</span><span class="o">&lt;</span><span class="n">string</span><span class="p">,</span> <span class="kt">int</span><span class="o">&gt;::</span><span class="n">value_type</span><span class="p">(</span><span class="s">&#34;Li Hua&#34;</span><span class="p">,</span> <span class="mi">22</span><span class="p">));</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>除了上面的三种方式以外还可以用类似于数组的方式来插入元素，下表事key，值对应着value。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">people</span><span class="p">[</span><span class="s">&#34;Tom&#34;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">20</span><span class="p">;</span>
+<span class="n">people</span><span class="p">[</span><span class="s">&#34;John&#34;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">21</span><span class="p">;</span>
+<span class="n">people</span><span class="p">[</span><span class="s">&#34;Li Hua&#34;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">22</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="13-删除元素">1.3 删除元素</h3>
+<p>删除元素可以用erase函数来实现，首先传入的参数可以是key的值，代码如下所示：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&#34;John&#34;</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">people</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">name</span><span class="p">))</span> <span class="p">{</span>
+        <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;after erase--------------&#34;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">iter</span> <span class="o">=</span> <span class="n">people</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span> <span class="n">iter</span> <span class="o">!=</span> <span class="n">people</span><span class="p">.</span><span class="n">end</span><span class="p">();</span> <span class="n">iter</span><span class="o">++</span><span class="p">)</span>
+            <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">iter</span><span class="o">-&gt;</span><span class="n">first</span> <span class="o">&lt;&lt;</span> <span class="sc">&#39; &#39;</span> <span class="o">&lt;&lt;</span> <span class="n">iter</span><span class="o">-&gt;</span><span class="n">second</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">else</span><span class="p">{</span>
+        <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;erase error!&#34;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+    <span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这是一种很直观的方式，通过函数返回的结果来判断删除是否成功。同样可以采用指向删除元素的迭代器作为erase函数的参数。这种情况下，返回的迭代器将会指向被删除元素的下一个位置。如果迭代器参数指向的是容器的最后一个元素，会返回end迭代器。</p>
+<p>在这种方式之下如果我们要删除全部的元素，第一种方式就是使用for循环一个一个删除，另一种方式就是使用erase的重载函数，指定删除的范围。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp">     <span class="n">map</span><span class="o">&lt;</span><span class="n">string</span><span class="p">,</span> <span class="kt">int</span><span class="o">&gt;::</span><span class="n">iterator</span> <span class="n">iter</span><span class="p">;</span>
+
+    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;people map has &#34;</span> <span class="o">&lt;&lt;</span> <span class="n">people</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="s">&#34; element&#34;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">iter</span> <span class="o">=</span> <span class="n">people</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span> <span class="n">iter</span> <span class="o">!=</span> <span class="n">people</span><span class="p">.</span><span class="n">end</span><span class="p">();</span> <span class="n">iter</span><span class="o">++</span><span class="p">)</span>
+        <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">iter</span><span class="o">-&gt;</span><span class="n">first</span> <span class="o">&lt;&lt;</span> <span class="sc">&#39; &#39;</span> <span class="o">&lt;&lt;</span> <span class="n">iter</span><span class="o">-&gt;</span><span class="n">second</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+   
+    <span class="c1">//用迭代器的方式来删除元素
+</span><span class="c1"></span>    <span class="n">map</span><span class="o">&lt;</span><span class="n">string</span><span class="p">,</span> <span class="kt">int</span><span class="o">&gt;::</span><span class="n">iterator</span> <span class="n">delete_item_iter</span><span class="p">;</span>
+    <span class="n">delete_item_iter</span> <span class="o">=</span> <span class="n">people</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#34;John&#34;</span><span class="p">);</span>
+
+    <span class="n">map</span><span class="o">&lt;</span><span class="n">string</span><span class="p">,</span> <span class="kt">int</span><span class="o">&gt;::</span><span class="n">iterator</span> <span class="n">next_iter</span> <span class="o">=</span> <span class="n">people</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">delete_item_iter</span><span class="p">);</span>
+    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;next iterartor is &#34;</span> <span class="o">&lt;&lt;</span> <span class="n">next_iter</span><span class="o">-&gt;</span><span class="n">first</span> <span class="o">&lt;&lt;</span> <span class="sc">&#39; &#39;</span> <span class="o">&lt;&lt;</span> <span class="n">next_iter</span><span class="o">-&gt;</span><span class="n">second</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+
+    <span class="n">people</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">people</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">people</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#34;Tom&#34;</span><span class="p">));</span>
+    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;people map has &#34;</span> <span class="o">&lt;&lt;</span> <span class="n">people</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="s">&#34; element&#34;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+
+    <span class="c1">//删除全部的元素
+</span><span class="c1"></span>    <span class="n">map</span><span class="o">&lt;</span><span class="n">string</span><span class="p">,</span> <span class="kt">int</span><span class="o">&gt;::</span><span class="n">iterator</span> <span class="n">next_iter2</span> <span class="o">=</span> <span class="n">people</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">people</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">people</span><span class="p">.</span><span class="n">end</span><span class="p">());</span>
+    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;people map has &#34;</span> <span class="o">&lt;&lt;</span> <span class="n">people</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="s">&#34; element&#34;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>为了方便，我们可以结合下面的控制台输出来看这个删除的结果。在最开始可以看到总共有三个元素，分别是John, Li hua和Tom。然后我们用迭代器的方式删除John这个元素，这时函数返回的迭代器就会指向它的下一个元素Li hua。然后我们利用迭代器指定删除的范围，从begin()开始，到Tom结束，可以看到返回的结果显示还有一个元素，也就是说Tom其实是没有被删除掉的。所以我们需要注意这个<strong>指定的范围是不包括最后一个迭代器的</strong>。</p>
+<p>这个特点同样可以用最后的例子来说明，如果删除全部的元素，最后的迭代器应该是end()，但是end()指向的是最后一个元素<strong>之后</strong>的位置，如果包括这个值的话程序执行就会报错了。</p>
+<p><img src="https://pic4.zhimg.com/80/v2-eea1edefe3bcf6389bb4ab7f38731383_720w.png" alt="img"></p>
+<h3 id="14-更新元素">1.4 更新元素</h3>
+<p>更新元素比较简单，只需要根据对应的key去修改掉值就行了，只需要注意一下map&lt;K,T&gt;的K是不能修改的。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="kt">void</span> <span class="nf">updateMap</span><span class="p">(</span><span class="n">map</span><span class="o">&lt;</span><span class="n">string</span><span class="p">,</span> <span class="kt">int</span><span class="o">&gt;&amp;</span> <span class="n">map</span><span class="p">,</span> <span class="n">string</span> <span class="n">key</span><span class="p">,</span> <span class="kt">int</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">map</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="c1">//用迭代器的方式
+</span><span class="c1"></span><span class="kt">void</span> <span class="nf">updateMap</span><span class="p">(</span><span class="n">map</span><span class="o">&lt;</span><span class="n">string</span><span class="p">,</span> <span class="kt">int</span><span class="o">&gt;&amp;</span> <span class="n">map</span><span class="p">,</span> <span class="n">string</span> <span class="n">key</span><span class="p">,</span> <span class="kt">int</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">map</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">second</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="15-查找元素">1.5 查找元素</h3>
+<p>查找元素主要用到的是find函数，这个在之前就已经出现过了，传入key的值就会返回对应的迭代器。或者直接用数组的方式也能得到对应的结果。这里需要注意以下如果找不到元素，数组的形式返回的结果是0，而迭代器返回的是map的end()这个迭代器。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;tom&#39;s age is &#34;</span> <span class="o">&lt;&lt;</span> <span class="n">people</span><span class="p">[</span><span class="s">&#34;Tom&#34;</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+<span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;Li Hua &#39;s age is &#34;</span> <span class="o">&lt;&lt;</span> <span class="n">people</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#34;Li Hua&#34;</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">second</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="16-其他操作">1.6 其他操作</h3>
+<p>map最基本的操作肯定是增删改查，但是初次之外还有一些比较好用的Api，这里贴出来一些供大家参考[<a href="https://zhuanlan.zhihu.com/p/427646437#ref_2">2]</a>。</p>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>clear(）</td>
+<td>删除所有元素</td>
+</tr>
+<tr>
+<td>count()</td>
+<td>返回指定元素出现的次数</td>
+</tr>
+<tr>
+<td>empty()</td>
+<td>如果map为空则返回true</td>
+</tr>
+<tr>
+<td>equal_range()</td>
+<td>返回特殊条目的迭代器对</td>
+</tr>
+<tr>
+<td>get_allocator()</td>
+<td>返回map的配置器</td>
+</tr>
+<tr>
+<td>key_comp()</td>
+<td>返回比较元素key的函数</td>
+</tr>
+<tr>
+<td>lower_bound()</td>
+<td>返回键值&gt;=给定元素的第一个位置</td>
+</tr>
+<tr>
+<td>max_size()</td>
+<td>返回可以容纳的最大元素个数</td>
+</tr>
+<tr>
+<td>rbegin()</td>
+<td>返回一个指向map尾部的逆向迭代器</td>
+</tr>
+<tr>
+<td>rend()</td>
+<td>返回一个指向map头部的逆向迭代器</td>
+</tr>
+<tr>
+<td>size()</td>
+<td>返回map中元素的个数</td>
+</tr>
+<tr>
+<td>swap()</td>
+<td>交换两个map</td>
+</tr>
+<tr>
+<td>upper_bound()</td>
+<td>返回键值&gt;给定元素的第一个位置</td>
+</tr>
+<tr>
+<td>value_comp()</td>
+<td>返回比较元素value的函数</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-multimapkt">2. multimap&lt;K,T&gt;</h2>
+<p>这个容器和map&lt;K,T&gt;类似，同样会对元素排序，但是不同的是它允许使用重复的键，所以一个multimap容器可以保存多个具有相同键和值的&lt;const K,T&gt;元素。下面我们主要讨论和map&lt;K,T&gt;用法不一致的内容。</p>
+<p>首先是插入元素，map可以利用数组的方式插入，但是multimap如果用这种方式可能会没法保证有唯一的key，所以不能用数组的方式来插入。用pair方式插入的代码和效果如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp">    <span class="n">multimap</span><span class="o">&lt;</span><span class="n">string</span><span class="p">,</span> <span class="kt">int</span><span class="o">&gt;</span> <span class="n">multi_people</span><span class="p">;</span>
+
+    <span class="n">multi_people</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">string</span><span class="p">,</span> <span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&#34;Tom&#34;</span><span class="p">,</span> <span class="mi">20</span><span class="p">));</span>
+    <span class="n">multi_people</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">string</span><span class="p">,</span> <span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&#34;Tom&#34;</span><span class="p">,</span> <span class="mi">20</span><span class="p">));</span>
+    <span class="n">multi_people</span><span class="p">.</span><span class="n">insert</span><span class="p">({</span> <span class="s">&#34;John&#34;</span><span class="p">,</span> <span class="mi">21</span> <span class="p">});</span>
+    <span class="n">multi_people</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">map</span><span class="o">&lt;</span><span class="n">string</span><span class="p">,</span> <span class="kt">int</span><span class="o">&gt;::</span><span class="n">value_type</span><span class="p">(</span><span class="s">&#34;Li Hua&#34;</span><span class="p">,</span> <span class="mi">22</span><span class="p">));</span>
+
+    <span class="n">multimap</span><span class="o">&lt;</span><span class="n">string</span><span class="p">,</span> <span class="kt">int</span><span class="o">&gt;::</span><span class="n">iterator</span> <span class="n">multi_iter</span><span class="p">;</span>
+
+    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;multi_people map has &#34;</span> <span class="o">&lt;&lt;</span> <span class="n">multi_people</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="s">&#34; element&#34;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">multi_iter</span> <span class="o">=</span> <span class="n">multi_people</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span> <span class="n">multi_iter</span> <span class="o">!=</span> <span class="n">multi_people</span><span class="p">.</span><span class="n">end</span><span class="p">();</span> <span class="n">multi_iter</span><span class="o">++</span><span class="p">)</span>
+        <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">multi_iter</span><span class="o">-&gt;</span><span class="n">first</span> <span class="o">&lt;&lt;</span> <span class="sc">&#39; &#39;</span> <span class="o">&lt;&lt;</span> <span class="n">multi_iter</span><span class="o">-&gt;</span><span class="n">second</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="https://pic2.zhimg.com/80/v2-24d3171bdd815c7a043060403be66081_720w.png" alt="img"></p>
+<p>在上图中可以明显看到有两个一模一样的Tom被成功插入了。当我们用find函数去查找的时候会返回第一个找到的内容。同样的，如果去更新它的值，也会更新第一个找到的内容。</p>
+<h2 id="3-unordered_mapkt">3. unordered_map&lt;K,T&gt;</h2>
+<p>unordered_map要求键是唯一的，可以类比Java语言的HashMap。容器中的内容不是有序的，其位置完全由键的哈希值来确定。在这种情况下，容器内部的数据组织方式就可以采用哈希表的形式来组织，查询的时间复杂度也直接变成了 <img src="https://www.zhihu.com/equation?tex=O%281%29" alt="[公式]"> 。</p>
+<p>理论上只要是哈希函数就会产生哈希碰撞，在产生哈希碰撞之后要么就是将要插入的值加到下一个哈希槽中，要么在原来的位置后加一个链表来存储，可以根据不同的情况来选择不同的实现。</p>
+<p>我们不难发现这种实现方式相比较map容器来说，在底层进行了很大的改变，也成功使得查询的时间复杂度变成了 <img src="https://www.zhihu.com/equation?tex=O%281%29" alt="[公式]"> ，但是从功能上来说确是和map达成了高度的一致，也要求key的唯一性。所以封装的API也和map的基本一致，只需要改变以下声明的类型就行。</p>
+<h2 id="4-unordered_multimapkt">4. unordered_multimap&lt;K,T&gt;</h2>
+<p>unordered_multimap可以允许插入重复的键值对，同时底层的实现类似于unordered_map，功能的效果类似于multimap，所以在实践中可以类比这两部分来进行编程。</p>
+<h2 id="参考">参考</h2>
+<ol>
+<li><a href="https://zhuanlan.zhihu.com/p/427646437#ref_1_0">^</a><a href="https://blog.csdn.net/qq_46527915/article/details/115210318?spm=1001.2101.3001.6661.1&amp;utm_medium=distribute.pc_relevant_t0.none-task-blog-2~default~CTRLIST~default-1.no_search_link&amp;depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2~default~CTRLIST~default-1.no_search_link">https://blog.csdn.net/qq_46527915/article/details/115210318?spm=1001.2101.3001.6661.1&amp;utm_medium=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7ECTRLIST%7Edefault-1.no_search_link&amp;depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7ECTRLIST%7Edefault-1.no_search_link</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/427646437#ref_2_0">^</a><a href="https://www.cnblogs.com/fnlingnzb-learner/p/5833051.html">https://www.cnblogs.com/fnlingnzb-learner/p/5833051.html</a></li>
+</ol>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">Albert Wang</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2021-12-23
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">数据结构与算法</a>
+          <a href="/tags/%E6%8A%80%E6%9C%AF/">技术</a>
+          <a href="/tags/c&#43;&#43;/">C&#43;&#43;</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/2022/%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%BC%80%E5%A7%8B%E5%86%99%E5%8D%9A%E5%AE%A2/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">为什么要开始写博客</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/2021/hyperledger-fabric%E5%AE%89%E8%A3%85%E4%B8%8E%E9%83%A8%E7%BD%B2/">
+            <span class="next-text nav-default">Hyperledger Fabric安装与部署</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  <span id="/post/2021/c&#43;&#43;-stl%E4%B8%AD%E7%9A%84map%E5%AE%B9%E5%99%A8/" class="leancloud_visitors" data-flag-title="c&#43;&#43; STL中的map容器">
+		<span class="post-meta-item-text">文章阅读量 </span>
+		<span class="leancloud-visitors-count">0</span>
+		<p></p>
+	  </span>
+  <div id="vcomments"></div>
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script type="text/javascript">
+    new Valine({
+        el: '#vcomments' ,
+        appId: 'r6zWLEHG05pIuyTJRJoq7Ui3-gzGzoHsz',
+        appKey: 'G5LjsconKzw0OVDny2WDmOIg',
+        notify:  false ,
+        verify:  false ,
+        avatar:'mm',
+        placeholder: '说点什么吧...',
+        visitor:  true 
+    });
+  </script>
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="wang-zr@outlook.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/root-zr" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.zhihu.com/people/gu-yu-50-55/posts" class="iconfont icon-zhihu" title="zhihu"></a>
+      <a href="http://localhost:1313" class="iconfont icon-bilibili" title="bilibili"></a>
+  <a href="http://localhost:1313/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2017 - 
+    2022<span class="heart"><i class="iconfont icon-heart"></i></span><span>Albert Wang</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

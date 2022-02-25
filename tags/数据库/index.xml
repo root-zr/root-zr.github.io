@@ -9,10 +9,10 @@
     <lastBuildDate>Sat, 19 Jun 2021 01:53:34 +0800</lastBuildDate><atom:link href="http://localhost:1313/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>ubuntu配置mysql数据库</title>
-      <link>http://localhost:1313/post/ubuntu%E9%85%8D%E7%BD%AEmysql%E6%95%B0%E6%8D%AE%E5%BA%93/</link>
+      <link>http://localhost:1313/post/2021/ubuntu%E9%85%8D%E7%BD%AEmysql%E6%95%B0%E6%8D%AE%E5%BA%93/</link>
       <pubDate>Sat, 19 Jun 2021 01:53:34 +0800</pubDate>
       
-      <guid>http://localhost:1313/post/ubuntu%E9%85%8D%E7%BD%AEmysql%E6%95%B0%E6%8D%AE%E5%BA%93/</guid>
+      <guid>http://localhost:1313/post/2021/ubuntu%E9%85%8D%E7%BD%AEmysql%E6%95%B0%E6%8D%AE%E5%BA%93/</guid>
       <description>使用的ubuntu版本为18.04，mysql的版本为5.7 首先使用linux命令下载到本地： 1 wget https://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-5.7.25-linux-glibc2.12-x86_64.tar.gz 然后解压缩 1 tar -xvf mysql-5.7.25-linux-glibc2.12-x86_64.tar.gz 注意：为了方便，之后的</description>
     </item>
     
