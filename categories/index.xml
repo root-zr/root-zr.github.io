@@ -2,44 +2,44 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Categories on Albert Wang</title>
-    <link>https://example.com/categories/</link>
+    <link>https://root-zr.github.io/categories/</link>
     <description>Recent content in Categories on Albert Wang</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 24 Feb 2022 13:39:37 +0800</lastBuildDate><atom:link href="https://example.com/categories/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 24 Feb 2022 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>技术文档</title>
-      <link>https://example.com/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E6%A1%A3/</link>
+      <link>https://root-zr.github.io/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E6%A1%A3/</link>
       <pubDate>Thu, 24 Feb 2022 13:39:37 +0800</pubDate>
       
-      <guid>https://example.com/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E6%A1%A3/</guid>
+      <guid>https://root-zr.github.io/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E6%A1%A3/</guid>
       <description></description>
     </item>
     
     <item>
       <title>生活</title>
-      <link>https://example.com/categories/%E7%94%9F%E6%B4%BB/</link>
+      <link>https://root-zr.github.io/categories/%E7%94%9F%E6%B4%BB/</link>
       <pubDate>Sun, 13 Feb 2022 13:39:37 +0800</pubDate>
       
-      <guid>https://example.com/categories/%E7%94%9F%E6%B4%BB/</guid>
+      <guid>https://root-zr.github.io/categories/%E7%94%9F%E6%B4%BB/</guid>
       <description></description>
     </item>
     
     <item>
       <title>test</title>
-      <link>https://example.com/categories/test/</link>
+      <link>https://root-zr.github.io/categories/test/</link>
       <pubDate>Thu, 07 Jan 2021 13:42:27 -0500</pubDate>
       
-      <guid>https://example.com/categories/test/</guid>
+      <guid>https://root-zr.github.io/categories/test/</guid>
       <description></description>
     </item>
     
     <item>
       <title>classical</title>
-      <link>https://example.com/categories/classical/</link>
+      <link>https://root-zr.github.io/categories/classical/</link>
       <pubDate>Thu, 01 Oct 1925 00:00:00 +0000</pubDate>
       
-      <guid>https://example.com/categories/classical/</guid>
+      <guid>https://root-zr.github.io/categories/classical/</guid>
       <description></description>
     </item>
     

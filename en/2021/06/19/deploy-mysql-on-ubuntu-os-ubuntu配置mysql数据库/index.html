@@ -1,0 +1,276 @@
+<a name="top"></a>
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  	
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>deploy mysql on ubuntu OS | ubuntu配置mysql数据库 - Albert Wang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/font.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega@5.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.12.2"></script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+            <link rel="icon" href="https://root-zr.github.io/media/logo.JPG">
+
+
+
+
+
+  </head>
+  
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav" >
+      <a href="/" class="nav-logo">
+        <img src="/media/logo.JPG"
+         width="50"
+         height="50"
+         alt="Hugo-ht">
+      </a>
+
+      <ul class="nav-links" >
+       
+       
+       
+       <li><a href="/">Home</a></li>
+       
+       <li><a href="/en/posts/">Posts</a></li>
+       
+       <li><a href="/tags/">Tags</a></li>
+       
+       <li><a href="/categories/">Categories</a></li>
+       
+       <li><a href="/en/about/">About</a></li>
+       
+       <li><a href="/cn/posts/">中文</a></li>
+       
+       
+      </ul>
+</nav>
+      </header>
+
+<main class = "content" role="main">
+<div style="text-align: center">
+
+<h1>deploy mysql on ubuntu OS | ubuntu配置mysql数据库</h1>
+
+<p> 
+ / 2021-06-19 
+/ 200 Words/has been Read  <span id="busuanzi_value_page_pv"></span>&nbsp;&nbsp;Times
+
+</p>
+
+
+
+<hr/>
+
+
+</div>
+
+<span class="article-toolbar">
+  
+  
+  
+  
+  
+  
+  
+  <a href='https://github.com/root-zren%5cposts%5c2021%5cubuntu%e9%85%8d%e7%bd%aemysql%e6%95%b0%e6%8d%ae%e5%ba%93.md'style="font-size: 24px; color: black;" target="_blank"><i class="fa fa-edit" aria-hidden="true" title="Suggest an edit of this page"></i>
+  </a>
+  
+  
+  
+</span>
+
+
+<aside class="toc">
+Table of Contents:
+<nav id="TableOfContents">
+  <ol>
+    <li><a href="#下载mysql">下载MySQL</a></li>
+    <li><a href="#创建mysql用户组和用户并修改权限">创建mysql用户组和用户并修改权限</a></li>
+    <li><a href="#启动mysql">启动mysql</a></li>
+    <li><a href="#远程连接mysql">远程连接mysql</a></li>
+    <li><a href="#参考">参考</a></li>
+  </ol>
+</nav>
+</aside>
+
+
+<div class="body-text list-text">
+<p>使用的ubuntu版本为18.04，mysql的版本为5.7</p>
+<h2 id="下载mysql">下载MySQL<a href="#下载mysql" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>首先使用linux命令下载到本地：</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">wget https://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-5.7.25-linux-glibc2.12-x86_64.tar.gz
+</code></pre></div><img src="https://pic3.zhimg.com/80/v2-405077d5715c86f60b93c4b186e5f0ca_720w.jpg" alt="img" style="zoom:150%;" />
+<p>然后解压缩</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">tar -xvf mysql-5.7.25-linux-glibc2.12-x86_64.tar.gz
+</code></pre></div><p>注意：为了方便，之后的命令一律采用root账户来配置</p>
+<p>移动到/usr/local/并且将mysql-5.7.25-linux-glibc2.12-x86_64重命名为mysql</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">mv mysql-5.7.25-linux-glibc2.12-x86_64 /usr/local/mysql
+</code></pre></div><h2 id="创建mysql用户组和用户并修改权限">创建mysql用户组和用户并修改权限<a href="#创建mysql用户组和用户并修改权限" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">groupadd mysql
+useradd -r -g mysql mysql
+</code></pre></div><p><img src="https://pic2.zhimg.com/80/v2-a4aac84ed3543a52784cfd5857269201_720w.png" alt="img"></p>
+<p>创建数据目录并赋予权限</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">mkdir -p  /data/mysql              <span style="color:#408080;font-style:italic">#创建目录</span>
+chown mysql:mysql -R /data/mysql   <span style="color:#408080;font-style:italic">#赋予权限</span>
+</code></pre></div><p>配置my.cnf文件，用以下命令打开</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">vim /etc/my.cnf
+</code></pre></div><p>文件的内容如下[<a href="https://zhuanlan.zhihu.com/p/382014291#ref_1" target="_blank" rel="noreferrer noopener">1]</a>
+
+：</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#666">[</span>mysqld<span style="color:#666">]</span>
+bind-address<span style="color:#666">=</span>0.0.0.0
+<span style="color:#19177c">port</span><span style="color:#666">=</span><span style="color:#666">3306</span>
+<span style="color:#19177c">user</span><span style="color:#666">=</span>mysql
+<span style="color:#19177c">basedir</span><span style="color:#666">=</span>/usr/local/mysql
+<span style="color:#19177c">datadir</span><span style="color:#666">=</span>/data/mysql
+<span style="color:#19177c">socket</span><span style="color:#666">=</span>/tmp/mysql.sock
+log-error<span style="color:#666">=</span>/data/mysql/mysql.err
+pid-file<span style="color:#666">=</span>/data/mysql/mysql.pid
+<span style="color:#408080;font-style:italic">#character config</span>
+<span style="color:#19177c">character_set_server</span><span style="color:#666">=</span>utf8mb4
+symbolic-links<span style="color:#666">=</span><span style="color:#666">0</span>
+<span style="color:#19177c">explicit_defaults_for_timestamp</span><span style="color:#666">=</span><span style="color:#008000">true</span>
+</code></pre></div><p>其中bind-address=0.0.0.0是设置允许远程连接，port=3306表示端口号为3306.</p>
+<p>完成上面的步骤之后我们就可以进行数据库的初始化工作了，首先进入mysql的bin目录</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#008000">cd</span> /usr/local/mysql/bin/
+</code></pre></div><p>然后执行bin目录下的mysqld脚本，用来初始化信息，</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">./mysqld --defaults-file<span style="color:#666">=</span>/etc/my.cnf --basedir<span style="color:#666">=</span>/usr/local/mysql/ --datadir<span style="color:#666">=</span>/data/mysql/ --user<span style="color:#666">=</span>mysql --initialize
+</code></pre></div><p>这里的user=mysql其实不重要，后续可以设置成root</p>
+<p><img src="https://pic4.zhimg.com/80/v2-9304fe3e8dbc13d6a6f6a593efe84903_720w.png" alt="img"></p>
+<p>但是很不幸它报错了，错误信息是./mysqld: error while loading shared libraries: libaio.so.1: cannot open shared object file。其实原因是我们没有下载libaio这个安装包，那我们就下载一个呗，命令如下：</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">apt-get install libaio-dev
+</code></pre></div><p>下载完成后再执行初始化的命令就能看到成功执行了，如下图</p>
+<p><img src="https://pic2.zhimg.com/80/v2-61f580a10adec02e1cb86e2225c01091_720w.png" alt="img"></p>
+<p>然后我们就可以查看数据库给我们设置的初始密码了，用下面的指令查看密码</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">cat /data/mysql/mysql.err
+</code></pre></div><p><img src="https://pic3.zhimg.com/80/v2-7c8978912cba06bc03e7f6a3603150b2_720w.png" alt="img"></p>
+<p>然后我们可以在末尾看到一堆字符串组成的密码，我的这个为3oTAig!nnjp1，建议大家把它复制下来，因为我们后面要用它登录。</p>
+<p>我们现在已经完成了初始化，也得到了初始密码，所以后续就需要启动mysql，并更改我们自己的root 密码了。开始之前我们先复制mysql.server到/etc/init.d/mysql中，方便我们成功启动mysql,执行的指令如下：</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysql
+</code></pre></div><h2 id="启动mysql">启动mysql<a href="#启动mysql" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>然后就启动mysql，用下面的指令</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">service mysql start
+</code></pre></div><p><img src="https://pic3.zhimg.com/80/v2-12f8324282e513e028c580d80e3bdfea_720w.png" alt="img"></p>
+<p>但是它又报错了，这回的信息是Failed to start mysql.service: Unit mysql.service not found. 这回报错的原因主要是Ubuntu的18.04舍弃了mysql.service，所以我们就需要用mariadb-server来代替，主要执行下面三条指令</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#408080;font-style:italic"># 首先需要安装mariadb-server</span>
+apt install -y mariadb-server
+<span style="color:#408080;font-style:italic"># 启动服务</span>
+systemctl start mariadb.service
+<span style="color:#408080;font-style:italic"># 添加到开机启动</span>
+systemctl <span style="color:#008000">enable</span> mariadb.service
+</code></pre></div><p>结果更惨了，它第一条指令就报错了，说unable to locate package mariadb-server</p>
+<p><img src="https://pic3.zhimg.com/80/v2-27564d27b825e0ea5a03778d523c4102_720w.png" alt="img"></p>
+<p>这个错误只要是在Linux下，每个Linux的发行版都会维护一个自己的软件仓库，我们常用的几乎所有软件都在这里面。用apt-get install命令直接安装。相比于源码安装，更新（configure，make，makeinstall）会方便很多。</p>
+<p>而在Ubuntu下，我们维护一个源列表，源列表里面都是一些网址信息，这每一条网址就是一个源，这个地址指向的数据标识着这台源服务器上有哪些软件可以安装使用。</p>
+<p>我们的这个问题很可能就是没有更新，所以只需要用以下指令更新就行，</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">apt-get update
+</code></pre></div><p>结果确实如我们所料，然后就是继续我们尚未完成的那三条指令，一次执行，结果如下图：</p>
+<p><img src="https://pic2.zhimg.com/80/v2-16c86b7287055eb38755fd5eda3eb471_720w.png" alt="img"></p>
+<p>解决完所有的问题我们重新启动mysql,这回就能看到成功的结果了，我们可以查看进程信息来确定mysql的状态。</p>
+<p><img src="https://pic4.zhimg.com/80/v2-219459d76032cd18af8dda124d5aba57_720w.png" alt="img"></p>
+<p>然后我们执行bin目录下的mysql脚本，用之前系统给的密码登录。</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">./mysql -u root -p
+</code></pre></div><img src="https://pic3.zhimg.com/80/v2-a1d4ec82a616c7edc3afc798f85983da_720w.jpg" alt="img" style="zoom:150%;" />
+<p>登录之后就能看到对应的信息了，然后我们在mysql里执行下面的命令来修改密码</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">SET <span style="color:#19177c">PASSWORD</span> <span style="color:#666">=</span> PASSWORD<span style="color:#666">(</span><span style="color:#ba2121">&#39;123456&#39;</span><span style="color:#666">)</span>;
+update mysql.user <span style="color:#008000">set</span> <span style="color:#19177c">authentication_string</span><span style="color:#666">=</span>password<span style="color:#666">(</span><span style="color:#ba2121">&#39;123456&#39;</span><span style="color:#666">)</span> where <span style="color:#19177c">user</span><span style="color:#666">=</span><span style="color:#ba2121">&#39;root&#39;</span>;
+FLUSH PRIVILEGES;  
+</code></pre></div><img src="https://pic1.zhimg.com/80/v2-1454c2c55ddebd427c21411011f285a8_720w.jpg" alt="img" style="zoom:150%;" />
+<h2 id="远程连接mysql">远程连接mysql<a href="#远程连接mysql" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>密码修改完成之后就可以在远程服务器上用我们自己的密码启动mysql了，但是我们从自己的电脑上仍然不能访问，所以我们呢仍需做以下的配置来开启这种访问。</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">use mysql                                            
+update user <span style="color:#008000">set</span> <span style="color:#19177c">host</span> <span style="color:#666">=</span> <span style="color:#ba2121">&#39;%&#39;</span> where <span style="color:#19177c">user</span> <span style="color:#666">=</span> <span style="color:#ba2121">&#39;root&#39;</span>;      
+FLUSH PRIVILEGES;    <span style="color:#408080;font-style:italic">#设置立即生效</span>
+</code></pre></div><img src="https://pic3.zhimg.com/80/v2-ff39e1fa12ad6f4c087618fb216bfe42_720w.jpg" alt="img" style="zoom:150%;" />
+<p>这样理论上是完成了，但是我们忽略了一个很重要的细节，那就是我们之前用了mariadb-server来做替代，但是它还没有被配置呢。我们查看3306端口的信息，果然发现还没有修改成功[<a href="https://zhuanlan.zhihu.com/p/382014291#ref_2" target="_blank" rel="noreferrer noopener">2]</a>
+
+。</p>
+<p><img src="https://pic4.zhimg.com/80/v2-11dba53f908645e47da14416a6692393_720w.png" alt="img"></p>
+<p>所以我们呢下面就需要找到mariadb-server的配置文件对它进行修改了，我们找到50-server.cnf，然后修改它的内容。</p>
+<img src="https://pic1.zhimg.com/80/v2-e112ce3acdcdc5c4d82269674321e81c_720w.jpg" alt="img" style="zoom:150%;" />
+<p>将下图中光标所指的那一栏给注释掉，让其不指定127.0.0.1</p>
+<img src="https://pic3.zhimg.com/80/v2-2da5ba1892c3699065cec897ef2b2216_720w.jpg" alt="img" style="zoom:150%;" />
+<p>然后重启服务器，重启完之后再查看端口信息，可以看到已经成功修改了。</p>
+<p><img src="https://pic2.zhimg.com/80/v2-b51b99610161b4537b758d01ad9dcc6d_720w.png" alt="img"></p>
+<p>我们重新切换到root用户，然后用我们用自己的密码登录mysql，查看mysql的访问权限信息</p>
+<img src="https://pic2.zhimg.com/80/v2-7a39c43bcbcf3764f46033c132238301_720w.jpg" alt="img" style="zoom:150%;" />
+<p>其中host一列代表哪个host可以远程访问访问当前数据库；%表示任意host可以访问，localhost代表本机。上图说明root是可以被任意访问的。如果不是，可以用以下指令开放权限，并且让其立即生效。</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">grant all privileges on *.* to <span style="color:#ba2121">&#39;root&#39;</span>@<span style="color:#ba2121">&#39;%&#39;</span> identified by <span style="color:#ba2121">&#39;123456&#39;</span>
+flush privileges;
+</code></pre></div><p>完成之后我们用自己本地的mysql来连接远程的服务器，可以看到已经成功连接了。</p>
+<img src="https://pic4.zhimg.com/80/v2-5dbc7cd09643ddfabe9ae2428000ff4b_720w.jpg" alt="img" style="zoom:150%;" />
+<p>至此整个连接数据库的过程就成功完成了。</p>
+<h2 id="参考">参考<a href="#参考" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<ol>
+<li><a href="https://zhuanlan.zhihu.com/p/382014291#ref_1_0" target="_blank" rel="noreferrer noopener">^</a>
+
+<a href="https://blog.csdn.net/qq_37598011/article/details/93489404?utm_medium=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-1.control&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-1.control" target="_blank" rel="noreferrer noopener">https://blog.csdn.net/qq_37598011/article/details/93489404?utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.control&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.control</a>
+
+</li>
+<li><a href="https://zhuanlan.zhihu.com/p/382014291#ref_2_0" target="_blank" rel="noreferrer noopener">^</a>
+
+https://www.cnblogs.com/daydayup-lin/p/11913266.html</li>
+</ol>
+
+<p style="color:#777;">Last modified on 2021-06-19</p>
+</div>
+<a href="#top"><i class="fa fa-chevron-up" style="font-size: 30px; color: black;"></i></a>
+
+</main>
+
+<footer class="footer">
+  <script type="text/javascript" src="/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/javascript" src="/js/center-img.js"></script>
+
+
+
+     <ul class="footer-links">
+      
+       
+       
+       
+       <li><a href="/en/posts/index.xml" type="application/rss+xml" title="RSS feed">
+       Subscribe </a>
+       </li>
+       
+       
+       <li>
+       
+        <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
+       
+        License
+        <i class="fa fa-cc" aria-hidden="true" title="Attribution-NonCommercial-ShareAlike 4.0 International"></i> 
+        </a>
+       </li>
+       
+     </ul>
+     <div class="copyright-text">
+			<span id="busuanzi_container_site_pv"> 本站访问量：<span id="busuanzi_value_site_pv"></span>次</span>&nbsp;
+			<span id="busuanzi_container_site_uv"> 您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者</span>
+     </div>
+</footer>
+
+
+
+
+

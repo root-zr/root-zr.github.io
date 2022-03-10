@@ -1,0 +1,456 @@
+<a name="top"></a>
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  	
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>LinkedList Source Sode | LinkedList源码学习 - Albert Wang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/font.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega@5.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.12.2"></script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+            <link rel="icon" href="https://root-zr.github.io/media/logo.JPG">
+
+
+
+
+
+  </head>
+  
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav" >
+      <a href="/" class="nav-logo">
+        <img src="/media/logo.JPG"
+         width="50"
+         height="50"
+         alt="Hugo-ht">
+      </a>
+
+      <ul class="nav-links" >
+       
+       
+       
+       <li><a href="/">Home</a></li>
+       
+       <li><a href="/en/posts/">Posts</a></li>
+       
+       <li><a href="/tags/">Tags</a></li>
+       
+       <li><a href="/categories/">Categories</a></li>
+       
+       <li><a href="/en/about/">About</a></li>
+       
+       <li><a href="/cn/posts/">中文</a></li>
+       
+       
+      </ul>
+</nav>
+      </header>
+
+<main class = "content" role="main">
+<div style="text-align: center">
+
+<h1>LinkedList Source Sode | LinkedList源码学习</h1>
+
+<p> 
+ / 2021-07-26 
+/ 900 Words/has been Read  <span id="busuanzi_value_page_pv"></span>&nbsp;&nbsp;Times
+
+</p>
+
+
+
+<hr/>
+
+
+</div>
+
+<span class="article-toolbar">
+  
+  
+  
+  
+  
+  
+  
+  <a href='https://github.com/root-zren%5cposts%5c2021%5cLinkedList%e6%ba%90%e7%a0%81%e5%ad%a6%e4%b9%a0.md'style="font-size: 24px; color: black;" target="_blank"><i class="fa fa-edit" aria-hidden="true" title="Suggest an edit of this page"></i>
+  </a>
+  
+  
+  
+</span>
+
+
+<aside class="toc">
+Table of Contents:
+<nav id="TableOfContents">
+  <ol>
+    <li><a href="#基本结构">基本结构</a></li>
+    <li><a href="#常用方法">常用方法</a>
+      <ol>
+        <li><a href="#插入元素">插入元素</a></li>
+        <li><a href="#查找元素">查找元素</a></li>
+        <li><a href="#删除元素">删除元素</a></li>
+        <li><a href="#修改元素">修改元素</a></li>
+        <li><a href="#toarray方法">toArray()方法</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+</aside>
+
+
+<div class="body-text list-text">
+<h2 id="基本结构">基本结构<a href="#基本结构" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>LinkedList是Java对线性表的一种实现，它实现的接口有List<E>, Deque<E>, Cloneable, java.io.Serializable，同时它也继承了util包下的AbstractSequentialList<E>抽象类。</p>
+<p>LinkedList是用链表来实现List接口的，它对链表的封装如下：</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#008000;font-weight:bold">private</span> <span style="color:#008000;font-weight:bold">static</span> <span style="color:#008000;font-weight:bold">class</span> <span style="color:#00f;font-weight:bold">Node</span><span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> <span style="color:#666">{</span>
+        E item<span style="color:#666">;</span>
+        Node<span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> next<span style="color:#666">;</span>
+        Node<span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> prev<span style="color:#666">;</span>
+
+        Node<span style="color:#666">(</span>Node<span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> prev<span style="color:#666">,</span> E element<span style="color:#666">,</span> Node<span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> next<span style="color:#666">)</span> <span style="color:#666">{</span>
+            <span style="color:#008000;font-weight:bold">this</span><span style="color:#666">.</span><span style="color:#7d9029">item</span> <span style="color:#666">=</span> element<span style="color:#666">;</span>
+            <span style="color:#008000;font-weight:bold">this</span><span style="color:#666">.</span><span style="color:#7d9029">next</span> <span style="color:#666">=</span> next<span style="color:#666">;</span>
+            <span style="color:#008000;font-weight:bold">this</span><span style="color:#666">.</span><span style="color:#7d9029">prev</span> <span style="color:#666">=</span> prev<span style="color:#666">;</span>
+        <span style="color:#666">}</span>
+<span style="color:#666">}</span>
+</code></pre></div><p>它的成员变量如下：</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#008000;font-weight:bold">private</span> <span style="color:#008000;font-weight:bold">static</span> <span style="color:#008000;font-weight:bold">final</span> <span style="color:#b00040">long</span> serialVersionUID <span style="color:#666">=</span> 876323262645176354L<span style="color:#666">;</span> <span style="color:#408080;font-style:italic">//序列化号
+</span><span style="color:#408080;font-style:italic"></span><span style="color:#008000;font-weight:bold">transient</span> <span style="color:#b00040">int</span> size <span style="color:#666">=</span> 0<span style="color:#666">;</span> <span style="color:#408080;font-style:italic">//链表的大小，transient关键字载序列化对象的时候，这个属性就不会被序列化
+</span><span style="color:#408080;font-style:italic"></span><span style="color:#008000;font-weight:bold">transient</span> Node<span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> first<span style="color:#666">;</span>  <span style="color:#408080;font-style:italic">//链表的头结点
+</span><span style="color:#408080;font-style:italic"></span><span style="color:#008000;font-weight:bold">transient</span> Node<span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> last<span style="color:#666">;</span>   <span style="color:#408080;font-style:italic">//链表的尾结点
+</span></code></pre></div><p>构造方法如下：</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#008000;font-weight:bold">public</span> <span style="color:#00f">LinkedList</span><span style="color:#666">()</span> <span style="color:#666">{</span>  <span style="color:#408080;font-style:italic">//无参构造方法
+</span><span style="color:#408080;font-style:italic"></span><span style="color:#666">}</span>
+<span style="color:#008000;font-weight:bold">public</span> <span style="color:#00f">LinkedList</span><span style="color:#666">(</span>Collection<span style="color:#666">&lt;?</span> <span style="color:#008000;font-weight:bold">extends</span> E<span style="color:#666">&gt;</span> c<span style="color:#666">)</span> <span style="color:#666">{</span>  <span style="color:#408080;font-style:italic">//传一个Collection的对象
+</span><span style="color:#408080;font-style:italic"></span>    <span style="color:#008000;font-weight:bold">this</span><span style="color:#666">();</span>
+    addAll<span style="color:#666">(</span>c<span style="color:#666">);</span>
+<span style="color:#666">}</span>
+</code></pre></div><p>从前面的有参构造方法可以看出，它要求传入一个实现了Collection接口的类，这个接口为线性表，向量，栈，队列等定义了共同的操作。在传了一个Collection的对象（<strong>接口本身是不能创建对象的，这里只是为了说明方便</strong>）之后会调用addAll()方法来初始化，这是一个封装好的方法，方法内部会调用它的重载方法，多传入一个index的参数，这个参数值在方法内部默认为size。方法的实现如下：</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#008000;font-weight:bold">public</span> <span style="color:#b00040">boolean</span> <span style="color:#00f">addAll</span><span style="color:#666">(</span><span style="color:#b00040">int</span> index<span style="color:#666">,</span> Collection<span style="color:#666">&lt;?</span> <span style="color:#008000;font-weight:bold">extends</span> E<span style="color:#666">&gt;</span> c<span style="color:#666">)</span> <span style="color:#666">{</span>
+        checkPositionIndex<span style="color:#666">(</span>index<span style="color:#666">);</span> <span style="color:#408080;font-style:italic">//这里会检查传入下标的合法性，index &gt;= 0 &amp;&amp; index &lt;= size，不满足会抛出异常
+</span><span style="color:#408080;font-style:italic"></span>
+        Object<span style="color:#666">[]</span> a <span style="color:#666">=</span> c<span style="color:#666">.</span><span style="color:#7d9029">toArray</span><span style="color:#666">();</span>
+        <span style="color:#b00040">int</span> numNew <span style="color:#666">=</span> a<span style="color:#666">.</span><span style="color:#7d9029">length</span><span style="color:#666">;</span>
+        <span style="color:#008000;font-weight:bold">if</span> <span style="color:#666">(</span>numNew <span style="color:#666">==</span> 0<span style="color:#666">)</span>  <span style="color:#408080;font-style:italic">//如果传入的 Collection对象为空，返回false表示添加失败
+</span><span style="color:#408080;font-style:italic"></span>            <span style="color:#008000;font-weight:bold">return</span> <span style="color:#008000;font-weight:bold">false</span><span style="color:#666">;</span>
+
+        Node<span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> pred<span style="color:#666">,</span> succ<span style="color:#666">;</span>
+        <span style="color:#008000;font-weight:bold">if</span> <span style="color:#666">(</span>index <span style="color:#666">==</span> size<span style="color:#666">)</span> <span style="color:#666">{</span>
+            succ <span style="color:#666">=</span> <span style="color:#008000;font-weight:bold">null</span><span style="color:#666">;</span>
+            pred <span style="color:#666">=</span> last<span style="color:#666">;</span>
+        <span style="color:#666">}</span> <span style="color:#008000;font-weight:bold">else</span> <span style="color:#666">{</span>
+            succ <span style="color:#666">=</span> node<span style="color:#666">(</span>index<span style="color:#666">);</span>  <span style="color:#408080;font-style:italic">//调用node函数返回index下标对应的Node结点
+</span><span style="color:#408080;font-style:italic"></span>            pred <span style="color:#666">=</span> succ<span style="color:#666">.</span><span style="color:#7d9029">prev</span><span style="color:#666">;</span>
+        <span style="color:#666">}</span>
+
+        <span style="color:#008000;font-weight:bold">for</span> <span style="color:#666">(</span>Object o <span style="color:#666">:</span> a<span style="color:#666">)</span> <span style="color:#666">{</span>
+            <span style="color:#a2f">@SuppressWarnings</span><span style="color:#666">(</span><span style="color:#ba2121">&#34;unchecked&#34;</span><span style="color:#666">)</span> E e <span style="color:#666">=</span> <span style="color:#666">(</span>E<span style="color:#666">)</span> o<span style="color:#666">;</span>
+            Node<span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> newNode <span style="color:#666">=</span> <span style="color:#008000;font-weight:bold">new</span> Node<span style="color:#666">&lt;&gt;(</span>pred<span style="color:#666">,</span> e<span style="color:#666">,</span> <span style="color:#008000;font-weight:bold">null</span><span style="color:#666">);</span>
+            <span style="color:#008000;font-weight:bold">if</span> <span style="color:#666">(</span>pred <span style="color:#666">==</span> <span style="color:#008000;font-weight:bold">null</span><span style="color:#666">)</span>
+                first <span style="color:#666">=</span> newNode<span style="color:#666">;</span>
+            <span style="color:#008000;font-weight:bold">else</span>
+                pred<span style="color:#666">.</span><span style="color:#7d9029">next</span> <span style="color:#666">=</span> newNode<span style="color:#666">;</span>
+            pred <span style="color:#666">=</span> newNode<span style="color:#666">;</span>
+        <span style="color:#666">}</span>
+
+        <span style="color:#008000;font-weight:bold">if</span> <span style="color:#666">(</span>succ <span style="color:#666">==</span> <span style="color:#008000;font-weight:bold">null</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+            last <span style="color:#666">=</span> pred<span style="color:#666">;</span>
+        <span style="color:#666">}</span> <span style="color:#008000;font-weight:bold">else</span> <span style="color:#666">{</span>
+            pred<span style="color:#666">.</span><span style="color:#7d9029">next</span> <span style="color:#666">=</span> succ<span style="color:#666">;</span>
+            succ<span style="color:#666">.</span><span style="color:#7d9029">prev</span> <span style="color:#666">=</span> pred<span style="color:#666">;</span>
+        <span style="color:#666">}</span>
+
+        size <span style="color:#666">+=</span> numNew<span style="color:#666">;</span>
+        modCount<span style="color:#666">++;</span>
+        <span style="color:#008000;font-weight:bold">return</span> <span style="color:#008000;font-weight:bold">true</span><span style="color:#666">;</span>
+<span style="color:#666">}</span>
+</code></pre></div><p>在上面的方法中调用node函数返回index下标对应的Node结点，这个函数在其他的方法中也有用到，我们单独进行一下分析。函数内部首先会对当前链表的大小除以2，如果index小于这个数，就说明这个下标对应链表的前半部分，然后就从头结点开始向后遍历；否则说明在整个链表的后半部分，就从后往前遍历，最后都是返回对应的结点，只不过这样会减少遍历的次数，节省时间。具体的代码如下：</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Node<span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> <span style="color:#00f">node</span><span style="color:#666">(</span><span style="color:#b00040">int</span> index<span style="color:#666">)</span> <span style="color:#666">{</span>
+        <span style="color:#408080;font-style:italic">// assert isElementIndex(index);
+</span><span style="color:#408080;font-style:italic"></span>
+        <span style="color:#008000;font-weight:bold">if</span> <span style="color:#666">(</span>index <span style="color:#666">&lt;</span> <span style="color:#666">(</span>size <span style="color:#666">&gt;&gt;</span> 1<span style="color:#666">))</span> <span style="color:#666">{</span>
+            Node<span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> x <span style="color:#666">=</span> first<span style="color:#666">;</span>
+            <span style="color:#008000;font-weight:bold">for</span> <span style="color:#666">(</span><span style="color:#b00040">int</span> i <span style="color:#666">=</span> 0<span style="color:#666">;</span> i <span style="color:#666">&lt;</span> index<span style="color:#666">;</span> i<span style="color:#666">++)</span>
+                x <span style="color:#666">=</span> x<span style="color:#666">.</span><span style="color:#7d9029">next</span><span style="color:#666">;</span>
+            <span style="color:#008000;font-weight:bold">return</span> x<span style="color:#666">;</span>
+        <span style="color:#666">}</span> <span style="color:#008000;font-weight:bold">else</span> <span style="color:#666">{</span>
+            Node<span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> x <span style="color:#666">=</span> last<span style="color:#666">;</span>
+            <span style="color:#008000;font-weight:bold">for</span> <span style="color:#666">(</span><span style="color:#b00040">int</span> i <span style="color:#666">=</span> size <span style="color:#666">-</span> 1<span style="color:#666">;</span> i <span style="color:#666">&gt;</span> index<span style="color:#666">;</span> i<span style="color:#666">--)</span>
+                x <span style="color:#666">=</span> x<span style="color:#666">.</span><span style="color:#7d9029">prev</span><span style="color:#666">;</span>
+            <span style="color:#008000;font-weight:bold">return</span> x<span style="color:#666">;</span>
+        <span style="color:#666">}</span>
+<span style="color:#666">}</span>
+</code></pre></div><h2 id="常用方法">常用方法<a href="#常用方法" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>下面我们来了解一些场用的一些方法：</p>
+<h3 id="插入元素">插入元素<a href="#插入元素" class="header-anchor" ariaLabel="Anchor"> # </a></h3>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#008000;font-weight:bold">public</span> <span style="color:#b00040">void</span> <span style="color:#00f">addFirst</span><span style="color:#666">(</span>E e<span style="color:#666">)</span> <span style="color:#666">{</span>  <span style="color:#408080;font-style:italic">//插入到链表头
+</span><span style="color:#408080;font-style:italic"></span>      linkFirst<span style="color:#666">(</span>e<span style="color:#666">);</span>
+ <span style="color:#666">}</span>
+
+<span style="color:#008000;font-weight:bold">private</span> <span style="color:#b00040">void</span> <span style="color:#00f">linkFirst</span><span style="color:#666">(</span>E e<span style="color:#666">)</span> <span style="color:#666">{</span>
+        <span style="color:#008000;font-weight:bold">final</span> Node<span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> f <span style="color:#666">=</span> first<span style="color:#666">;</span>   
+        <span style="color:#008000;font-weight:bold">final</span> Node<span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> newNode <span style="color:#666">=</span> <span style="color:#008000;font-weight:bold">new</span> Node<span style="color:#666">&lt;&gt;(</span><span style="color:#008000;font-weight:bold">null</span><span style="color:#666">,</span> e<span style="color:#666">,</span> f<span style="color:#666">);</span>
+        first <span style="color:#666">=</span> newNode<span style="color:#666">;</span>
+        <span style="color:#008000;font-weight:bold">if</span> <span style="color:#666">(</span>f <span style="color:#666">==</span> <span style="color:#008000;font-weight:bold">null</span><span style="color:#666">)</span>  <span style="color:#408080;font-style:italic">//如果原来的头结点是null，说明现在整个链表只有一个元素
+</span><span style="color:#408080;font-style:italic"></span>            last <span style="color:#666">=</span> newNode<span style="color:#666">;</span> <span style="color:#408080;font-style:italic">//所以链表的尾结点也是newNode
+</span><span style="color:#408080;font-style:italic"></span>        <span style="color:#008000;font-weight:bold">else</span>
+            f<span style="color:#666">.</span><span style="color:#7d9029">prev</span> <span style="color:#666">=</span> newNode<span style="color:#666">;</span> <span style="color:#408080;font-style:italic">//这时原来头结点的prev就是现在的头结点
+</span><span style="color:#408080;font-style:italic"></span>        size<span style="color:#666">++;</span>
+        modCount<span style="color:#666">++;</span>
+<span style="color:#666">}</span>
+
+<span style="color:#008000;font-weight:bold">public</span> <span style="color:#b00040">void</span> <span style="color:#00f">addLast</span><span style="color:#666">(</span>E e<span style="color:#666">)</span> <span style="color:#666">{</span>
+        linkLast<span style="color:#666">(</span>e<span style="color:#666">);</span>
+<span style="color:#666">}</span>
+
+ <span style="color:#b00040">void</span> <span style="color:#00f">linkLast</span><span style="color:#666">(</span>E e<span style="color:#666">)</span> <span style="color:#666">{</span>
+        <span style="color:#008000;font-weight:bold">final</span> Node<span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> l <span style="color:#666">=</span> last<span style="color:#666">;</span>
+        <span style="color:#008000;font-weight:bold">final</span> Node<span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> newNode <span style="color:#666">=</span> <span style="color:#008000;font-weight:bold">new</span> Node<span style="color:#666">&lt;&gt;(</span>l<span style="color:#666">,</span> e<span style="color:#666">,</span> <span style="color:#008000;font-weight:bold">null</span><span style="color:#666">);</span>
+        last <span style="color:#666">=</span> newNode<span style="color:#666">;</span>
+        <span style="color:#008000;font-weight:bold">if</span> <span style="color:#666">(</span>l <span style="color:#666">==</span> <span style="color:#008000;font-weight:bold">null</span><span style="color:#666">)</span>  <span style="color:#408080;font-style:italic">//如果原来的尾结点是null，说明现在整个链表只有一个元素
+</span><span style="color:#408080;font-style:italic"></span>            first <span style="color:#666">=</span> newNode<span style="color:#666">;</span> <span style="color:#408080;font-style:italic">//所以链表的头结点也是newNode
+</span><span style="color:#408080;font-style:italic"></span>        <span style="color:#008000;font-weight:bold">else</span>
+            l<span style="color:#666">.</span><span style="color:#7d9029">next</span> <span style="color:#666">=</span> newNode<span style="color:#666">;</span>
+        size<span style="color:#666">++;</span>
+        modCount<span style="color:#666">++;</span>
+    <span style="color:#666">}</span>
+
+<span style="color:#008000;font-weight:bold">public</span> <span style="color:#b00040">boolean</span> <span style="color:#00f">add</span><span style="color:#666">(</span>E e<span style="color:#666">)</span> <span style="color:#666">{</span>
+        linkLast<span style="color:#666">(</span>e<span style="color:#666">);</span>  <span style="color:#408080;font-style:italic">//默认的添加元素是添加到链表尾部
+</span><span style="color:#408080;font-style:italic"></span>        <span style="color:#008000;font-weight:bold">return</span> <span style="color:#008000;font-weight:bold">true</span><span style="color:#666">;</span>
+<span style="color:#666">}</span>
+
+ <span style="color:#008000;font-weight:bold">public</span> <span style="color:#b00040">void</span> <span style="color:#00f">add</span><span style="color:#666">(</span><span style="color:#b00040">int</span> index<span style="color:#666">,</span> E element<span style="color:#666">)</span> <span style="color:#666">{</span>  <span style="color:#408080;font-style:italic">//在固定下标处添加元素
+</span><span style="color:#408080;font-style:italic"></span>        checkPositionIndex<span style="color:#666">(</span>index<span style="color:#666">);</span>  <span style="color:#408080;font-style:italic">//检查下标的合法性，index &gt;= 0 &amp;&amp; index &lt;= size
+</span><span style="color:#408080;font-style:italic"></span>
+        <span style="color:#008000;font-weight:bold">if</span> <span style="color:#666">(</span>index <span style="color:#666">==</span> size<span style="color:#666">)</span>
+            linkLast<span style="color:#666">(</span>element<span style="color:#666">);</span>
+        <span style="color:#008000;font-weight:bold">else</span>
+            linkBefore<span style="color:#666">(</span>element<span style="color:#666">,</span> node<span style="color:#666">(</span>index<span style="color:#666">));</span>  <span style="color:#408080;font-style:italic">//传入插入元素下标处的原结点
+</span><span style="color:#408080;font-style:italic"></span><span style="color:#666">}</span>
+
+<span style="color:#b00040">void</span> <span style="color:#00f">linkBefore</span><span style="color:#666">(</span>E e<span style="color:#666">,</span> Node<span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> succ<span style="color:#666">)</span> <span style="color:#666">{</span>  
+        <span style="color:#408080;font-style:italic">// assert succ != null;
+</span><span style="color:#408080;font-style:italic"></span>        <span style="color:#008000;font-weight:bold">final</span> Node<span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> pred <span style="color:#666">=</span> succ<span style="color:#666">.</span><span style="color:#7d9029">prev</span><span style="color:#666">;</span>  
+        <span style="color:#008000;font-weight:bold">final</span> Node<span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> newNode <span style="color:#666">=</span> <span style="color:#008000;font-weight:bold">new</span> Node<span style="color:#666">&lt;&gt;(</span>pred<span style="color:#666">,</span> e<span style="color:#666">,</span> succ<span style="color:#666">);</span>
+        succ<span style="color:#666">.</span><span style="color:#7d9029">prev</span> <span style="color:#666">=</span> newNode<span style="color:#666">;</span>
+        <span style="color:#008000;font-weight:bold">if</span> <span style="color:#666">(</span>pred <span style="color:#666">==</span> <span style="color:#008000;font-weight:bold">null</span><span style="color:#666">)</span>
+            first <span style="color:#666">=</span> newNode<span style="color:#666">;</span>
+        <span style="color:#008000;font-weight:bold">else</span>
+            pred<span style="color:#666">.</span><span style="color:#7d9029">next</span> <span style="color:#666">=</span> newNode<span style="color:#666">;</span>
+        size<span style="color:#666">++;</span>
+        modCount<span style="color:#666">++;</span>
+<span style="color:#666">}</span>
+</code></pre></div><h3 id="查找元素">查找元素<a href="#查找元素" class="header-anchor" ariaLabel="Anchor"> # </a></h3>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"> <span style="color:#008000;font-weight:bold">public</span> E <span style="color:#00f">getFirst</span><span style="color:#666">()</span> <span style="color:#666">{</span>  <span style="color:#408080;font-style:italic">//查找第一个元素
+</span><span style="color:#408080;font-style:italic"></span>        <span style="color:#008000;font-weight:bold">final</span> Node<span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> f <span style="color:#666">=</span> first<span style="color:#666">;</span>
+        <span style="color:#008000;font-weight:bold">if</span> <span style="color:#666">(</span>f <span style="color:#666">==</span> <span style="color:#008000;font-weight:bold">null</span><span style="color:#666">)</span>
+            <span style="color:#008000;font-weight:bold">throw</span> <span style="color:#008000;font-weight:bold">new</span> NoSuchElementException<span style="color:#666">();</span>
+        <span style="color:#008000;font-weight:bold">return</span> f<span style="color:#666">.</span><span style="color:#7d9029">item</span><span style="color:#666">;</span>
+ <span style="color:#666">}</span>
+
+<span style="color:#008000;font-weight:bold">public</span> E <span style="color:#00f">getLast</span><span style="color:#666">()</span> <span style="color:#666">{</span>  <span style="color:#408080;font-style:italic">//查找末尾的元素
+</span><span style="color:#408080;font-style:italic"></span>        <span style="color:#008000;font-weight:bold">final</span> Node<span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> l <span style="color:#666">=</span> last<span style="color:#666">;</span>
+        <span style="color:#008000;font-weight:bold">if</span> <span style="color:#666">(</span>l <span style="color:#666">==</span> <span style="color:#008000;font-weight:bold">null</span><span style="color:#666">)</span>
+            <span style="color:#008000;font-weight:bold">throw</span> <span style="color:#008000;font-weight:bold">new</span> NoSuchElementException<span style="color:#666">();</span>
+        <span style="color:#008000;font-weight:bold">return</span> l<span style="color:#666">.</span><span style="color:#7d9029">item</span><span style="color:#666">;</span>
+<span style="color:#666">}</span>
+
+<span style="color:#008000;font-weight:bold">public</span> E <span style="color:#00f">get</span><span style="color:#666">(</span><span style="color:#b00040">int</span> index<span style="color:#666">)</span> <span style="color:#666">{</span>   <span style="color:#408080;font-style:italic">//指定下标的元素
+</span><span style="color:#408080;font-style:italic"></span>        checkElementIndex<span style="color:#666">(</span>index<span style="color:#666">);</span>
+        <span style="color:#008000;font-weight:bold">return</span> node<span style="color:#666">(</span>index<span style="color:#666">).</span><span style="color:#7d9029">item</span><span style="color:#666">;</span>
+<span style="color:#666">}</span>
+</code></pre></div><h3 id="删除元素">删除元素<a href="#删除元素" class="header-anchor" ariaLabel="Anchor"> # </a></h3>
+<p>删除元素和前面的插入元素正好是对偶的操作，在删除元素的代码中，这里作者并不是直接将头结点的指针指向下一个结点，而是先把要删除元素的内容全部设置为null，这样做更加方便jvm进行垃圾回收。</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#008000;font-weight:bold">public</span> E <span style="color:#00f">removeFirst</span><span style="color:#666">()</span> <span style="color:#666">{</span>
+        <span style="color:#008000;font-weight:bold">final</span> Node<span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> f <span style="color:#666">=</span> first<span style="color:#666">;</span>
+        <span style="color:#008000;font-weight:bold">if</span> <span style="color:#666">(</span>f <span style="color:#666">==</span> <span style="color:#008000;font-weight:bold">null</span><span style="color:#666">)</span>
+            <span style="color:#008000;font-weight:bold">throw</span> <span style="color:#008000;font-weight:bold">new</span> NoSuchElementException<span style="color:#666">();</span>
+        <span style="color:#008000;font-weight:bold">return</span> unlinkFirst<span style="color:#666">(</span>f<span style="color:#666">);</span>
+<span style="color:#666">}</span>
+
+<span style="color:#008000;font-weight:bold">private</span> E <span style="color:#00f">unlinkFirst</span><span style="color:#666">(</span>Node<span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> f<span style="color:#666">)</span> <span style="color:#666">{</span>
+        <span style="color:#408080;font-style:italic">// assert f == first &amp;&amp; f != null;
+</span><span style="color:#408080;font-style:italic"></span>        <span style="color:#008000;font-weight:bold">final</span> E element <span style="color:#666">=</span> f<span style="color:#666">.</span><span style="color:#7d9029">item</span><span style="color:#666">;</span>
+        <span style="color:#008000;font-weight:bold">final</span> Node<span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> next <span style="color:#666">=</span> f<span style="color:#666">.</span><span style="color:#7d9029">next</span><span style="color:#666">;</span>
+        f<span style="color:#666">.</span><span style="color:#7d9029">item</span> <span style="color:#666">=</span> <span style="color:#008000;font-weight:bold">null</span><span style="color:#666">;</span>
+        f<span style="color:#666">.</span><span style="color:#7d9029">next</span> <span style="color:#666">=</span> <span style="color:#008000;font-weight:bold">null</span><span style="color:#666">;</span> <span style="color:#408080;font-style:italic">// help GC
+</span><span style="color:#408080;font-style:italic"></span>        first <span style="color:#666">=</span> next<span style="color:#666">;</span>
+        <span style="color:#008000;font-weight:bold">if</span> <span style="color:#666">(</span>next <span style="color:#666">==</span> <span style="color:#008000;font-weight:bold">null</span><span style="color:#666">)</span>
+            last <span style="color:#666">=</span> <span style="color:#008000;font-weight:bold">null</span><span style="color:#666">;</span>
+        <span style="color:#008000;font-weight:bold">else</span>
+            next<span style="color:#666">.</span><span style="color:#7d9029">prev</span> <span style="color:#666">=</span> <span style="color:#008000;font-weight:bold">null</span><span style="color:#666">;</span>
+        size<span style="color:#666">--;</span>
+        modCount<span style="color:#666">++;</span>
+        <span style="color:#008000;font-weight:bold">return</span> element<span style="color:#666">;</span>
+<span style="color:#666">}</span>
+
+<span style="color:#008000;font-weight:bold">public</span> E <span style="color:#00f">removeLast</span><span style="color:#666">()</span> <span style="color:#666">{</span>
+        <span style="color:#008000;font-weight:bold">final</span> Node<span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> l <span style="color:#666">=</span> last<span style="color:#666">;</span>
+        <span style="color:#008000;font-weight:bold">if</span> <span style="color:#666">(</span>l <span style="color:#666">==</span> <span style="color:#008000;font-weight:bold">null</span><span style="color:#666">)</span>
+            <span style="color:#008000;font-weight:bold">throw</span> <span style="color:#008000;font-weight:bold">new</span> NoSuchElementException<span style="color:#666">();</span>
+        <span style="color:#008000;font-weight:bold">return</span> unlinkLast<span style="color:#666">(</span>l<span style="color:#666">);</span>
+<span style="color:#666">}</span>
+
+<span style="color:#008000;font-weight:bold">private</span> E <span style="color:#00f">unlinkLast</span><span style="color:#666">(</span>Node<span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> l<span style="color:#666">)</span> <span style="color:#666">{</span>
+        <span style="color:#408080;font-style:italic">// assert l == last &amp;&amp; l != null;
+</span><span style="color:#408080;font-style:italic"></span>        <span style="color:#008000;font-weight:bold">final</span> E element <span style="color:#666">=</span> l<span style="color:#666">.</span><span style="color:#7d9029">item</span><span style="color:#666">;</span>
+        <span style="color:#008000;font-weight:bold">final</span> Node<span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> prev <span style="color:#666">=</span> l<span style="color:#666">.</span><span style="color:#7d9029">prev</span><span style="color:#666">;</span>
+        l<span style="color:#666">.</span><span style="color:#7d9029">item</span> <span style="color:#666">=</span> <span style="color:#008000;font-weight:bold">null</span><span style="color:#666">;</span>
+        l<span style="color:#666">.</span><span style="color:#7d9029">prev</span> <span style="color:#666">=</span> <span style="color:#008000;font-weight:bold">null</span><span style="color:#666">;</span> <span style="color:#408080;font-style:italic">// help GC
+</span><span style="color:#408080;font-style:italic"></span>        last <span style="color:#666">=</span> prev<span style="color:#666">;</span>
+        <span style="color:#008000;font-weight:bold">if</span> <span style="color:#666">(</span>prev <span style="color:#666">==</span> <span style="color:#008000;font-weight:bold">null</span><span style="color:#666">)</span>
+            first <span style="color:#666">=</span> <span style="color:#008000;font-weight:bold">null</span><span style="color:#666">;</span>
+        <span style="color:#008000;font-weight:bold">else</span>
+            prev<span style="color:#666">.</span><span style="color:#7d9029">next</span> <span style="color:#666">=</span> <span style="color:#008000;font-weight:bold">null</span><span style="color:#666">;</span>
+        size<span style="color:#666">--;</span>
+        modCount<span style="color:#666">++;</span>
+        <span style="color:#008000;font-weight:bold">return</span> element<span style="color:#666">;</span>
+    <span style="color:#666">}</span>
+
+<span style="color:#008000;font-weight:bold">public</span> <span style="color:#b00040">boolean</span> <span style="color:#00f">remove</span><span style="color:#666">(</span>Object o<span style="color:#666">)</span> <span style="color:#666">{</span>  <span style="color:#408080;font-style:italic">//删除对应元素的结点
+</span><span style="color:#408080;font-style:italic"></span>        <span style="color:#008000;font-weight:bold">if</span> <span style="color:#666">(</span>o <span style="color:#666">==</span> <span style="color:#008000;font-weight:bold">null</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+            <span style="color:#008000;font-weight:bold">for</span> <span style="color:#666">(</span>Node<span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> x <span style="color:#666">=</span> first<span style="color:#666">;</span> x <span style="color:#666">!=</span> <span style="color:#008000;font-weight:bold">null</span><span style="color:#666">;</span> x <span style="color:#666">=</span> x<span style="color:#666">.</span><span style="color:#7d9029">next</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+                <span style="color:#008000;font-weight:bold">if</span> <span style="color:#666">(</span>x<span style="color:#666">.</span><span style="color:#7d9029">item</span> <span style="color:#666">==</span> <span style="color:#008000;font-weight:bold">null</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+                    unlink<span style="color:#666">(</span>x<span style="color:#666">);</span>
+                    <span style="color:#008000;font-weight:bold">return</span> <span style="color:#008000;font-weight:bold">true</span><span style="color:#666">;</span>
+                <span style="color:#666">}</span>
+            <span style="color:#666">}</span>
+        <span style="color:#666">}</span> <span style="color:#008000;font-weight:bold">else</span> <span style="color:#666">{</span>
+            <span style="color:#008000;font-weight:bold">for</span> <span style="color:#666">(</span>Node<span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> x <span style="color:#666">=</span> first<span style="color:#666">;</span> x <span style="color:#666">!=</span> <span style="color:#008000;font-weight:bold">null</span><span style="color:#666">;</span> x <span style="color:#666">=</span> x<span style="color:#666">.</span><span style="color:#7d9029">next</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+                <span style="color:#008000;font-weight:bold">if</span> <span style="color:#666">(</span>o<span style="color:#666">.</span><span style="color:#7d9029">equals</span><span style="color:#666">(</span>x<span style="color:#666">.</span><span style="color:#7d9029">item</span><span style="color:#666">))</span> <span style="color:#666">{</span>
+                    unlink<span style="color:#666">(</span>x<span style="color:#666">);</span>
+                    <span style="color:#008000;font-weight:bold">return</span> <span style="color:#008000;font-weight:bold">true</span><span style="color:#666">;</span>
+                <span style="color:#666">}</span>
+            <span style="color:#666">}</span>
+        <span style="color:#666">}</span>
+        <span style="color:#008000;font-weight:bold">return</span> <span style="color:#008000;font-weight:bold">false</span><span style="color:#666">;</span>
+<span style="color:#666">}</span>
+
+E <span style="color:#00f">unlink</span><span style="color:#666">(</span>Node<span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> x<span style="color:#666">)</span> <span style="color:#666">{</span>
+        <span style="color:#408080;font-style:italic">// assert x != null;
+</span><span style="color:#408080;font-style:italic"></span>        <span style="color:#008000;font-weight:bold">final</span> E element <span style="color:#666">=</span> x<span style="color:#666">.</span><span style="color:#7d9029">item</span><span style="color:#666">;</span>
+        <span style="color:#008000;font-weight:bold">final</span> Node<span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> next <span style="color:#666">=</span> x<span style="color:#666">.</span><span style="color:#7d9029">next</span><span style="color:#666">;</span>
+        <span style="color:#008000;font-weight:bold">final</span> Node<span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> prev <span style="color:#666">=</span> x<span style="color:#666">.</span><span style="color:#7d9029">prev</span><span style="color:#666">;</span>
+
+        <span style="color:#008000;font-weight:bold">if</span> <span style="color:#666">(</span>prev <span style="color:#666">==</span> <span style="color:#008000;font-weight:bold">null</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+            first <span style="color:#666">=</span> next<span style="color:#666">;</span>
+        <span style="color:#666">}</span> <span style="color:#008000;font-weight:bold">else</span> <span style="color:#666">{</span>
+            prev<span style="color:#666">.</span><span style="color:#7d9029">next</span> <span style="color:#666">=</span> next<span style="color:#666">;</span>
+            x<span style="color:#666">.</span><span style="color:#7d9029">prev</span> <span style="color:#666">=</span> <span style="color:#008000;font-weight:bold">null</span><span style="color:#666">;</span>
+        <span style="color:#666">}</span>
+
+        <span style="color:#008000;font-weight:bold">if</span> <span style="color:#666">(</span>next <span style="color:#666">==</span> <span style="color:#008000;font-weight:bold">null</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+            last <span style="color:#666">=</span> prev<span style="color:#666">;</span>
+        <span style="color:#666">}</span> <span style="color:#008000;font-weight:bold">else</span> <span style="color:#666">{</span>
+            next<span style="color:#666">.</span><span style="color:#7d9029">prev</span> <span style="color:#666">=</span> prev<span style="color:#666">;</span>
+            x<span style="color:#666">.</span><span style="color:#7d9029">next</span> <span style="color:#666">=</span> <span style="color:#008000;font-weight:bold">null</span><span style="color:#666">;</span>
+        <span style="color:#666">}</span>
+
+        x<span style="color:#666">.</span><span style="color:#7d9029">item</span> <span style="color:#666">=</span> <span style="color:#008000;font-weight:bold">null</span><span style="color:#666">;</span>
+        size<span style="color:#666">--;</span>
+        modCount<span style="color:#666">++;</span>
+        <span style="color:#008000;font-weight:bold">return</span> element<span style="color:#666">;</span>
+<span style="color:#666">}</span>
+
+<span style="color:#008000;font-weight:bold">public</span> E <span style="color:#00f">remove</span><span style="color:#666">(</span><span style="color:#b00040">int</span> index<span style="color:#666">)</span> <span style="color:#666">{</span> <span style="color:#408080;font-style:italic">//删除对应下标的结点
+</span><span style="color:#408080;font-style:italic"></span>      checkElementIndex<span style="color:#666">(</span>index<span style="color:#666">);</span>
+      <span style="color:#008000;font-weight:bold">return</span> unlink<span style="color:#666">(</span>node<span style="color:#666">(</span>index<span style="color:#666">));</span>
+<span style="color:#666">}</span>
+</code></pre></div><h3 id="修改元素">修改元素<a href="#修改元素" class="header-anchor" ariaLabel="Anchor"> # </a></h3>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#008000;font-weight:bold">public</span> E <span style="color:#00f">set</span><span style="color:#666">(</span><span style="color:#b00040">int</span> index<span style="color:#666">,</span> E element<span style="color:#666">)</span> <span style="color:#666">{</span>  <span style="color:#408080;font-style:italic">//将下标index处的元素的值修改为element
+</span><span style="color:#408080;font-style:italic"></span>        checkElementIndex<span style="color:#666">(</span>index<span style="color:#666">);</span>
+        Node<span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> x <span style="color:#666">=</span> node<span style="color:#666">(</span>index<span style="color:#666">);</span>
+        E oldVal <span style="color:#666">=</span> x<span style="color:#666">.</span><span style="color:#7d9029">item</span><span style="color:#666">;</span>
+        x<span style="color:#666">.</span><span style="color:#7d9029">item</span> <span style="color:#666">=</span> element<span style="color:#666">;</span>
+        <span style="color:#008000;font-weight:bold">return</span> oldVal<span style="color:#666">;</span>
+<span style="color:#666">}</span>
+</code></pre></div><h3 id="toarray方法">toArray()方法<a href="#toarray方法" class="header-anchor" ariaLabel="Anchor"> # </a></h3>
+<p>Collection接口提供的toArray方法返回一个collection的数组表示，无参的方法返回的是Object类型的数组，在实际中往往不好进行类型转换，所以可以传入想转换成数据类型的数组来进行转换。</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"> <span style="color:#008000;font-weight:bold">public</span> Object<span style="color:#666">[]</span> <span style="color:#00f">toArray</span><span style="color:#666">()</span> <span style="color:#666">{</span>
+        Object<span style="color:#666">[]</span> result <span style="color:#666">=</span> <span style="color:#008000;font-weight:bold">new</span> Object<span style="color:#666">[</span>size<span style="color:#666">];</span>
+        <span style="color:#b00040">int</span> i <span style="color:#666">=</span> 0<span style="color:#666">;</span>
+        <span style="color:#008000;font-weight:bold">for</span> <span style="color:#666">(</span>Node<span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> x <span style="color:#666">=</span> first<span style="color:#666">;</span> x <span style="color:#666">!=</span> <span style="color:#008000;font-weight:bold">null</span><span style="color:#666">;</span> x <span style="color:#666">=</span> x<span style="color:#666">.</span><span style="color:#7d9029">next</span><span style="color:#666">)</span>
+            result<span style="color:#666">[</span>i<span style="color:#666">++]</span> <span style="color:#666">=</span> x<span style="color:#666">.</span><span style="color:#7d9029">item</span><span style="color:#666">;</span>
+        <span style="color:#008000;font-weight:bold">return</span> result<span style="color:#666">;</span>
+<span style="color:#666">}</span>
+
+<span style="color:#008000;font-weight:bold">public</span> <span style="color:#666">&lt;</span>T<span style="color:#666">&gt;</span> T<span style="color:#666">[]</span> <span style="color:#00f">toArray</span><span style="color:#666">(</span>T<span style="color:#666">[]</span> a<span style="color:#666">)</span> <span style="color:#666">{</span>
+        <span style="color:#008000;font-weight:bold">if</span> <span style="color:#666">(</span>a<span style="color:#666">.</span><span style="color:#7d9029">length</span> <span style="color:#666">&lt;</span> size<span style="color:#666">)</span>
+            a <span style="color:#666">=</span> <span style="color:#666">(</span>T<span style="color:#666">[])</span>java<span style="color:#666">.</span><span style="color:#7d9029">lang</span><span style="color:#666">.</span><span style="color:#7d9029">reflect</span><span style="color:#666">.</span><span style="color:#7d9029">Array</span><span style="color:#666">.</span><span style="color:#7d9029">newInstance</span><span style="color:#666">(</span>
+                                a<span style="color:#666">.</span><span style="color:#7d9029">getClass</span><span style="color:#666">().</span><span style="color:#7d9029">getComponentType</span><span style="color:#666">(),</span> size<span style="color:#666">);</span>
+        <span style="color:#b00040">int</span> i <span style="color:#666">=</span> 0<span style="color:#666">;</span>
+        Object<span style="color:#666">[]</span> result <span style="color:#666">=</span> a<span style="color:#666">;</span>
+        <span style="color:#008000;font-weight:bold">for</span> <span style="color:#666">(</span>Node<span style="color:#666">&lt;</span>E<span style="color:#666">&gt;</span> x <span style="color:#666">=</span> first<span style="color:#666">;</span> x <span style="color:#666">!=</span> <span style="color:#008000;font-weight:bold">null</span><span style="color:#666">;</span> x <span style="color:#666">=</span> x<span style="color:#666">.</span><span style="color:#7d9029">next</span><span style="color:#666">)</span>
+            result<span style="color:#666">[</span>i<span style="color:#666">++]</span> <span style="color:#666">=</span> x<span style="color:#666">.</span><span style="color:#7d9029">item</span><span style="color:#666">;</span>
+
+        <span style="color:#008000;font-weight:bold">if</span> <span style="color:#666">(</span>a<span style="color:#666">.</span><span style="color:#7d9029">length</span> <span style="color:#666">&gt;</span> size<span style="color:#666">)</span>
+            a<span style="color:#666">[</span>size<span style="color:#666">]</span> <span style="color:#666">=</span> <span style="color:#008000;font-weight:bold">null</span><span style="color:#666">;</span>
+
+        <span style="color:#008000;font-weight:bold">return</span> a<span style="color:#666">;</span>
+<span style="color:#666">}</span>
+</code></pre></div><p>另外我们最开始提到LinkedList实现了Deque<E>接口，所以它也重写了队列相关的一些方法，这些方法是对前面提到的增删改查方法的进一步封装，如offer()方法内部就是执行调用add()的方法。</p>
+
+<p style="color:#777;">Last modified on 2021-07-26</p>
+</div>
+<a href="#top"><i class="fa fa-chevron-up" style="font-size: 30px; color: black;"></i></a>
+
+</main>
+
+<footer class="footer">
+  <script type="text/javascript" src="/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/javascript" src="/js/center-img.js"></script>
+
+
+
+     <ul class="footer-links">
+      
+       
+       
+       
+       <li><a href="/en/posts/index.xml" type="application/rss+xml" title="RSS feed">
+       Subscribe </a>
+       </li>
+       
+       
+       <li>
+       
+        <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
+       
+        License
+        <i class="fa fa-cc" aria-hidden="true" title="Attribution-NonCommercial-ShareAlike 4.0 International"></i> 
+        </a>
+       </li>
+       
+     </ul>
+     <div class="copyright-text">
+			<span id="busuanzi_container_site_pv"> 本站访问量：<span id="busuanzi_value_site_pv"></span>次</span>&nbsp;
+			<span id="busuanzi_container_site_uv"> 您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者</span>
+     </div>
+</footer>
+
+
+
+
+

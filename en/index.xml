@@ -2,10 +2,10 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>English page on Albert Wang</title>
-    <link>https://example.com/en/</link>
+    <link>https://root-zr.github.io/en/</link>
     <description>Recent content in English page on Albert Wang</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 07 May 2021 01:53:34 +0800</lastBuildDate><atom:link href="https://example.com/en/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 07 May 2021 01:53:34 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/en/index.xml" rel="self" type="application/rss+xml" />
   </channel>
 </rss>

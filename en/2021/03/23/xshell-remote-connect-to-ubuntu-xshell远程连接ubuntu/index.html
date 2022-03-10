@@ -1,0 +1,179 @@
+<a name="top"></a>
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  	
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Xshell remote connect to ubuntu | Xshell远程连接ubuntu - Albert Wang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/font.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega@5.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.12.2"></script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+            <link rel="icon" href="https://root-zr.github.io/media/logo.JPG">
+
+
+
+
+
+  </head>
+  
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav" >
+      <a href="/" class="nav-logo">
+        <img src="/media/logo.JPG"
+         width="50"
+         height="50"
+         alt="Hugo-ht">
+      </a>
+
+      <ul class="nav-links" >
+       
+       
+       
+       <li><a href="/">Home</a></li>
+       
+       <li><a href="/en/posts/">Posts</a></li>
+       
+       <li><a href="/tags/">Tags</a></li>
+       
+       <li><a href="/categories/">Categories</a></li>
+       
+       <li><a href="/en/about/">About</a></li>
+       
+       <li><a href="/cn/posts/">中文</a></li>
+       
+       
+      </ul>
+</nav>
+      </header>
+
+<main class = "content" role="main">
+<div style="text-align: center">
+
+<h1>Xshell remote connect to ubuntu | Xshell远程连接ubuntu</h1>
+
+<p> 
+ / 2021-03-23 
+/ 100 Words/has been Read  <span id="busuanzi_value_page_pv"></span>&nbsp;&nbsp;Times
+
+</p>
+
+
+
+<hr/>
+
+
+</div>
+
+<span class="article-toolbar">
+  
+  
+  
+  
+  
+  
+  
+  <a href='https://github.com/root-zren%5cposts%5c2021%5cXshell%e8%bf%9c%e7%a8%8b%e8%bf%9e%e6%8e%a5ubuntu.md'style="font-size: 24px; color: black;" target="_blank"><i class="fa fa-edit" aria-hidden="true" title="Suggest an edit of this page"></i>
+  </a>
+  
+  
+  
+</span>
+
+
+<aside class="toc">
+Table of Contents:
+<nav id="TableOfContents">
+  <ol>
+    <li><a href="#获取主机ip">获取主机IP</a></li>
+    <li><a href="#安装ssh服务">安装SSH服务</a></li>
+  </ol>
+</nav>
+</aside>
+
+
+<div class="body-text list-text">
+<p>本文采用的版本是Xshell7和ubuntu18.04，默认是刚安装ubuntu操作系统时的情况。</p>
+<h2 id="获取主机ip">获取主机IP<a href="#获取主机ip" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>首先打开Xshell，新建会话</p>
+<p><img src="/img/past/Xshell-conn-ubuntu/1.PNG" alt="img"></p>
+<p>这里名称可以随便起，然后就需要知道要连接主机的ip，同时连接的协议是SSH，首先解决主机IP的问题，打开ubuntu的终端，输入ifconfig，结果发现出现了</p>
+<img src="https://pic4.zhimg.com/80/v2-9e8ca4987c734665d72a3231603fbc0b_720w.png" alt="img" style="zoom:150%;" />
+<p>我们按照提示输入指令</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">sudo apt install net-tools
+</code></pre></div><p>这里的sudo是用管理员权限，所以可能需要输入密码，然后可能会出现以下情况，显示资源暂时不可用，如果没有这种情况可以忽略解决这个问题的部分，继续进行下面的步骤：</p>
+<p><img src="https://pic2.zhimg.com/80/v2-a765e6ebaacdec177b08f20b4b722d01_720w.png" alt="img"></p>
+<p>这时需要用管理员权限把上面提示的目录删掉，删除命令就是rm</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">sudo rm /var/lib/dpkg/lock
+</code></pre></div><p>这时执行sudo apt install net-tools就能成功安装了，然后执行指令ifconfig就可以看到对应的ip了。</p>
+<p><img src="/img/past/Xshell-conn-ubuntu/4.PNG" alt="img"></p>
+<h2 id="安装ssh服务">安装SSH服务<a href="#安装ssh服务" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>然后解决SSH的问题，因为系统里可能没有SSH服务，所以同样需要重新安装，然后启动SSH服务，查看状态是否正常，如果状态正常就可以继续进行远程连接了，具体安装SSH服务可以参考下面的博客：</p>
+<p><a href="http://link.zhihu.com/?target=https%3A//blog.csdn.net/qq_34510308/article/details/101433987" target="_blank" rel="noreferrer noopener">ubuntu远程连接_ANDY-CSDN博客_ubuntu远程连接blog.csdn.net/qq_34510308/article/details/101433987</a>
+
+</p>
+<p>看到如下界面表示连接成功</p>
+<p><img src="/img/past/Xshell-conn-ubuntu/5.PNG" alt="img"></p>
+<p>另外在远程连接过程中需要输入用户名和密码，这里对应的就是ubuntu的系统用户名以及密码。</p>
+
+<p style="color:#777;">Last modified on 2021-03-23</p>
+</div>
+<a href="#top"><i class="fa fa-chevron-up" style="font-size: 30px; color: black;"></i></a>
+
+</main>
+
+<footer class="footer">
+  <script type="text/javascript" src="/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/javascript" src="/js/center-img.js"></script>
+
+
+
+     <ul class="footer-links">
+      
+       
+       
+       
+       <li><a href="/en/posts/index.xml" type="application/rss+xml" title="RSS feed">
+       Subscribe </a>
+       </li>
+       
+       
+       <li>
+       
+        <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
+       
+        License
+        <i class="fa fa-cc" aria-hidden="true" title="Attribution-NonCommercial-ShareAlike 4.0 International"></i> 
+        </a>
+       </li>
+       
+     </ul>
+     <div class="copyright-text">
+			<span id="busuanzi_container_site_pv"> 本站访问量：<span id="busuanzi_value_site_pv"></span>次</span>&nbsp;
+			<span id="busuanzi_container_site_uv"> 您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者</span>
+     </div>
+</footer>
+
+
+
+
+

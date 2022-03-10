@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>区块链 on Albert Wang</title>
-    <link>https://example.com/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/</link>
+    <link>https://root-zr.github.io/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/</link>
     <description>Recent content in 区块链 on Albert Wang</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 23 Oct 2021 01:53:34 +0800</lastBuildDate><atom:link href="https://example.com/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 23 Oct 2021 01:53:34 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Hyperledger Fabric安装与部署</title>
-      <link>https://example.com/en/2021/10/23/hyperledger-fabric%E5%AE%89%E8%A3%85%E4%B8%8E%E9%83%A8%E7%BD%B2/</link>
+      <title>Deploy Hyperledger Fabric Environment | Hyperledger Fabric安装与部署</title>
+      <link>https://root-zr.github.io/en/2021/10/23/deploy-hyperledger-fabric-environment-hyperledger-fabric%E5%AE%89%E8%A3%85%E4%B8%8E%E9%83%A8%E7%BD%B2/</link>
       <pubDate>Sat, 23 Oct 2021 01:53:34 +0800</pubDate>
       
-      <guid>https://example.com/en/2021/10/23/hyperledger-fabric%E5%AE%89%E8%A3%85%E4%B8%8E%E9%83%A8%E7%BD%B2/</guid>
+      <guid>https://root-zr.github.io/en/2021/10/23/deploy-hyperledger-fabric-environment-hyperledger-fabric%E5%AE%89%E8%A3%85%E4%B8%8E%E9%83%A8%E7%BD%B2/</guid>
       <description>本文中用到的宿主环境是Ubuntu18.04。
 目前Fabric采用Docker容器作为链码执行环境，因此即使在本地运行，链码服务器上也必须要安装Docker环境。我们这个安装环境主要包括Docker环境的配置以及Docker之上的一些Fabric镜像的配置。
 整个项目是采用gradle的框架，然后有一个gradle的服务是用来将智能合约部署到服务器，app的文件夹下放置的是整个应用程序的项目。项目的详细信息可以查看下面的仓库地址：

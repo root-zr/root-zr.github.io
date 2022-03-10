@@ -1,0 +1,351 @@
+<a name="top"></a>
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  	
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>the Map Container of C&#43;&#43; STL | c&#43;&#43; STL中的map容器 - Albert Wang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/font.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega@5.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.12.2"></script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+            <link rel="icon" href="https://root-zr.github.io/media/logo.JPG">
+
+
+
+
+
+  </head>
+  
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav" >
+      <a href="/" class="nav-logo">
+        <img src="/media/logo.JPG"
+         width="50"
+         height="50"
+         alt="Hugo-ht">
+      </a>
+
+      <ul class="nav-links" >
+       
+       
+       
+       <li><a href="/">Home</a></li>
+       
+       <li><a href="/en/posts/">Posts</a></li>
+       
+       <li><a href="/tags/">Tags</a></li>
+       
+       <li><a href="/categories/">Categories</a></li>
+       
+       <li><a href="/en/about/">About</a></li>
+       
+       <li><a href="/cn/posts/">中文</a></li>
+       
+       
+      </ul>
+</nav>
+      </header>
+
+<main class = "content" role="main">
+<div style="text-align: center">
+
+<h1>the Map Container of C&#43;&#43; STL | c&#43;&#43; STL中的map容器</h1>
+
+<p> 
+ / 2021-12-23 
+/ 400 Words/has been Read  <span id="busuanzi_value_page_pv"></span>&nbsp;&nbsp;Times
+
+</p>
+
+
+
+<hr/>
+
+
+</div>
+
+<span class="article-toolbar">
+  
+  
+  
+  
+  
+  
+  
+  <a href='https://github.com/root-zren%5cposts%5c2021%5cc&#43;&#43;%20STL%e4%b8%ad%e7%9a%84map%e5%ae%b9%e5%99%a8.md'style="font-size: 24px; color: black;" target="_blank"><i class="fa fa-edit" aria-hidden="true" title="Suggest an edit of this page"></i>
+  </a>
+  
+  
+  
+</span>
+
+
+<aside class="toc">
+Table of Contents:
+<nav id="TableOfContents">
+  <ol>
+    <li><a href="#1-mapkt">1. map&lt;K,T&gt;</a>
+      <ol>
+        <li><a href="#11-创建容器">1.1 创建容器</a></li>
+        <li><a href="#12-插入元素">1.2 插入元素</a></li>
+        <li><a href="#13-删除元素">1.3 删除元素</a></li>
+        <li><a href="#14-更新元素">1.4 更新元素</a></li>
+        <li><a href="#15-查找元素">1.5 查找元素</a></li>
+        <li><a href="#16-其他操作">1.6 其他操作</a></li>
+      </ol>
+    </li>
+    <li><a href="#2-multimapkt">2. multimap&lt;K,T&gt;</a></li>
+    <li><a href="#3-unordered_mapkt">3. unordered_map&lt;K,T&gt;</a></li>
+    <li><a href="#4-unordered_multimapkt">4. unordered_multimap&lt;K,T&gt;</a></li>
+    <li><a href="#参考">参考</a></li>
+  </ol>
+</nav>
+</aside>
+
+
+<div class="body-text list-text">
+<p>c++的map容器有4种，它们都保存了键值对类型的元素。map容器的元素是pair&lt;const K,T&gt;类型的对象，以K为键，T为值。pair实际上可以看作一个内部有两个元素的结构体，且这两个元素的类型是可以指定的[<a href="https://zhuanlan.zhihu.com/p/427646437#ref_1" target="_blank" rel="noreferrer noopener">1]</a>
+
+。</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#008000;font-weight:bold">struct</span> <span style="color:#00f;font-weight:bold">pair</span>
+{
+	typeName1 first;
+	typeName2 second;
+};
+</code></pre></div><p>同时我们注意到pair元素中的键是const指针来修饰的，这表明我们不能去修改它，因为如果修改的话会扰乱容器中元素的顺序。下面我们来具体了解一下这四种容器的具体实现。</p>
+<h2 id="1-mapkt">1. map&lt;K,T&gt;<a href="#1-mapkt" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>这个容器中的元素是有序的，通过less<K>对象按照键来对所有元素排序。map&lt;K,T&gt;中不允许有重复的键。对于每一个pair&lt;const K,T&gt;节点，map&lt;K,T&gt;中一般是以平衡二叉树的形式来存储的，这样可以保证检索一个随机元素所需的时间是 <img src="https://www.zhihu.com/equation?tex=O%28log_2n%29" alt="[公式]"> 。</p>
+<h3 id="11-创建容器">1.1 创建容器<a href="#11-创建容器" class="header-anchor" ariaLabel="Anchor"> # </a></h3>
+<p>创建一个map容器的方法如下：</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">map<span style="color:#666">&lt;</span>string, <span style="color:#b00040">int</span><span style="color:#666">&gt;</span> people;
+
+map<span style="color:#666">&lt;</span>string, <span style="color:#b00040">int</span><span style="color:#666">&gt;</span> people{ {<span style="color:#ba2121">&#34;Alice&#34;</span>,<span style="color:#666">20</span>},{<span style="color:#ba2121">&#34;Bob&#34;</span>,<span style="color:#666">25</span>} };
+
+map<span style="color:#666">&lt;</span>string, <span style="color:#b00040">int</span><span style="color:#666">&gt;</span> people{ pair<span style="color:#666">&lt;</span>string, <span style="color:#b00040">int</span><span style="color:#666">&gt;</span>(<span style="color:#ba2121">&#34;Alice&#34;</span>,<span style="color:#666">20</span>),
+                         pair<span style="color:#666">&lt;</span>string, <span style="color:#b00040">int</span><span style="color:#666">&gt;</span>(<span style="color:#ba2121">&#34;Bob&#34;</span>,<span style="color:#666">25</span>)
+                        };
+</code></pre></div><p>可以先创建对象，后续再往里面加元素，也可以在初始化的时候添加一些元素。</p>
+<h3 id="12-插入元素">1.2 插入元素<a href="#12-插入元素" class="header-anchor" ariaLabel="Anchor"> # </a></h3>
+<p>具体添加元素的api是insert函数，插入的元素类型可以有以下几种，第一种很容易理解，因为map里存放的就是pair类型的对象，第二种在保证类型正确的情况下也能保证正确插入，第三种方式则是根据map的value_type方式来插入。</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">people.insert(pair<span style="color:#666">&lt;</span>string, <span style="color:#b00040">int</span><span style="color:#666">&gt;</span>(<span style="color:#ba2121">&#34;Tom&#34;</span>, <span style="color:#666">20</span>));
+people.insert({ <span style="color:#ba2121">&#34;John&#34;</span>, <span style="color:#666">21</span> });
+people.insert(map<span style="color:#666">&lt;</span>string, <span style="color:#b00040">int</span><span style="color:#666">&gt;::</span>value_type(<span style="color:#ba2121">&#34;Li Hua&#34;</span>, <span style="color:#666">22</span>));
+</code></pre></div><p>除了上面的三种方式以外还可以用类似于数组的方式来插入元素，下表事key，值对应着value。</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">people[<span style="color:#ba2121">&#34;Tom&#34;</span>] <span style="color:#666">=</span> <span style="color:#666">20</span>;
+people[<span style="color:#ba2121">&#34;John&#34;</span>] <span style="color:#666">=</span> <span style="color:#666">21</span>;
+people[<span style="color:#ba2121">&#34;Li Hua&#34;</span>] <span style="color:#666">=</span> <span style="color:#666">22</span>;
+</code></pre></div><h3 id="13-删除元素">1.3 删除元素<a href="#13-删除元素" class="header-anchor" ariaLabel="Anchor"> # </a></h3>
+<p>删除元素可以用erase函数来实现，首先传入的参数可以是key的值，代码如下所示：</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">string name <span style="color:#666">=</span> <span style="color:#ba2121">&#34;John&#34;</span>;
+    <span style="color:#008000;font-weight:bold">if</span> (people.erase(name)) {
+        cout <span style="color:#666">&lt;&lt;</span> <span style="color:#ba2121">&#34;after erase--------------&#34;</span> <span style="color:#666">&lt;&lt;</span> endl;
+        <span style="color:#008000;font-weight:bold">for</span> (iter <span style="color:#666">=</span> people.begin(); iter <span style="color:#666">!=</span> people.end(); iter<span style="color:#666">++</span>)
+            cout <span style="color:#666">&lt;&lt;</span> iter<span style="color:#666">-&gt;</span>first <span style="color:#666">&lt;&lt;</span> <span style="color:#ba2121">&#39; &#39;</span> <span style="color:#666">&lt;&lt;</span> iter<span style="color:#666">-&gt;</span>second <span style="color:#666">&lt;&lt;</span> endl;
+    }
+    <span style="color:#008000;font-weight:bold">else</span>{
+        cout <span style="color:#666">&lt;&lt;</span> <span style="color:#ba2121">&#34;erase error!&#34;</span> <span style="color:#666">&lt;&lt;</span> endl;
+    }
+</code></pre></div><p>这是一种很直观的方式，通过函数返回的结果来判断删除是否成功。同样可以采用指向删除元素的迭代器作为erase函数的参数。这种情况下，返回的迭代器将会指向被删除元素的下一个位置。如果迭代器参数指向的是容器的最后一个元素，会返回end迭代器。</p>
+<p>在这种方式之下如果我们要删除全部的元素，第一种方式就是使用for循环一个一个删除，另一种方式就是使用erase的重载函数，指定删除的范围。</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">     map<span style="color:#666">&lt;</span>string, <span style="color:#b00040">int</span><span style="color:#666">&gt;::</span>iterator iter;
+
+    cout <span style="color:#666">&lt;&lt;</span> <span style="color:#ba2121">&#34;people map has &#34;</span> <span style="color:#666">&lt;&lt;</span> people.size() <span style="color:#666">&lt;&lt;</span> <span style="color:#ba2121">&#34; element&#34;</span> <span style="color:#666">&lt;&lt;</span> endl;
+    <span style="color:#008000;font-weight:bold">for</span> (iter <span style="color:#666">=</span> people.begin(); iter <span style="color:#666">!=</span> people.end(); iter<span style="color:#666">++</span>)
+        cout <span style="color:#666">&lt;&lt;</span> iter<span style="color:#666">-&gt;</span>first <span style="color:#666">&lt;&lt;</span> <span style="color:#ba2121">&#39; &#39;</span> <span style="color:#666">&lt;&lt;</span> iter<span style="color:#666">-&gt;</span>second <span style="color:#666">&lt;&lt;</span> endl;
+   
+    <span style="color:#408080;font-style:italic">//用迭代器的方式来删除元素
+</span><span style="color:#408080;font-style:italic"></span>    map<span style="color:#666">&lt;</span>string, <span style="color:#b00040">int</span><span style="color:#666">&gt;::</span>iterator delete_item_iter;
+    delete_item_iter <span style="color:#666">=</span> people.find(<span style="color:#ba2121">&#34;John&#34;</span>);
+
+    map<span style="color:#666">&lt;</span>string, <span style="color:#b00040">int</span><span style="color:#666">&gt;::</span>iterator next_iter <span style="color:#666">=</span> people.erase(delete_item_iter);
+    cout <span style="color:#666">&lt;&lt;</span> <span style="color:#ba2121">&#34;next iterartor is &#34;</span> <span style="color:#666">&lt;&lt;</span> next_iter<span style="color:#666">-&gt;</span>first <span style="color:#666">&lt;&lt;</span> <span style="color:#ba2121">&#39; &#39;</span> <span style="color:#666">&lt;&lt;</span> next_iter<span style="color:#666">-&gt;</span>second <span style="color:#666">&lt;&lt;</span> endl;
+
+    people.erase(people.begin(), people.find(<span style="color:#ba2121">&#34;Tom&#34;</span>));
+    cout <span style="color:#666">&lt;&lt;</span> <span style="color:#ba2121">&#34;people map has &#34;</span> <span style="color:#666">&lt;&lt;</span> people.size() <span style="color:#666">&lt;&lt;</span> <span style="color:#ba2121">&#34; element&#34;</span> <span style="color:#666">&lt;&lt;</span> endl;
+
+    <span style="color:#408080;font-style:italic">//删除全部的元素
+</span><span style="color:#408080;font-style:italic"></span>    map<span style="color:#666">&lt;</span>string, <span style="color:#b00040">int</span><span style="color:#666">&gt;::</span>iterator next_iter2 <span style="color:#666">=</span> people.erase(people.begin(), people.end());
+    cout <span style="color:#666">&lt;&lt;</span> <span style="color:#ba2121">&#34;people map has &#34;</span> <span style="color:#666">&lt;&lt;</span> people.size() <span style="color:#666">&lt;&lt;</span> <span style="color:#ba2121">&#34; element&#34;</span> <span style="color:#666">&lt;&lt;</span> endl;
+</code></pre></div><p>为了方便，我们可以结合下面的控制台输出来看这个删除的结果。在最开始可以看到总共有三个元素，分别是John, Li hua和Tom。然后我们用迭代器的方式删除John这个元素，这时函数返回的迭代器就会指向它的下一个元素Li hua。然后我们利用迭代器指定删除的范围，从begin()开始，到Tom结束，可以看到返回的结果显示还有一个元素，也就是说Tom其实是没有被删除掉的。所以我们需要注意这个<strong>指定的范围是不包括最后一个迭代器的</strong>。</p>
+<p>这个特点同样可以用最后的例子来说明，如果删除全部的元素，最后的迭代器应该是end()，但是end()指向的是最后一个元素<strong>之后</strong>的位置，如果包括这个值的话程序执行就会报错了。</p>
+<p><img src="https://pic4.zhimg.com/80/v2-eea1edefe3bcf6389bb4ab7f38731383_720w.png" alt="img"></p>
+<h3 id="14-更新元素">1.4 更新元素<a href="#14-更新元素" class="header-anchor" ariaLabel="Anchor"> # </a></h3>
+<p>更新元素比较简单，只需要根据对应的key去修改掉值就行了，只需要注意一下map&lt;K,T&gt;的K是不能修改的。</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#b00040">void</span> <span style="color:#00f">updateMap</span>(map<span style="color:#666">&lt;</span>string, <span style="color:#b00040">int</span><span style="color:#666">&gt;&amp;</span> map, string key, <span style="color:#b00040">int</span> value) {
+    map[key] <span style="color:#666">=</span> value;
+}
+<span style="color:#408080;font-style:italic">//用迭代器的方式
+</span><span style="color:#408080;font-style:italic"></span><span style="color:#b00040">void</span> <span style="color:#00f">updateMap</span>(map<span style="color:#666">&lt;</span>string, <span style="color:#b00040">int</span><span style="color:#666">&gt;&amp;</span> map, string key, <span style="color:#b00040">int</span> value) {
+    map.find(key)<span style="color:#666">-&gt;</span>second <span style="color:#666">=</span> value;
+}
+</code></pre></div><h3 id="15-查找元素">1.5 查找元素<a href="#15-查找元素" class="header-anchor" ariaLabel="Anchor"> # </a></h3>
+<p>查找元素主要用到的是find函数，这个在之前就已经出现过了，传入key的值就会返回对应的迭代器。或者直接用数组的方式也能得到对应的结果。这里需要注意以下如果找不到元素，数组的形式返回的结果是0，而迭代器返回的是map的end()这个迭代器。</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">cout <span style="color:#666">&lt;&lt;</span> <span style="color:#ba2121">&#34;tom&#39;s age is &#34;</span> <span style="color:#666">&lt;&lt;</span> people[<span style="color:#ba2121">&#34;Tom&#34;</span>] <span style="color:#666">&lt;&lt;</span> endl;
+cout <span style="color:#666">&lt;&lt;</span> <span style="color:#ba2121">&#34;Li Hua &#39;s age is &#34;</span> <span style="color:#666">&lt;&lt;</span> people.find(<span style="color:#ba2121">&#34;Li Hua&#34;</span>)<span style="color:#666">-&gt;</span>second <span style="color:#666">&lt;&lt;</span> endl;
+</code></pre></div><h3 id="16-其他操作">1.6 其他操作<a href="#16-其他操作" class="header-anchor" ariaLabel="Anchor"> # </a></h3>
+<p>map最基本的操作肯定是增删改查，但是初次之外还有一些比较好用的Api，这里贴出来一些供大家参考[<a href="https://zhuanlan.zhihu.com/p/427646437#ref_2" target="_blank" rel="noreferrer noopener">2]</a>
+
+。</p>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>clear(）</td>
+<td>删除所有元素</td>
+</tr>
+<tr>
+<td>count()</td>
+<td>返回指定元素出现的次数</td>
+</tr>
+<tr>
+<td>empty()</td>
+<td>如果map为空则返回true</td>
+</tr>
+<tr>
+<td>equal_range()</td>
+<td>返回特殊条目的迭代器对</td>
+</tr>
+<tr>
+<td>get_allocator()</td>
+<td>返回map的配置器</td>
+</tr>
+<tr>
+<td>key_comp()</td>
+<td>返回比较元素key的函数</td>
+</tr>
+<tr>
+<td>lower_bound()</td>
+<td>返回键值&gt;=给定元素的第一个位置</td>
+</tr>
+<tr>
+<td>max_size()</td>
+<td>返回可以容纳的最大元素个数</td>
+</tr>
+<tr>
+<td>rbegin()</td>
+<td>返回一个指向map尾部的逆向迭代器</td>
+</tr>
+<tr>
+<td>rend()</td>
+<td>返回一个指向map头部的逆向迭代器</td>
+</tr>
+<tr>
+<td>size()</td>
+<td>返回map中元素的个数</td>
+</tr>
+<tr>
+<td>swap()</td>
+<td>交换两个map</td>
+</tr>
+<tr>
+<td>upper_bound()</td>
+<td>返回键值&gt;给定元素的第一个位置</td>
+</tr>
+<tr>
+<td>value_comp()</td>
+<td>返回比较元素value的函数</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-multimapkt">2. multimap&lt;K,T&gt;<a href="#2-multimapkt" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>这个容器和map&lt;K,T&gt;类似，同样会对元素排序，但是不同的是它允许使用重复的键，所以一个multimap容器可以保存多个具有相同键和值的&lt;const K,T&gt;元素。下面我们主要讨论和map&lt;K,T&gt;用法不一致的内容。</p>
+<p>首先是插入元素，map可以利用数组的方式插入，但是multimap如果用这种方式可能会没法保证有唯一的key，所以不能用数组的方式来插入。用pair方式插入的代码和效果如下：</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">    multimap<span style="color:#666">&lt;</span>string, <span style="color:#b00040">int</span><span style="color:#666">&gt;</span> multi_people;
+
+    multi_people.insert(pair<span style="color:#666">&lt;</span>string, <span style="color:#b00040">int</span><span style="color:#666">&gt;</span>(<span style="color:#ba2121">&#34;Tom&#34;</span>, <span style="color:#666">20</span>));
+    multi_people.insert(pair<span style="color:#666">&lt;</span>string, <span style="color:#b00040">int</span><span style="color:#666">&gt;</span>(<span style="color:#ba2121">&#34;Tom&#34;</span>, <span style="color:#666">20</span>));
+    multi_people.insert({ <span style="color:#ba2121">&#34;John&#34;</span>, <span style="color:#666">21</span> });
+    multi_people.insert(map<span style="color:#666">&lt;</span>string, <span style="color:#b00040">int</span><span style="color:#666">&gt;::</span>value_type(<span style="color:#ba2121">&#34;Li Hua&#34;</span>, <span style="color:#666">22</span>));
+
+    multimap<span style="color:#666">&lt;</span>string, <span style="color:#b00040">int</span><span style="color:#666">&gt;::</span>iterator multi_iter;
+
+    cout <span style="color:#666">&lt;&lt;</span> <span style="color:#ba2121">&#34;multi_people map has &#34;</span> <span style="color:#666">&lt;&lt;</span> multi_people.size() <span style="color:#666">&lt;&lt;</span> <span style="color:#ba2121">&#34; element&#34;</span> <span style="color:#666">&lt;&lt;</span> endl;
+    <span style="color:#008000;font-weight:bold">for</span> (multi_iter <span style="color:#666">=</span> multi_people.begin(); multi_iter <span style="color:#666">!=</span> multi_people.end(); multi_iter<span style="color:#666">++</span>)
+        cout <span style="color:#666">&lt;&lt;</span> multi_iter<span style="color:#666">-&gt;</span>first <span style="color:#666">&lt;&lt;</span> <span style="color:#ba2121">&#39; &#39;</span> <span style="color:#666">&lt;&lt;</span> multi_iter<span style="color:#666">-&gt;</span>second <span style="color:#666">&lt;&lt;</span> endl;
+</code></pre></div><p><img src="https://pic2.zhimg.com/80/v2-24d3171bdd815c7a043060403be66081_720w.png" alt="img"></p>
+<p>在上图中可以明显看到有两个一模一样的Tom被成功插入了。当我们用find函数去查找的时候会返回第一个找到的内容。同样的，如果去更新它的值，也会更新第一个找到的内容。</p>
+<h2 id="3-unordered_mapkt">3. unordered_map&lt;K,T&gt;<a href="#3-unordered_mapkt" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>unordered_map要求键是唯一的，可以类比Java语言的HashMap。容器中的内容不是有序的，其位置完全由键的哈希值来确定。在这种情况下，容器内部的数据组织方式就可以采用哈希表的形式来组织，查询的时间复杂度也直接变成了 <img src="https://www.zhihu.com/equation?tex=O%281%29" alt="[公式]"> 。</p>
+<p>理论上只要是哈希函数就会产生哈希碰撞，在产生哈希碰撞之后要么就是将要插入的值加到下一个哈希槽中，要么在原来的位置后加一个链表来存储，可以根据不同的情况来选择不同的实现。</p>
+<p>我们不难发现这种实现方式相比较map容器来说，在底层进行了很大的改变，也成功使得查询的时间复杂度变成了 <img src="https://www.zhihu.com/equation?tex=O%281%29" alt="[公式]"> ，但是从功能上来说确是和map达成了高度的一致，也要求key的唯一性。所以封装的API也和map的基本一致，只需要改变以下声明的类型就行。</p>
+<h2 id="4-unordered_multimapkt">4. unordered_multimap&lt;K,T&gt;<a href="#4-unordered_multimapkt" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>unordered_multimap可以允许插入重复的键值对，同时底层的实现类似于unordered_map，功能的效果类似于multimap，所以在实践中可以类比这两部分来进行编程。</p>
+<h2 id="参考">参考<a href="#参考" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<ol>
+<li><a href="https://zhuanlan.zhihu.com/p/427646437#ref_1_0" target="_blank" rel="noreferrer noopener">^</a>
+
+<a href="https://blog.csdn.net/qq_46527915/article/details/115210318?spm=1001.2101.3001.6661.1&amp;utm_medium=distribute.pc_relevant_t0.none-task-blog-2~default~CTRLIST~default-1.no_search_link&amp;depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2~default~CTRLIST~default-1.no_search_link" target="_blank" rel="noreferrer noopener">https://blog.csdn.net/qq_46527915/article/details/115210318?spm=1001.2101.3001.6661.1&amp;utm_medium=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7ECTRLIST%7Edefault-1.no_search_link&amp;depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7ECTRLIST%7Edefault-1.no_search_link</a>
+
+</li>
+<li><a href="https://zhuanlan.zhihu.com/p/427646437#ref_2_0" target="_blank" rel="noreferrer noopener">^</a>
+
+https://www.cnblogs.com/fnlingnzb-learner/p/5833051.html</li>
+</ol>
+
+<p style="color:#777;">Last modified on 2021-12-23</p>
+</div>
+<a href="#top"><i class="fa fa-chevron-up" style="font-size: 30px; color: black;"></i></a>
+
+</main>
+
+<footer class="footer">
+  <script type="text/javascript" src="/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/javascript" src="/js/center-img.js"></script>
+
+
+
+     <ul class="footer-links">
+      
+       
+       
+       
+       <li><a href="/en/posts/index.xml" type="application/rss+xml" title="RSS feed">
+       Subscribe </a>
+       </li>
+       
+       
+       <li>
+       
+        <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
+       
+        License
+        <i class="fa fa-cc" aria-hidden="true" title="Attribution-NonCommercial-ShareAlike 4.0 International"></i> 
+        </a>
+       </li>
+       
+     </ul>
+     <div class="copyright-text">
+			<span id="busuanzi_container_site_pv"> 本站访问量：<span id="busuanzi_value_site_pv"></span>次</span>&nbsp;
+			<span id="busuanzi_container_site_uv"> 您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者</span>
+     </div>
+</footer>
+
+
+
+
+

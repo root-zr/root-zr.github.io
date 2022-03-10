@@ -1,0 +1,351 @@
+<a name="top"></a>
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  	
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Knapsack Problem | 背包问题 - Albert Wang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/font.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega@5.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.12.2"></script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+            <link rel="icon" href="https://root-zr.github.io/media/logo.JPG">
+
+
+
+
+
+  </head>
+  
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav" >
+      <a href="/" class="nav-logo">
+        <img src="/media/logo.JPG"
+         width="50"
+         height="50"
+         alt="Hugo-ht">
+      </a>
+
+      <ul class="nav-links" >
+       
+       
+       
+       <li><a href="/">Home</a></li>
+       
+       <li><a href="/en/posts/">Posts</a></li>
+       
+       <li><a href="/tags/">Tags</a></li>
+       
+       <li><a href="/categories/">Categories</a></li>
+       
+       <li><a href="/en/about/">About</a></li>
+       
+       <li><a href="/cn/posts/">中文</a></li>
+       
+       
+      </ul>
+</nav>
+      </header>
+
+<main class = "content" role="main">
+<div style="text-align: center">
+
+<h1>Knapsack Problem | 背包问题</h1>
+
+<p>Albert Wang 
+ / 2022-02-24 
+/ 700 Words/has been Read  <span id="busuanzi_value_page_pv"></span>&nbsp;&nbsp;Times
+
+</p>
+
+
+
+<hr/>
+
+
+</div>
+
+<span class="article-toolbar">
+  
+  
+  
+  
+  
+  
+  
+  <a href='https://github.com/root-zren%5cposts%5c2022%5c%e8%83%8c%e5%8c%85%e9%97%ae%e9%a2%98.md'style="font-size: 24px; color: black;" target="_blank"><i class="fa fa-edit" aria-hidden="true" title="Suggest an edit of this page"></i>
+  </a>
+  
+  
+  
+</span>
+
+
+<aside class="toc">
+Table of Contents:
+<nav id="TableOfContents">
+  <ol>
+    <li><a href="#01背包问题">01背包问题</a>
+      <ol>
+        <li><a href="#暴力算法">暴力算法</a></li>
+        <li><a href="#动态规划10">动态规划1.0</a></li>
+        <li><a href="#动态规划20---优化空间复杂度">动态规划2.0 - 优化空间复杂度</a></li>
+      </ol>
+    </li>
+    <li><a href="#完全背包问题">完全背包问题</a>
+      <ol>
+        <li><a href="#动态规划10-1">动态规划1.0</a></li>
+        <li><a href="#动态规划20">动态规划2.0</a></li>
+      </ol>
+    </li>
+    <li><a href="#多重背包问题">多重背包问题</a></li>
+  </ol>
+</nav>
+</aside>
+
+
+<div class="body-text list-text">
+<h2 id="01背包问题">01背包问题<a href="#01背包问题" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>有N 件物品和一个容量为bag 的背包。第i 件物品的重量是w[i]，价值是v[i]。
+求解将哪些物品装入背包可使价值总和最大。</p>
+<h3 id="暴力算法">暴力算法<a href="#暴力算法" class="header-anchor" ariaLabel="Anchor"> # </a></h3>
+<p>我们首先想到的应该是穷举所有的可能，然后把最好的那一个给返回。而在穷举的过程种我们需要考虑的问题仅仅是对于第i个物品，到底要不要把它放入背包。所以可以用递归的方式很自然地解决。</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">    <span style="color:#408080;font-style:italic">/**
+</span><span style="color:#408080;font-style:italic">     * 
+</span><span style="color:#408080;font-style:italic">     * @param w 物品的重量
+</span><span style="color:#408080;font-style:italic">     * @param v 物品的价值
+</span><span style="color:#408080;font-style:italic">     * @param i 第i个物品
+</span><span style="color:#408080;font-style:italic">     * @param alreadyW 已经放入背包的重量
+</span><span style="color:#408080;font-style:italic">     * @param bag 背包所能承受的最大重量
+</span><span style="color:#408080;font-style:italic">     * @return 最大价值
+</span><span style="color:#408080;font-style:italic">     */</span>
+    
+    <span style="color:#008000;font-weight:bold">public</span> <span style="color:#008000;font-weight:bold">static</span> <span style="color:#b00040">int</span> <span style="color:#00f">recur</span><span style="color:#666">(</span><span style="color:#b00040">int</span><span style="color:#666">[]</span> w<span style="color:#666">,</span><span style="color:#b00040">int</span><span style="color:#666">[]</span> v<span style="color:#666">,</span><span style="color:#b00040">int</span> i<span style="color:#666">,</span><span style="color:#b00040">int</span> alreadyW<span style="color:#666">,</span><span style="color:#b00040">int</span> bag<span style="color:#666">){</span>
+        <span style="color:#008000;font-weight:bold">if</span><span style="color:#666">(</span>alreadyW <span style="color:#666">&gt;</span> bag <span style="color:#666">||</span> i <span style="color:#666">&gt;=</span> w<span style="color:#666">.</span><span style="color:#7d9029">length</span><span style="color:#666">)</span> <span style="color:#008000;font-weight:bold">return</span> 0<span style="color:#666">;</span> <span style="color:#408080;font-style:italic">//背包超重或者没有物品可以装
+</span><span style="color:#408080;font-style:italic"></span>
+        <span style="color:#b00040">int</span> totalVal1 <span style="color:#666">=</span> 0<span style="color:#666">,</span>totalVal2 <span style="color:#666">=</span> 0<span style="color:#666">;</span>
+        totalVal1 <span style="color:#666">=</span> recur<span style="color:#666">(</span>w<span style="color:#666">,</span>v<span style="color:#666">,</span>i<span style="color:#666">+</span>1<span style="color:#666">,</span>alreadyW<span style="color:#666">,</span>bag<span style="color:#666">);</span>  <span style="color:#408080;font-style:italic">//第i个物品不放入背包
+</span><span style="color:#408080;font-style:italic"></span>        <span style="color:#008000;font-weight:bold">if</span><span style="color:#666">(</span>alreadyW<span style="color:#666">+</span> w<span style="color:#666">[</span>i<span style="color:#666">]</span> <span style="color:#666">&lt;=</span> bag<span style="color:#666">)</span>
+            totalVal2 <span style="color:#666">=</span> recur<span style="color:#666">(</span>w<span style="color:#666">,</span>v<span style="color:#666">,</span>i<span style="color:#666">+</span>1<span style="color:#666">,</span>alreadyW<span style="color:#666">+</span> w<span style="color:#666">[</span>i<span style="color:#666">],</span>bag<span style="color:#666">)</span> <span style="color:#666">+</span> v<span style="color:#666">[</span>i<span style="color:#666">];</span> <span style="color:#408080;font-style:italic">//第i个物品放入背包
+</span><span style="color:#408080;font-style:italic"></span>
+        <span style="color:#008000;font-weight:bold">return</span> Math<span style="color:#666">.</span><span style="color:#7d9029">max</span><span style="color:#666">(</span>totalVal1<span style="color:#666">,</span>totalVal2<span style="color:#666">);</span>
+    <span style="color:#666">}</span>
+</code></pre></div><p>或者用背包的剩余容量来表达</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"> <span style="color:#008000;font-weight:bold">public</span> <span style="color:#008000;font-weight:bold">static</span> <span style="color:#b00040">int</span> <span style="color:#00f">recur</span><span style="color:#666">(</span><span style="color:#b00040">int</span><span style="color:#666">[]</span> w<span style="color:#666">,</span><span style="color:#b00040">int</span><span style="color:#666">[]</span> v<span style="color:#666">,</span><span style="color:#b00040">int</span> i<span style="color:#666">,</span><span style="color:#b00040">int</span> bag<span style="color:#666">){</span>
+        <span style="color:#008000;font-weight:bold">if</span><span style="color:#666">(</span>bag <span style="color:#666">&lt;</span> 0 <span style="color:#666">||</span> i <span style="color:#666">&gt;=</span> w<span style="color:#666">.</span><span style="color:#7d9029">length</span><span style="color:#666">)</span> <span style="color:#008000;font-weight:bold">return</span> 0<span style="color:#666">;</span> <span style="color:#408080;font-style:italic">//背包超重或者没有物品可以装
+</span><span style="color:#408080;font-style:italic"></span>
+        <span style="color:#b00040">int</span> totalVal1 <span style="color:#666">=</span> 0<span style="color:#666">,</span>totalVal2 <span style="color:#666">=</span> 0<span style="color:#666">;</span>
+        totalVal1 <span style="color:#666">=</span> recur<span style="color:#666">(</span>w<span style="color:#666">,</span>v<span style="color:#666">,</span>i<span style="color:#666">+</span>1<span style="color:#666">,</span>bag<span style="color:#666">);</span>  <span style="color:#408080;font-style:italic">//第i个物品不放入背包，这里的bag指的是剩余的容量
+</span><span style="color:#408080;font-style:italic"></span>        <span style="color:#008000;font-weight:bold">if</span><span style="color:#666">(</span>bag <span style="color:#666">&gt;=</span> w<span style="color:#666">[</span>i<span style="color:#666">])</span>
+            totalVal2 <span style="color:#666">=</span> recur<span style="color:#666">(</span>w<span style="color:#666">,</span>v<span style="color:#666">,</span>i<span style="color:#666">+</span>1<span style="color:#666">,</span>bag <span style="color:#666">-</span> w<span style="color:#666">[</span>i<span style="color:#666">])</span> <span style="color:#666">+</span> v<span style="color:#666">[</span>i<span style="color:#666">];</span> <span style="color:#408080;font-style:italic">//第i个物品放入背包
+</span><span style="color:#408080;font-style:italic"></span>
+        <span style="color:#008000;font-weight:bold">return</span> Math<span style="color:#666">.</span><span style="color:#7d9029">max</span><span style="color:#666">(</span>totalVal1<span style="color:#666">,</span>totalVal2<span style="color:#666">);</span>
+    <span style="color:#666">}</span>
+</code></pre></div><h3 id="动态规划10">动态规划1.0<a href="#动态规划10" class="header-anchor" ariaLabel="Anchor"> # </a></h3>
+<p>如果用递归的方式会造成很多重复的计算，所以可以考虑动态规划的方法来计算,我们可以用数组缓存一些中间的结果，避免重复计算。</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">	<span style="color:#008000;font-weight:bold">public</span> <span style="color:#008000;font-weight:bold">static</span> <span style="color:#b00040">int</span> <span style="color:#00f">bag</span><span style="color:#666">(</span><span style="color:#b00040">int</span><span style="color:#666">[]</span> w<span style="color:#666">,</span> <span style="color:#b00040">int</span><span style="color:#666">[]</span> v<span style="color:#666">,</span> <span style="color:#b00040">int</span> bag<span style="color:#666">)</span> <span style="color:#666">{</span>
+
+		<span style="color:#408080;font-style:italic">// 用一个数组来缓存中间步骤的结果
+</span><span style="color:#408080;font-style:italic"></span>		<span style="color:#b00040">int</span><span style="color:#666">[][]</span> dp <span style="color:#666">=</span> <span style="color:#008000;font-weight:bold">new</span> <span style="color:#b00040">int</span><span style="color:#666">[</span>w<span style="color:#666">.</span><span style="color:#7d9029">length</span><span style="color:#666">][</span>bag <span style="color:#666">+</span> 1<span style="color:#666">];</span>
+
+		<span style="color:#408080;font-style:italic">// 初始化第0行，第0列已经被初始化为0
+</span><span style="color:#408080;font-style:italic"></span>		<span style="color:#008000;font-weight:bold">for</span> <span style="color:#666">(</span><span style="color:#b00040">int</span> i <span style="color:#666">=</span> 0<span style="color:#666">;</span> i <span style="color:#666">&lt;</span> dp<span style="color:#666">[</span>0<span style="color:#666">].</span><span style="color:#7d9029">length</span><span style="color:#666">;</span> i<span style="color:#666">++)</span> <span style="color:#666">{</span>
+			dp<span style="color:#666">[</span>0<span style="color:#666">][</span>i<span style="color:#666">]</span> <span style="color:#666">=</span> i <span style="color:#666">-</span> w<span style="color:#666">[</span>0<span style="color:#666">]</span> <span style="color:#666">&gt;=</span> 0 <span style="color:#666">?</span> v<span style="color:#666">[</span>0<span style="color:#666">]</span> <span style="color:#666">:</span> 0<span style="color:#666">;</span>
+		<span style="color:#666">}</span>
+
+		<span style="color:#408080;font-style:italic">// 前i件物品当背包的容量为j时的最优解
+</span><span style="color:#408080;font-style:italic"></span>		<span style="color:#008000;font-weight:bold">for</span> <span style="color:#666">(</span><span style="color:#b00040">int</span> i <span style="color:#666">=</span> 1<span style="color:#666">;</span> i <span style="color:#666">&lt;</span> w<span style="color:#666">.</span><span style="color:#7d9029">length</span><span style="color:#666">;</span> i<span style="color:#666">++)</span> <span style="color:#666">{</span>
+			<span style="color:#008000;font-weight:bold">for</span> <span style="color:#666">(</span><span style="color:#b00040">int</span> j <span style="color:#666">=</span> 1<span style="color:#666">;</span> j <span style="color:#666">&lt;=</span> bag<span style="color:#666">;</span> j<span style="color:#666">++)</span> <span style="color:#666">{</span>
+				<span style="color:#008000;font-weight:bold">if</span> <span style="color:#666">(</span>j <span style="color:#666">-</span> w<span style="color:#666">[</span>i<span style="color:#666">]</span> <span style="color:#666">&lt;</span> 0<span style="color:#666">)</span> <span style="color:#666">{</span> <span style="color:#408080;font-style:italic">// 背包的容量装不下第i件物品
+</span><span style="color:#408080;font-style:italic"></span>					dp<span style="color:#666">[</span>i<span style="color:#666">][</span>j<span style="color:#666">]</span> <span style="color:#666">=</span> dp<span style="color:#666">[</span>i <span style="color:#666">-</span> 1<span style="color:#666">][</span>j<span style="color:#666">];</span>
+				<span style="color:#666">}</span> <span style="color:#008000;font-weight:bold">else</span> <span style="color:#666">{</span>
+					dp<span style="color:#666">[</span>i<span style="color:#666">][</span>j<span style="color:#666">]</span> <span style="color:#666">=</span> Math<span style="color:#666">.</span><span style="color:#7d9029">max</span><span style="color:#666">(</span>dp<span style="color:#666">[</span>i <span style="color:#666">-</span> 1<span style="color:#666">][</span>j<span style="color:#666">],</span> dp<span style="color:#666">[</span>i <span style="color:#666">-</span> 1<span style="color:#666">][</span>j <span style="color:#666">-</span> w<span style="color:#666">[</span>i<span style="color:#666">]]</span> <span style="color:#666">+</span> v<span style="color:#666">[</span>i<span style="color:#666">]);</span>
+				<span style="color:#666">}</span>
+			<span style="color:#666">}</span>
+		<span style="color:#666">}</span>
+
+		<span style="color:#008000;font-weight:bold">return</span> dp<span style="color:#666">[</span>w<span style="color:#666">.</span><span style="color:#7d9029">length</span> <span style="color:#666">-</span> 1<span style="color:#666">][</span>bag<span style="color:#666">];</span>
+	<span style="color:#666">}</span>
+</code></pre></div><h3 id="动态规划20---优化空间复杂度">动态规划2.0 - 优化空间复杂度<a href="#动态规划20---优化空间复杂度" class="header-anchor" ariaLabel="Anchor"> # </a></h3>
+<p>目前看起来时间复杂度上面似乎没有更好的优化方案，我们可以考虑从空间复杂度上面入手。从上面的状态转移方程我们可以看出，对于低K个物品的最优解，似乎我们只需要知道第K-1个物品的最优解就可以。那我们是不是可以尝试只保留前一个物品的最优解呢，答案当然是肯定的。</p>
+<p>只要我们接受dp中保存着K-1个物品的最优解，就可以把dp数组变成一维，如下面的代码所示。不过这是需要注意的一点就是第二层循环只能从背包的容量bag开始，到0结束。因为后面的值需要前面的值才能导出，</p>
+<p>比如K-1时dp数组的值为                                1，2，3，3，4</p>
+<p>此时我们更新dp数组的顺序应该是             1，2，3，3，5</p>
+<p>​                                                                          1，2，3，4，5</p>
+<p>从后往前更新，如果从前往后更新的话可能会把dp数组刷新，这时得到的结果就会出错。</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#008000;font-weight:bold">public</span> <span style="color:#008000;font-weight:bold">static</span> <span style="color:#b00040">int</span> <span style="color:#00f">fixBag</span><span style="color:#666">(</span><span style="color:#b00040">int</span><span style="color:#666">[]</span> w<span style="color:#666">,</span> <span style="color:#b00040">int</span><span style="color:#666">[]</span> v<span style="color:#666">,</span> <span style="color:#b00040">int</span> bag<span style="color:#666">)</span> <span style="color:#666">{</span>
+
+		<span style="color:#408080;font-style:italic">// 用一个数组来缓存中间步骤的结果
+</span><span style="color:#408080;font-style:italic"></span>		<span style="color:#b00040">int</span><span style="color:#666">[]</span> dp <span style="color:#666">=</span> <span style="color:#008000;font-weight:bold">new</span> <span style="color:#b00040">int</span><span style="color:#666">[</span>bag <span style="color:#666">+</span> 1<span style="color:#666">];</span>
+
+	    <span style="color:#408080;font-style:italic">//初始化数组
+</span><span style="color:#408080;font-style:italic"></span>		<span style="color:#008000;font-weight:bold">for</span> <span style="color:#666">(</span><span style="color:#b00040">int</span> i <span style="color:#666">=</span> 0<span style="color:#666">;</span> i <span style="color:#666">&lt;</span> dp<span style="color:#666">.</span><span style="color:#7d9029">length</span><span style="color:#666">;</span> i<span style="color:#666">++)</span> <span style="color:#666">{</span>
+			dp<span style="color:#666">[</span>i<span style="color:#666">]</span> <span style="color:#666">=</span> i <span style="color:#666">-</span> w<span style="color:#666">[</span>0<span style="color:#666">]</span> <span style="color:#666">&gt;=</span> 0 <span style="color:#666">?</span> w<span style="color:#666">[</span>0<span style="color:#666">]</span> <span style="color:#666">:</span> 0<span style="color:#666">;</span>
+		<span style="color:#666">}</span>
+		
+		<span style="color:#408080;font-style:italic">// 前i件物品当背包的容量为j时的最优解
+</span><span style="color:#408080;font-style:italic"></span>		<span style="color:#008000;font-weight:bold">for</span> <span style="color:#666">(</span><span style="color:#b00040">int</span> i <span style="color:#666">=</span> 1<span style="color:#666">;</span> i <span style="color:#666">&lt;</span> w<span style="color:#666">.</span><span style="color:#7d9029">length</span><span style="color:#666">;</span> i<span style="color:#666">++)</span> <span style="color:#666">{</span>
+			<span style="color:#008000;font-weight:bold">for</span> <span style="color:#666">(</span><span style="color:#b00040">int</span> j <span style="color:#666">=</span> bag<span style="color:#666">;</span> j <span style="color:#666">&gt;=</span> 0 <span style="color:#666">;</span> j<span style="color:#666">--)</span> <span style="color:#666">{</span>
+				<span style="color:#008000;font-weight:bold">if</span><span style="color:#666">(</span>j <span style="color:#666">-</span> w<span style="color:#666">[</span>i<span style="color:#666">]</span> <span style="color:#666">&gt;=</span> 0<span style="color:#666">)</span>
+					dp<span style="color:#666">[</span>j<span style="color:#666">]</span> <span style="color:#666">=</span> Math<span style="color:#666">.</span><span style="color:#7d9029">max</span><span style="color:#666">(</span>dp<span style="color:#666">[</span>j<span style="color:#666">],</span> dp<span style="color:#666">[</span>j <span style="color:#666">-</span> w<span style="color:#666">[</span>i<span style="color:#666">]]</span> <span style="color:#666">+</span> v<span style="color:#666">[</span>i<span style="color:#666">]);</span>
+			<span style="color:#666">}</span>
+		<span style="color:#666">}</span>
+
+		<span style="color:#008000;font-weight:bold">return</span> dp<span style="color:#666">[</span>bag<span style="color:#666">];</span>
+	<span style="color:#666">}</span>
+</code></pre></div><h2 id="完全背包问题">完全背包问题<a href="#完全背包问题" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>有N 种物品和一个容量为bag 的背包。第i 种物品的重量是w[i]，价值是v[i]。每种物品可以被放入多个且没有上限。
+求解将哪些物品装入背包可使价值总和最大。</p>
+<h3 id="动态规划10-1">动态规划1.0<a href="#动态规划10-1" class="header-anchor" ariaLabel="Anchor"> # </a></h3>
+<p>这种情况下一种很直观的想法就是把没有限制的物品变成有限制的物品，让这道题的类型和01背包一致。我们可以假设如果背包里只放一种物品，那么对于N种物品来说就分别需要放入$K_i$个 (0&lt; I &lt; N)，那也就是说总共也就相当于只有$\sum{K_i}$个物品，只不过这些物品里有些物品的重量和价值是一样的，这样的话我们就能用01背包的方式来做这道题了，一种相对优雅的解法如下：
+$$
+f[i][j] =max{f[i-1][j - k * w[i]]+ k * v[i]}
+$$</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#008000;font-weight:bold">public</span> <span style="color:#008000;font-weight:bold">static</span> <span style="color:#b00040">int</span> <span style="color:#00f">completeBag</span><span style="color:#666">(</span><span style="color:#b00040">int</span><span style="color:#666">[]</span> w<span style="color:#666">,</span> <span style="color:#b00040">int</span><span style="color:#666">[]</span> v<span style="color:#666">,</span> <span style="color:#b00040">int</span> bag<span style="color:#666">)</span> <span style="color:#666">{</span>
+
+		<span style="color:#408080;font-style:italic">// 用一个数组来缓存中间步骤的结果
+</span><span style="color:#408080;font-style:italic"></span>		<span style="color:#b00040">int</span><span style="color:#666">[][]</span> dp <span style="color:#666">=</span> <span style="color:#008000;font-weight:bold">new</span> <span style="color:#b00040">int</span><span style="color:#666">[</span>w<span style="color:#666">.</span><span style="color:#7d9029">length</span><span style="color:#666">][</span>bag <span style="color:#666">+</span> 1<span style="color:#666">];</span>
+
+		<span style="color:#408080;font-style:italic">// 初始化第0行，第0列已经被初始化为0
+</span><span style="color:#408080;font-style:italic"></span>		<span style="color:#408080;font-style:italic">// 只能放第0件物品，在最大承重为i时的最大价值
+</span><span style="color:#408080;font-style:italic"></span>		<span style="color:#008000;font-weight:bold">for</span> <span style="color:#666">(</span><span style="color:#b00040">int</span> i <span style="color:#666">=</span> 0<span style="color:#666">;</span> i <span style="color:#666">&lt;</span> dp<span style="color:#666">[</span>0<span style="color:#666">].</span><span style="color:#7d9029">length</span><span style="color:#666">;</span> i<span style="color:#666">++)</span> <span style="color:#666">{</span>
+			dp<span style="color:#666">[</span>0<span style="color:#666">][</span>i<span style="color:#666">]</span> <span style="color:#666">=</span> <span style="color:#666">(</span>i <span style="color:#666">/</span> w<span style="color:#666">[</span>0<span style="color:#666">])</span> <span style="color:#666">*</span> v<span style="color:#666">[</span>0<span style="color:#666">];</span>
+		<span style="color:#666">}</span>
+
+		<span style="color:#408080;font-style:italic">// 前i件物品当背包的容量为j时的最优解
+</span><span style="color:#408080;font-style:italic"></span>		<span style="color:#008000;font-weight:bold">for</span> <span style="color:#666">(</span><span style="color:#b00040">int</span> i <span style="color:#666">=</span> 1<span style="color:#666">;</span> i <span style="color:#666">&lt;</span> w<span style="color:#666">.</span><span style="color:#7d9029">length</span><span style="color:#666">;</span> i<span style="color:#666">++)</span> <span style="color:#666">{</span>
+			<span style="color:#008000;font-weight:bold">for</span> <span style="color:#666">(</span><span style="color:#b00040">int</span> j <span style="color:#666">=</span> 1<span style="color:#666">;</span> j <span style="color:#666">&lt;=</span> bag<span style="color:#666">;</span> j<span style="color:#666">++)</span> <span style="color:#666">{</span>
+				<span style="color:#b00040">int</span> nCount <span style="color:#666">=</span> j <span style="color:#666">/</span> w<span style="color:#666">[</span>i<span style="color:#666">];</span>
+				<span style="color:#008000;font-weight:bold">for</span> <span style="color:#666">(</span><span style="color:#b00040">int</span> k <span style="color:#666">=</span> 0<span style="color:#666">;</span> k <span style="color:#666">&lt;</span> nCount<span style="color:#666">;</span> k<span style="color:#666">++)</span> <span style="color:#666">{</span>
+					dp<span style="color:#666">[</span>i<span style="color:#666">][</span>j<span style="color:#666">]</span> <span style="color:#666">=</span> Math<span style="color:#666">.</span><span style="color:#7d9029">max</span><span style="color:#666">(</span>dp<span style="color:#666">[</span>i <span style="color:#666">-</span> 1<span style="color:#666">][</span>j<span style="color:#666">],</span> <span style="color:#666">(</span>dp<span style="color:#666">[</span>i <span style="color:#666">-</span> 1<span style="color:#666">][</span>j <span style="color:#666">-</span> k <span style="color:#666">*</span> w<span style="color:#666">[</span>i<span style="color:#666">]]</span> <span style="color:#666">+</span> k <span style="color:#666">*</span> v<span style="color:#666">[</span>i<span style="color:#666">]));</span>
+				<span style="color:#666">}</span>
+			<span style="color:#666">}</span>
+		<span style="color:#666">}</span>
+
+		<span style="color:#008000;font-weight:bold">return</span> dp<span style="color:#666">[</span>w<span style="color:#666">.</span><span style="color:#7d9029">length</span> <span style="color:#666">-</span> 1<span style="color:#666">][</span>bag<span style="color:#666">];</span>
+	<span style="color:#666">}</span>
+</code></pre></div><p>我们也很容易发现这种情况下计算的复杂度也很高，我们甚至多加了一次需要遍历$K_i$次的循环，那么有没有什么办法可以继续优化一下呢？答案当前也是有的。</p>
+<h3 id="动态规划20">动态规划2.0<a href="#动态规划20" class="header-anchor" ariaLabel="Anchor"> # </a></h3>
+<p>我们先来看这段优化后的代码</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#008000;font-weight:bold">public</span> <span style="color:#008000;font-weight:bold">static</span> <span style="color:#b00040">int</span> <span style="color:#00f">fixCompleteBag</span><span style="color:#666">(</span><span style="color:#b00040">int</span><span style="color:#666">[]</span> w<span style="color:#666">,</span> <span style="color:#b00040">int</span><span style="color:#666">[]</span> v<span style="color:#666">,</span> <span style="color:#b00040">int</span> bag<span style="color:#666">)</span> <span style="color:#666">{</span>
+
+		<span style="color:#408080;font-style:italic">// 用一个数组来缓存中间步骤的结果
+</span><span style="color:#408080;font-style:italic"></span>		<span style="color:#b00040">int</span><span style="color:#666">[][]</span> dp <span style="color:#666">=</span> <span style="color:#008000;font-weight:bold">new</span> <span style="color:#b00040">int</span><span style="color:#666">[</span>w<span style="color:#666">.</span><span style="color:#7d9029">length</span><span style="color:#666">][</span>bag <span style="color:#666">+</span> 1<span style="color:#666">];</span>
+
+		<span style="color:#408080;font-style:italic">// 初始化第0行，第0列已经被初始化为0
+</span><span style="color:#408080;font-style:italic"></span>		<span style="color:#408080;font-style:italic">// 只能放第0件物品，在最大承重为i时的最大价值
+</span><span style="color:#408080;font-style:italic"></span>		<span style="color:#008000;font-weight:bold">for</span> <span style="color:#666">(</span><span style="color:#b00040">int</span> i <span style="color:#666">=</span> 0<span style="color:#666">;</span> i <span style="color:#666">&lt;</span> dp<span style="color:#666">[</span>0<span style="color:#666">].</span><span style="color:#7d9029">length</span><span style="color:#666">;</span> i<span style="color:#666">++)</span> <span style="color:#666">{</span>
+			dp<span style="color:#666">[</span>0<span style="color:#666">][</span>i<span style="color:#666">]</span> <span style="color:#666">=</span> <span style="color:#666">(</span>i <span style="color:#666">/</span> w<span style="color:#666">[</span>0<span style="color:#666">])</span> <span style="color:#666">*</span> v<span style="color:#666">[</span>0<span style="color:#666">];</span>
+		<span style="color:#666">}</span>
+
+	
+		<span style="color:#408080;font-style:italic">// 前i件物品当背包的容量为j时的最优解
+</span><span style="color:#408080;font-style:italic"></span>		<span style="color:#008000;font-weight:bold">for</span> <span style="color:#666">(</span><span style="color:#b00040">int</span> i <span style="color:#666">=</span> 1<span style="color:#666">;</span> i <span style="color:#666">&lt;</span> w<span style="color:#666">.</span><span style="color:#7d9029">length</span><span style="color:#666">;</span> i<span style="color:#666">++)</span> <span style="color:#666">{</span>
+			<span style="color:#008000;font-weight:bold">for</span> <span style="color:#666">(</span><span style="color:#b00040">int</span> j <span style="color:#666">=</span> 0<span style="color:#666">;</span> j <span style="color:#666">&lt;=</span> bag <span style="color:#666">;</span> j<span style="color:#666">++</span> <span style="color:#666">)</span> <span style="color:#666">{</span>
+				<span style="color:#008000;font-weight:bold">if</span><span style="color:#666">(</span>j <span style="color:#666">-</span> w<span style="color:#666">[</span>i<span style="color:#666">]</span> <span style="color:#666">&lt;</span> 0<span style="color:#666">)</span>
+					dp<span style="color:#666">[</span>i<span style="color:#666">][</span>j<span style="color:#666">]</span> <span style="color:#666">=</span> dp<span style="color:#666">[</span>i<span style="color:#666">-</span>1<span style="color:#666">][</span>j<span style="color:#666">];</span>
+				<span style="color:#008000;font-weight:bold">else</span>
+					dp<span style="color:#666">[</span>i<span style="color:#666">][</span>j<span style="color:#666">]</span> <span style="color:#666">=</span> Math<span style="color:#666">.</span><span style="color:#7d9029">max</span><span style="color:#666">(</span>dp<span style="color:#666">[</span>i<span style="color:#666">-</span>1<span style="color:#666">][</span>j<span style="color:#666">],</span> dp<span style="color:#666">[</span>i<span style="color:#666">-</span>1<span style="color:#666">][</span>j <span style="color:#666">-</span> w<span style="color:#666">[</span>i<span style="color:#666">]]</span> <span style="color:#666">+</span> v<span style="color:#666">[</span>i<span style="color:#666">]);</span>
+			<span style="color:#666">}</span>
+		<span style="color:#666">}</span>
+		<span style="color:#008000;font-weight:bold">return</span> dp<span style="color:#666">[</span>w<span style="color:#666">.</span><span style="color:#7d9029">length</span> <span style="color:#666">-</span> 1<span style="color:#666">][</span>bag<span style="color:#666">];</span>
+	<span style="color:#666">}</span>
+</code></pre></div><p>这段代码的循环体部门看起来是不是有种似曾相识的感觉。没错，它就是01背包动态规划2.0的解法，将容量从bag到0给倒过来了。在01背包中我们要确保用到的是K-1种物品的最优值，所以是从后往前循环。但是在没有数量限制的情况下，我们不需要考虑我们用到的是第K种的缓存还是第K-1种的缓存，我们只在乎它最优的那种形式。</p>
+<h2 id="多重背包问题">多重背包问题<a href="#多重背包问题" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>有N 种物品和一个容量为bag 的背包。第i 种物品的重量是w[i]，价值是v[i]。每种物品有n[i]个。
+求解将哪些物品装入背包可使价值总和最大。</p>
+<p>这种情况的限制更加具体，但是我们同样可以考虑用01背包的那种方式。还记得我们是怎么样把完全背包变成01背包的形式的吗。没错，我们可以假设背包内放同一种物品能放多少来界定这种物品的最大数量。现在题目中已经帮我们定好了数量是多少，我们只需要带入进去用同样的方式就能得到答案。
+$$
+dp[i][j] = max(dp[i-1][j],dp[i-1][v-k<em>w[i]]+k</em>v[i])
+$$</p>
+<p>$$</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">	<span style="color:#008000;font-weight:bold">public</span> <span style="color:#008000;font-weight:bold">static</span> <span style="color:#b00040">int</span> <span style="color:#00f">multiBag</span><span style="color:#666">(</span><span style="color:#b00040">int</span><span style="color:#666">[]</span> w<span style="color:#666">,</span> <span style="color:#b00040">int</span><span style="color:#666">[]</span> v<span style="color:#666">,</span><span style="color:#b00040">int</span><span style="color:#666">[]</span> n<span style="color:#666">,</span><span style="color:#b00040">int</span> bag<span style="color:#666">)</span> <span style="color:#666">{</span>
+
+		<span style="color:#408080;font-style:italic">// 用一个数组来缓存中间步骤的结果
+</span><span style="color:#408080;font-style:italic"></span>		<span style="color:#b00040">int</span><span style="color:#666">[][]</span> dp <span style="color:#666">=</span> <span style="color:#008000;font-weight:bold">new</span> <span style="color:#b00040">int</span><span style="color:#666">[</span>w<span style="color:#666">.</span><span style="color:#7d9029">length</span><span style="color:#666">][</span>bag <span style="color:#666">+</span> 1<span style="color:#666">];</span>
+
+		<span style="color:#408080;font-style:italic">// 初始化第0行，第0列已经被初始化为0
+</span><span style="color:#408080;font-style:italic"></span>		<span style="color:#408080;font-style:italic">// 只能放第0件物品，在最大承重为i时的最大价值
+</span><span style="color:#408080;font-style:italic"></span>		<span style="color:#008000;font-weight:bold">for</span> <span style="color:#666">(</span><span style="color:#b00040">int</span> i <span style="color:#666">=</span> 0<span style="color:#666">;</span> i <span style="color:#666">&lt;</span> dp<span style="color:#666">[</span>0<span style="color:#666">].</span><span style="color:#7d9029">length</span><span style="color:#666">;</span> i<span style="color:#666">++)</span> <span style="color:#666">{</span>
+			<span style="color:#b00040">int</span> k <span style="color:#666">=</span> i <span style="color:#666">/</span>w<span style="color:#666">[</span>0<span style="color:#666">];</span>
+			<span style="color:#008000;font-weight:bold">if</span><span style="color:#666">(</span> k <span style="color:#666">&lt;=</span> n<span style="color:#666">[</span>0<span style="color:#666">])</span> <span style="color:#666">{</span>
+				dp<span style="color:#666">[</span>0<span style="color:#666">][</span>i<span style="color:#666">]</span> <span style="color:#666">=</span> k <span style="color:#666">*</span> v<span style="color:#666">[</span>0<span style="color:#666">];</span>
+			<span style="color:#666">}</span><span style="color:#008000;font-weight:bold">else</span> <span style="color:#666">{</span>
+				dp<span style="color:#666">[</span>0<span style="color:#666">][</span>i<span style="color:#666">]</span> <span style="color:#666">=</span> n<span style="color:#666">[</span>0<span style="color:#666">]</span> <span style="color:#666">*</span> v<span style="color:#666">[</span>0<span style="color:#666">];</span>
+			<span style="color:#666">}</span>
+			
+		<span style="color:#666">}</span>
+
+		<span style="color:#408080;font-style:italic">// 前i件物品当背包的容量为j时的最优解
+</span><span style="color:#408080;font-style:italic"></span>		<span style="color:#008000;font-weight:bold">for</span> <span style="color:#666">(</span><span style="color:#b00040">int</span> i <span style="color:#666">=</span> 1<span style="color:#666">;</span> i <span style="color:#666">&lt;</span> w<span style="color:#666">.</span><span style="color:#7d9029">length</span><span style="color:#666">;</span> i<span style="color:#666">++)</span> <span style="color:#666">{</span>
+			<span style="color:#008000;font-weight:bold">for</span> <span style="color:#666">(</span><span style="color:#b00040">int</span> j <span style="color:#666">=</span> 1<span style="color:#666">;</span> j <span style="color:#666">&lt;=</span> bag<span style="color:#666">;</span> j<span style="color:#666">++)</span> <span style="color:#666">{</span>
+				<span style="color:#008000;font-weight:bold">for</span> <span style="color:#666">(</span><span style="color:#b00040">int</span> k <span style="color:#666">=</span> 0<span style="color:#666">;</span> k <span style="color:#666">&lt;</span> n<span style="color:#666">[</span>i<span style="color:#666">];</span> k<span style="color:#666">++)</span> <span style="color:#666">{</span>
+					dp<span style="color:#666">[</span>i<span style="color:#666">][</span>j<span style="color:#666">]</span> <span style="color:#666">=</span> Math<span style="color:#666">.</span><span style="color:#7d9029">max</span><span style="color:#666">(</span>dp<span style="color:#666">[</span>i <span style="color:#666">-</span> 1<span style="color:#666">][</span>j<span style="color:#666">],</span> <span style="color:#666">(</span>dp<span style="color:#666">[</span>i <span style="color:#666">-</span> 1<span style="color:#666">][</span>j <span style="color:#666">-</span> k <span style="color:#666">*</span> w<span style="color:#666">[</span>i<span style="color:#666">]]</span> <span style="color:#666">+</span> k <span style="color:#666">*</span> v<span style="color:#666">[</span>i<span style="color:#666">]));</span>
+				<span style="color:#666">}</span>
+			<span style="color:#666">}</span>
+		<span style="color:#666">}</span>
+
+		<span style="color:#008000;font-weight:bold">return</span> dp<span style="color:#666">[</span>w<span style="color:#666">.</span><span style="color:#7d9029">length</span> <span style="color:#666">-</span> 1<span style="color:#666">][</span>bag<span style="color:#666">];</span>
+	<span style="color:#666">}</span>
+</code></pre></div>
+<p style="color:#777;">Last modified on 2022-02-24</p>
+</div>
+<a href="#top"><i class="fa fa-chevron-up" style="font-size: 30px; color: black;"></i></a>
+
+</main>
+
+<footer class="footer">
+  <script type="text/javascript" src="/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/javascript" src="/js/center-img.js"></script>
+
+
+
+     <ul class="footer-links">
+      
+       
+       
+       
+       <li><a href="/en/posts/index.xml" type="application/rss+xml" title="RSS feed">
+       Subscribe </a>
+       </li>
+       
+       
+       <li>
+       
+        <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
+       
+        License
+        <i class="fa fa-cc" aria-hidden="true" title="Attribution-NonCommercial-ShareAlike 4.0 International"></i> 
+        </a>
+       </li>
+       
+     </ul>
+     <div class="copyright-text">
+			<span id="busuanzi_container_site_pv"> 本站访问量：<span id="busuanzi_value_site_pv"></span>次</span>&nbsp;
+			<span id="busuanzi_container_site_uv"> 您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者</span>
+     </div>
+</footer>
+
+
+
+
+

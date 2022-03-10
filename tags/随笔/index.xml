@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>随笔 on Albert Wang</title>
-    <link>https://example.com/tags/%E9%9A%8F%E7%AC%94/</link>
+    <link>https://root-zr.github.io/tags/%E9%9A%8F%E7%AC%94/</link>
     <description>Recent content in 随笔 on Albert Wang</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 13 Feb 2022 13:39:37 +0800</lastBuildDate><atom:link href="https://example.com/tags/%E9%9A%8F%E7%AC%94/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 13 Feb 2022 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/tags/%E9%9A%8F%E7%AC%94/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>为什么要开始写博客</title>
-      <link>https://example.com/en/2022/02/13/%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%BC%80%E5%A7%8B%E5%86%99%E5%8D%9A%E5%AE%A2/</link>
+      <title>Why Do I Start to Write Blog| 为什么要开始写博客</title>
+      <link>https://root-zr.github.io/en/2022/02/13/why-do-i-start-to-write-blog-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%BC%80%E5%A7%8B%E5%86%99%E5%8D%9A%E5%AE%A2/</link>
       <pubDate>Sun, 13 Feb 2022 13:39:37 +0800</pubDate>
       
-      <guid>https://example.com/en/2022/02/13/%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%BC%80%E5%A7%8B%E5%86%99%E5%8D%9A%E5%AE%A2/</guid>
+      <guid>https://root-zr.github.io/en/2022/02/13/why-do-i-start-to-write-blog-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%BC%80%E5%A7%8B%E5%86%99%E5%8D%9A%E5%AE%A2/</guid>
       <description>我开始写博客应该是2020年的时候。那时正处于新冠疫情期间，由于只能在家里上课，学习的效率难免受到影响，再加上那时的课业压力有点大，所以我便开始尝试来写技术博客来记录自己遇到的一些问题和学习的心得。
 最开始的时候都是把文章保存在本地磁盘，因为害怕自己写的东西可能会存在一些错误，从而误导读者，所以不敢发布到网络平台上。后面我开始逐渐说服了自己，因为即便是文章有错误被读者指正了，我也能够改正这个也许一直都不曾发现的问题。从另外一个角度来说，如果自己的一些经验可以帮到千里之外的某一个人的话那更是一件让人非常高兴的事。
 于是我开始渐渐将自己写的博客发到自己的知乎上，看着每一篇文章都能被几百个人阅读感觉还是非常不错的。不过慢慢我也发现了知乎存在的一些问题。
