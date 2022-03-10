@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>技术 on Albert Wang</title>
+    <link>https://example.com/tags/%E6%8A%80%E6%9C%AF/</link>
+    <description>Recent content in 技术 on Albert Wang</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 24 Feb 2022 13:39:37 +0800</lastBuildDate><atom:link href="https://example.com/tags/%E6%8A%80%E6%9C%AF/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>背包问题</title>
+      <link>https://example.com/en/2022/02/24/%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98/</link>
+      <pubDate>Thu, 24 Feb 2022 13:39:37 +0800</pubDate>
+      
+      <guid>https://example.com/en/2022/02/24/%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98/</guid>
+      <description>01背包问题 有N 件物品和一个容量为bag 的背包。第i 件物品的重量是w[i]，价值是v[i]。 求解将哪些物品装入背包可使价值总和最大。
+暴力算法 我们首先想到的应该是穷举所有的可能，然后把最好的那一个给返回。而在穷举的过程种我们需要考虑的问题仅仅是对于第i个物品，到底要不要把它放入背包。所以可以用递归的方式很自然地解决。
+/** * * @param w 物品的重量 * @param v 物品的价值 * @param i 第i个物品 * @param alreadyW 已经放入背包的重量 * @param bag 背包所能承受的最大重量 * @return 最大价值 */ public static int recur(int[] w,int[] v,int i,int alreadyW,int bag){ if(alreadyW &amp;gt; bag || i &amp;gt;= w.length) return 0; //背包超重或者没有物品可以装  int totalVal1 = 0,totalVal2 = 0; totalVal1 = recur(w,v,i+1,alreadyW,bag); //第i个物品不放入背包  if(alreadyW+ w[i] &amp;lt;= bag) totalVal2 = recur(w,v,i+1,alreadyW+ w[i],bag) + v[i]; //第i个物品放入背包  return Math.</description>
+    </item>
+    
+    <item>
+      <title>c&#43;&#43; STL中的map容器</title>
+      <link>https://example.com/en/2021/12/23/c-stl%E4%B8%AD%E7%9A%84map%E5%AE%B9%E5%99%A8/</link>
+      <pubDate>Thu, 23 Dec 2021 01:53:34 +0800</pubDate>
+      
+      <guid>https://example.com/en/2021/12/23/c-stl%E4%B8%AD%E7%9A%84map%E5%AE%B9%E5%99%A8/</guid>
+      <description>c++的map容器有4种，它们都保存了键值对类型的元素。map容器的元素是pair&amp;lt;const K,T&amp;gt;类型的对象，以K为键，T为值。pair实际上可以看作一个内部有两个元素的结构体，且这两个元素的类型是可以指定的[1] 。
+struct pair { typeName1 first; typeName2 second; }; 同时我们注意到pair元素中的键是const指针来修饰的，这表明我们不能去修改它，因为如果修改的话会扰乱容器中元素的顺序。下面我们来具体了解一下这四种容器的具体实现。
+1. map&amp;lt;K,T&amp;gt; 这个容器中的元素是有序的，通过less对象按照键来对所有元素排序。map&amp;lt;K,T&amp;gt;中不允许有重复的键。对于每一个pair&amp;lt;const K,T&amp;gt;节点，map&amp;lt;K,T&amp;gt;中一般是以平衡二叉树的形式来存储的，这样可以保证检索一个随机元素所需的时间是 。
+1.1 创建容器 创建一个map容器的方法如下：
+map&amp;lt;string, int&amp;gt; people; map&amp;lt;string, int&amp;gt; people{ {&amp;#34;Alice&amp;#34;,20},{&amp;#34;Bob&amp;#34;,25} }; map&amp;lt;string, int&amp;gt; people{ pair&amp;lt;string, int&amp;gt;(&amp;#34;Alice&amp;#34;,20), pair&amp;lt;string, int&amp;gt;(&amp;#34;Bob&amp;#34;,25) }; 可以先创建对象，后续再往里面加元素，也可以在初始化的时候添加一些元素。
+1.2 插入元素 具体添加元素的api是insert函数，插入的元素类型可以有以下几种，第一种很容易理解，因为map里存放的就是pair类型的对象，第二种在保证类型正确的情况下也能保证正确插入，第三种方式则是根据map的value_type方式来插入。
+people.insert(pair&amp;lt;string, int&amp;gt;(&amp;#34;Tom&amp;#34;, 20)); people.insert({ &amp;#34;John&amp;#34;, 21 }); people.insert(map&amp;lt;string, int&amp;gt;::value_type(&amp;#34;Li Hua&amp;#34;, 22)); 除了上面的三种方式以外还可以用类似于数组的方式来插入元素，下表事key，值对应着value。
+people[&amp;#34;Tom&amp;#34;] = 20; people[&amp;#34;John&amp;#34;] = 21; people[&amp;#34;Li Hua&amp;#34;] = 22; 1.3 删除元素 删除元素可以用erase函数来实现，首先传入的参数可以是key的值，代码如下所示：
+string name = &amp;#34;John&amp;#34;; if (people.</description>
+    </item>
+    
+    <item>
+      <title>Hyperledger Fabric安装与部署</title>
+      <link>https://example.com/en/2021/10/23/hyperledger-fabric%E5%AE%89%E8%A3%85%E4%B8%8E%E9%83%A8%E7%BD%B2/</link>
+      <pubDate>Sat, 23 Oct 2021 01:53:34 +0800</pubDate>
+      
+      <guid>https://example.com/en/2021/10/23/hyperledger-fabric%E5%AE%89%E8%A3%85%E4%B8%8E%E9%83%A8%E7%BD%B2/</guid>
+      <description>本文中用到的宿主环境是Ubuntu18.04。
+目前Fabric采用Docker容器作为链码执行环境，因此即使在本地运行，链码服务器上也必须要安装Docker环境。我们这个安装环境主要包括Docker环境的配置以及Docker之上的一些Fabric镜像的配置。
+整个项目是采用gradle的框架，然后有一个gradle的服务是用来将智能合约部署到服务器，app的文件夹下放置的是整个应用程序的项目。项目的详细信息可以查看下面的仓库地址：
+https://gitlab.com/qubing/blockchain_lab_v2.git 安装公共软件包 在开始之前请确保您的操作系统上安装了以下实用程序
+ 安装ca-certificates，如果路由器里面没导入证书，在部署路由器的时候,路由器可能会不支持从https安装应用。  sudo apt-get install -y apt-transport-https ca-certificates software-properties-common 安装wget，一个从网页自动下载的工具。  sudo apt-get install -y unzip git curl wget vim tree jq 安装gradle  cd /tmp &amp;amp;&amp;amp; wget https://services.gradle.org/distributions/gradle-6.4-bin.zip 解压缩gradle
+unzip gradle-6.4-bin.zip 将grade移动到/usr/local/gradle目录下
+sudo mv gradle-6.4 /usr/local/gradle 设置配置文件
+sudo cat &amp;gt;&amp;gt; ~/.bashrc &amp;lt;&amp;lt;EOF setup gradle environments # ===================== export PATH=$PATH:/usr/local/gradle/bin # ===================== EOF source ~/.bashrc 从http://gitlab.com 下载qubing老师的项目：  git clone https://gitlab.com/qubing/blockchain_lab_v2.git ~/workspace **注意：**这里如果是采用虚拟机下载，可能网速过慢下载不下来，可以选择在Windows上下载下来，然后复制到虚拟机里。</description>
+    </item>
+    
+    <item>
+      <title>HashMap源码学习</title>
+      <link>https://example.com/en/2021/10/03/hashmap%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link>
+      <pubDate>Sun, 03 Oct 2021 01:53:34 +0800</pubDate>
+      
+      <guid>https://example.com/en/2021/10/03/hashmap%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid>
+      <description>HashMap近年来是Java面试经常会被问到的知识点，现在也有很多的博客对这个做了介绍，但是我个人感觉这些博客的关注点都倾向于面试问答，看完后好像对HashMap还是似懂非懂。所以我想从源代码出发写这一篇内容，因为能力和所学知识有限，如果文章内容有任何问题欢迎大家批评指正！
+笔者的JVM版本是hotspot的1.8.0版本，具体细节如下：
+首先从Java API文档来看对HashMap的介绍，
+可以看到HashMap位于util包下，所有实现的接口为Serializable, Cloneable和Map&amp;lt;K,V&amp;gt;，
+子类包括LinkedHashMap和PrinterStateReasons，如下图所示：
+以下是官方对HashMap的解释：
+HashMap是基于哈希表的Map接口实现。这个实现提供了所有可选的map操作，并允许空值和空键(HashMap类大致相当于Hashtable，只是它是unsynchronized并且允许空值。）这个类不保证映射的顺序；特别是，它不能保证随着时间的推移，顺序将保持不变。在哈希函数
+将元素正确地分散在存储桶（buckets）中的前提下，这种实现为基本操作（get和put）提供了常数时间的性能。
+对集合视图的迭代需要与HashMap实例的capacity（bucket的数量），加上它的大小（键值映射的数量）成比例的时间。因此，如果迭代性能很重要，那么不要将初始容量设置得太高（或者负载系数太低）。
+HashMap的实例有两个影响其性能的参数：初始容量（initial capacity）和负载因子（load factor）。容量是哈希表中存储桶的数量，初始容量只是创建哈希表时的容量。负载因子是在哈希表的容量自动增加之前，允许哈希表获得的完整度的度量。当哈希表中的条目数超过负载因子和当前容量的乘积时，哈希表将被rehashed（即，重建内部数据结构），以便哈希表具有大约两倍的存储桶数。
+**笔者注：**这里确实是大约两倍，因为实际上是（容量*负载系数）&amp;laquo;1, 当负载系数为1时才是真正意义上的两倍。
+一般来讲，**默认负载系数（.75）**在时间和空间成本之间提供了一个很好的折衷。较高的值会减少空间开销，但会增加查找成本（反映在HashMap类的大多数操作中，包括get和put）。在设置初始容量时，应考虑map中的预期条目数（number of entries）及其负载系数，以尽量减少rehash操作的次数。如果初始容量大于最大条目数除以负载系数，则不会发生rehash操作。
+如果要在HashMap实例中存储多个映射，那么使用足够大的容量创建它将允许更有效地存储映射，而不是让它根据需要执行rehash以增加表。请注意，使用具有相同hashCode（）的多个键肯定会降低任何哈希表的性能。为了改善影响，当键是Comparable时，此类可以使用键之间的比较顺序来帮助打破联系。
+Note that this implementation is not synchronized. 如果多个线程同时访问hash map，并且至少有一个线程在结构上修改了该映射，则必须在外部对其进行同步(结构修改是添加或删除一个或多个映射的任何操作；仅仅更改与实例已包含的键相关联的值并不是结构修改。）这通常是通过在自然封装映射的某个对象上进行同步来实现的。如果不存在这样的对象，则应该使用Collections.synchronizedMap方法“包装”映射。最好在创建时执行此操作，以防止对map的意外非同步访问：
+Map m=Collections.synchronizedMap（new HashMap（…））； 这个类的所有“集合视图方法”返回的迭代器都是fail-fast 的：如果在迭代器创建之后的任何时候，以任何方式（除了通过迭代器自己的remove方法）对映射进行结构修改，迭代器将抛出ConcurrentModificationException。因此，在面对并发修改时，迭代器会快速而干净地失败，而不是冒着在将来不确定的时间出现任意的、不确定的行为的风险。
+注意，不能保证迭代器的fail-fast 行为，因为一般来说，在存在非同步并发修改的情况下，不可能做出任何硬保证。Fail-fast 迭代器会尽最大努力抛出ConcurrentModificationException。因此，编写一个依赖于此异常来保证其正确性的程序是错误的：迭代器的fail-fast行为应该只用于检测bug。
+此类是Java集合框架的成员。
+以上内容是官方的API文档对HashMap的解释，因为原文档是全英的描述，如果翻译有错还请帮忙指正。下面从HashMap.java类出发来介绍。
+HashMap.java类总共有两千多行，涉及十多个方法。
+成员变量如下：
+private static final long serialVersionUID = 362498820763181265L; static final int DEFAULT_INITIAL_CAPACITY = 1 &amp;lt;&amp;lt; 4; // aka 16，初始容量必须是2的幂 //1 &amp;lt;&amp;lt; 4表示将1左移4位，即1 -&amp;gt; 10000（2） = 16，说明初始容量是16 static final int MAXIMUM_CAPACITY = 1 &amp;lt;&amp;lt; 30; //最大容量 static final float DEFAULT_LOAD_FACTOR = 0.</description>
+    </item>
+    
+    <item>
+      <title>观察Linux的行为与SHELL编程</title>
+      <link>https://example.com/en/2021/09/16/%E8%A7%82%E5%AF%9Flinux%E7%9A%84%E8%A1%8C%E4%B8%BA%E4%B8%8Eshell%E7%BC%96%E7%A8%8B/</link>
+      <pubDate>Thu, 16 Sep 2021 01:53:34 +0800</pubDate>
+      
+      <guid>https://example.com/en/2021/09/16/%E8%A7%82%E5%AF%9Flinux%E7%9A%84%E8%A1%8C%E4%B8%BA%E4%B8%8Eshell%E7%BC%96%E7%A8%8B/</guid>
+      <description>(1) 以root登录linux系统，并进入/proc目录，键入ls命令，查看/proc下的内容 终端显示的界面如下：
+Proc 目录下主要目录和文件的内容有：
+Ioports I/O 端口的使用，Kcore 内核核心印象，Kmsg 内核消息，Ksyms 内核符号表，Loadavg 负载均衡，Locks 内核锁，Misc 杂项，Modules 加载模块列表，Mounts加载的文件系统，Partitions 系统识别的分区表，Rtc 实时时钟，Slabinfo Slab 池信息，还有一些其他的信息可参见下表：
+   文件名 文件内容     proc/apm 高级电源管理信息   /proc/cmdline 加载kernel时所执行的相关参数。此文件可帮助了解系统是如何启动的   /proc/cpuinfo 本机的CPU相关信息，包含频率、类型与运算功能等   /proc/devices 记录了系统各个主要设备的主要设备代号，与mknod有关   /proc/dma 使用的DMA通道   /proc/filesystems 目前系统已经加载的文件系统   /proc/interrupts 目前系统的IRQ分配状态   /proc/ioports 目前系统的各个设备所配置的IO地址   /proc/kcore 内存的大小   /proc/loadavg top和uptime上面的三个平均数值   /proc/meminfo 使用free列出的内存信息，在这也能查阅   /proc/mounts 系统已经挂载的数据，就是用mount命令调出来的数据   /proc/swaps 系统加载的内存，使用的分区记录   /proc/stat 全面统计状态表   /proc/partitions 使用fdisk -l会出现目前所有的分区，这个文件中也有记录   /proc/version 内核版本   /proc/uptime 系统正常运行时间    查看每个文件的读写权限,如fs文件夹,输入指令</description>
+    </item>
+    
+    <item>
+      <title>LinkedList源码学习</title>
+      <link>https://example.com/en/2021/07/26/linkedlist%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link>
+      <pubDate>Mon, 26 Jul 2021 01:53:34 +0800</pubDate>
+      
+      <guid>https://example.com/en/2021/07/26/linkedlist%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid>
+      <description>LinkedList是Java对线性表的一种实现，它实现的接口有List, Deque, Cloneable, java.io.Serializable，同时它也继承了util包下的AbstractSequentialList抽象类。
+LinkedList是用链表来实现List接口的，它对链表的封装如下：
+private static class Node&amp;lt;E&amp;gt; { E item; Node&amp;lt;E&amp;gt; next; Node&amp;lt;E&amp;gt; prev; Node(Node&amp;lt;E&amp;gt; prev, E element, Node&amp;lt;E&amp;gt; next) { this.item = element; this.next = next; this.prev = prev; } } 它的成员变量如下：
+private static final long serialVersionUID = 876323262645176354L; //序列化号 transient int size = 0; //链表的大小，transient关键字载序列化对象的时候，这个属性就不会被序列化 transient Node&amp;lt;E&amp;gt; first; //链表的头结点 transient Node&amp;lt;E&amp;gt; last; //链表的尾结点 构造方法如下：
+public LinkedList() { //无参构造方法 } public LinkedList(Collection&amp;lt;? extends E&amp;gt; c) { //传一个Collection的对象  this(); addAll(c); } 从前面的有参构造方法可以看出，它要求传入一个实现了Collection接口的类，这个接口为线性表，向量，栈，队列等定义了共同的操作。在传了一个Collection的对象（接口本身是不能创建对象的，这里只是为了说明方便）之后会调用addAll()方法来初始化，这是一个封装好的方法，方法内部会调用它的重载方法，多传入一个index的参数，这个参数值在方法内部默认为size。方法的实现如下：</description>
+    </item>
+    
+    <item>
+      <title>红黑树</title>
+      <link>https://example.com/en/2021/07/24/%E7%BA%A2%E9%BB%91%E6%A0%91/</link>
+      <pubDate>Sat, 24 Jul 2021 01:53:34 +0800</pubDate>
+      
+      <guid>https://example.com/en/2021/07/24/%E7%BA%A2%E9%BB%91%E6%A0%91/</guid>
+      <description>我们先从二叉查找树开始谈起，在足够理想的情况下，二叉查找树和快速排序非常类似，树的根节点就是快排的第一个切分元素pivot，并且满足左子结点小于root，右子结点的值大于root。并且在保持平衡的BST上平均的情况下查询的时间复杂度能达到 O(log n)。但是因为二叉查找树的所有操作所需的时间都和树的高度成正比，假如这个数退化成一个链表，那查询速度将会大打折扣。我们如果始终保持这棵树是平衡的也要花费很大的成本。如下图，插入1之后大量的结点发生了调整。
+为了优化这个问题，人们就考虑在一个树的结点中保存多个值，这样就能减少高度的增加。最直观的想法就是让一个结点可以保存不超过2个值，如下图：
+我们保证结点中的值都是从小到大排列的，并且可以看到单个值对应有两个孩子（2-结点），两个值的结点对应3个孩子（3-结点）。所以我们把这种数据结构叫2-3树。可以看到树上的所有叶子都在一个层次上，因此2-3树总是保持高度平衡的。它的查找效率也能保证在 O(log n)。虽然看似只是进行了一点小小的优化，但一个10个结点的2-3树高度只在19-30之间，这实际上是一个很惊人的数据了。
+但是我们怎么插入新的元素呢，假如我们采取和查找一样的方式，直接插到尾部，那将无法保持平衡。所以必须做一些规定：
+ 假如要插入的元素位置的父结点是一个2-结点，那我们就将这个2-结点变成3-结点，把新元素加进去就行 如果父结点是一个3-结点，我们要把它变成一个4-结点，然后根据不同情况做拆分：   这个4-结点的父结点为2-结点，就将4-结点中最中间的值加进2-结点中，把2-结点变成3-结点，然后剩下的最小的元素和最大的元素拆成两个2-结点接到下面； 这个4-结点的父结点为3-结点，采取和1一样的做法，一直往上做拆分，直到找到一个父结点是2-结点。如果到根节点都不满足根节点是一个2-结点，那根节点就会变成一个临时的4-结点，然后把这个4-结点拆成3个2-结点，使得树的高度增加1.  以上就是所有插入的变换情况，可以看到整个过程中树都是保持平衡的，而且和二叉查找树自上而下生长的方式不同，2-3树是自下而上生长的。
+下面要做的就是真正实现这种数据结构了。不难想到，我们可以构建2-结点和3-结点的类，然后根据上面的算法不断的变换来实现它。事实上这么做当然没问题，但是却面临两个难点，首先是结点之间的数据需要来回变换，效率低，消耗资源；另外真正实现起来也比较容易出错。
+所以科学家就根据这种思路实现了红黑二叉查找树的这种数据结构来高效地进行优化，方便我们进行代码实现，也减少了数据之间的来回变化。我们知道普通的二叉查找树的高度不好控制，所以我们才允许一个结点出现多个值来降低高度。那我们能不能只是在逻辑上采用这种思想，但是实际上还是采用二叉查找树的结构呢。毕竟这种结构实在是有很多好处。所以有了下面的这种实现，如下图：
+如果我们把二叉树的某一个链接放平，可以看到树的高度明显减小了1，而且在本质上这棵树是没有发生变化的。同样的，我们把这两个结点合起来不就正好是一个3-结点吗。
+红黑树实际上就是将3-结点拆开了，然后把较大的值作为父结点，较小的值作为子结点，这样就能用一个2-结点的数据结构来实现。只要我们把父结点放平，再把这两个结点合起来，它们就构成了一个3-结点。
+为了便于区分我们到底把哪个链接放平了，我们就要给这个链接做个特殊的颜色标记，把它标记为红色，如上图所示。但是我们知道链接是结点这个类里面的一个成员变量，它指向某一个结点，所以我们就直接把它指向的这个结点的颜色标记为红色，其余的颜色为黑色。但是为了便于理解，我们还是约定某一个结点的颜色指的是指向该结点的链接的颜色。结点的数据结构如下：
+class Node&amp;lt;Key,Value&amp;gt;{ Key key; Value val; Node&amp;lt;Key,Value&amp;gt; left,right; boolean color; //红色为true,黑色为false  public Node(Key key, Value val,boolean color){ this.key = key; this.val = val; this.color = color; } …… } 现在我们来说明它具有的几个特征：
+（1)空链接的颜色为黑色，这也说明根结点中的颜色标记为黑色，因为指向根节点的链接是空链接；
+（2）红链接全是左链接；
+（3）没有任何一个结点同时和两条红链接相连，因为如果将2-3树的3-结点画成红色左链接相连的两个2-结点，必然不会存在能够和两条红色链接相连的结点；
+（4）任意空链接到根结点的路径上的黑链接数量相同，该树完美黑色平衡。
+要使这棵树完美黑色平衡，以上条件必须满足。如果不满足，就必须进行调整，调整的策略就是对树进行旋转和颜色转换。
+ 左旋转：将红色的右链接转化为左链接的过程叫左旋转，具体过程如下图所示：  可以看到，我们需要把较小元素的color设置为红色，并且需要让较大元素的左子树链接到较小元素的右子结点下面。代码实现如下：
+public Node rotateLeft(Node node){ //node为较小元素对应的结点  Node x = node.</description>
+    </item>
+    
+    <item>
+      <title>KMP算法</title>
+      <link>https://example.com/en/2021/07/23/kmp%E7%AE%97%E6%B3%95/</link>
+      <pubDate>Fri, 23 Jul 2021 01:53:34 +0800</pubDate>
+      
+      <guid>https://example.com/en/2021/07/23/kmp%E7%AE%97%E6%B3%95/</guid>
+      <description>KMP算法是用来解决字符串的匹配问题的。对于字符串匹配问题，我们首先想到的就是暴力破解法。
+用指针i,j来说明，第一个位置下标以0开始。如果匹配则继续比较下一位。否则将j的值清0，i的值也要回到最开始匹配成功的位置重新开始比较，如下图。
+public static int violentMatch(String source,String target){ int i, j = 0; for( i = 0 ; i &amp;lt; source.length() &amp;amp;&amp;amp; j &amp;lt; target.length(); i++){ if (source.charAt(i) == target.charAt(j)){ //如果当前字符匹配成功 j++; } else {//匹配失败 i = i - j; j = 0; } } if (j == target.length()) //匹配成功，返回首字符的位置 return i - j; else return -1; } 暴力算法有一个很严重的问题就是一旦不匹配就要从目标字符串的第一个字符开始从头计算。如果是人为来寻找的话，我们肯定不会这样做，因为主串匹配失败的位置(i=3)前面除了第一个A之外再也没有A了，我们为什么能知道主串前面只有一个A？因为我们已经知道前面三个字符都是匹配的[1] 。换句话说是我们知道匹配失败位置之前的元素都不是A，所以我们可以直接将i指针移动到下图所示的位置：
+这样就避免了回退的问题，其实前面的例子中要匹配的字符串（ABCE）中并没有出现相同的字符，所以多少会有一点巧合的意思。现在我们用另外一个例子来说明。假设文档的字符串source = &amp;ldquo;abaabaabca&amp;rdquo;, 目标字符串target = &amp;ldquo;abaabca&amp;rdquo;
+匹配到高亮显示的位置就需要重新调整j的值，这时自然不能像最开始的例子那样直接跳到不匹配的位置,这样最终会返回匹配失败。其实应该跳到的位置如下图所示：
+但其实按照上面所描述的这样，如果不匹配，其实原字符串的指针和目标字符串的指针也都向后回退了，虽然回退的步数有所减少。我们能不能想到一个办法让指针不发生回退呢，即直接从匹配失败的位置处继续往下扫描，如下图所示：
+从上面的图可以看出指针i依然停留在原来的位置，指针j则跳回了它对应的位置。我们可以通过下图来比较前后两种不同的差异：
+那怎么确保让指针j跳到合适的位置呢，在解释这个问题之前我们先来了解一个字符串的前缀和后缀的概念：</description>
+    </item>
+    
+    <item>
+      <title>ubuntu配置mysql数据库</title>
+      <link>https://example.com/en/2021/06/19/ubuntu%E9%85%8D%E7%BD%AEmysql%E6%95%B0%E6%8D%AE%E5%BA%93/</link>
+      <pubDate>Sat, 19 Jun 2021 01:53:34 +0800</pubDate>
+      
+      <guid>https://example.com/en/2021/06/19/ubuntu%E9%85%8D%E7%BD%AEmysql%E6%95%B0%E6%8D%AE%E5%BA%93/</guid>
+      <description>使用的ubuntu版本为18.04，mysql的版本为5.7
+首先使用linux命令下载到本地：
+wget https://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-5.7.25-linux-glibc2.12-x86_64.tar.gz 然后解压缩
+tar -xvf mysql-5.7.25-linux-glibc2.12-x86_64.tar.gz 注意：为了方便，之后的命令一律采用root账户来配置
+移动到/usr/local/并且将mysql-5.7.25-linux-glibc2.12-x86_64重命名为mysql
+mv mysql-5.7.25-linux-glibc2.12-x86_64 /usr/local/mysql 创建mysql用户组和用户并修改权限
+groupadd mysql useradd -r -g mysql mysql 创建数据目录并赋予权限
+mkdir -p /data/mysql #创建目录 chown mysql:mysql -R /data/mysql #赋予权限 配置my.cnf文件，用以下命令打开
+vim /etc/my.cnf 文件的内容如下[1] ：
+[mysqld] bind-address=0.0.0.0 port=3306 user=mysql basedir=/usr/local/mysql datadir=/data/mysql socket=/tmp/mysql.sock log-error=/data/mysql/mysql.err pid-file=/data/mysql/mysql.pid #character config character_set_server=utf8mb4 symbolic-links=0 explicit_defaults_for_timestamp=true 其中bind-address=0.0.0.0是设置允许远程连接，port=3306表示端口号为3306.
+完成上面的步骤之后我们就可以进行数据库的初始化工作了，首先进入mysql的bin目录
+cd /usr/local/mysql/bin/ 然后执行bin目录下的mysqld脚本，用来初始化信息，
+./mysqld --defaults-file=/etc/my.cnf --basedir=/usr/local/mysql/ --datadir=/data/mysql/ --user=mysql --initialize 这里的user=mysql其实不重要，后续可以设置成root
+但是很不幸它报错了，错误信息是./mysqld: error while loading shared libraries: libaio.so.1: cannot open shared object file。其实原因是我们没有下载libaio这个安装包，那我们就下载一个呗，命令如下：</description>
+    </item>
+    
+    <item>
+      <title>错误：‘DT_DIR’未声明(在此函数内第一次使用) 解决办法</title>
+      <link>https://example.com/en/2021/06/17/%E9%94%99%E8%AF%AFdt_dir%E6%9C%AA%E5%A3%B0%E6%98%8E%E5%9C%A8%E6%AD%A4%E5%87%BD%E6%95%B0%E5%86%85%E7%AC%AC%E4%B8%80%E6%AC%A1%E4%BD%BF%E7%94%A8-%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95/</link>
+      <pubDate>Thu, 17 Jun 2021 01:53:34 +0800</pubDate>
+      
+      <guid>https://example.com/en/2021/06/17/%E9%94%99%E8%AF%AFdt_dir%E6%9C%AA%E5%A3%B0%E6%98%8E%E5%9C%A8%E6%AD%A4%E5%87%BD%E6%95%B0%E5%86%85%E7%AC%AC%E4%B8%80%E6%AC%A1%E4%BD%BF%E7%94%A8-%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95/</guid>
+      <description>在编写Linux系统下执行的C语言文件时报错
+错误：‘DT_DIR’未声明(在此函数内第一次使用)
+解决办法： 需要事先导入对应的依赖
+#include &amp;lt;sys/types.h&amp;gt;#include &amp;lt;dirent.h&amp;gt;#include &amp;lt;stdlib.h&amp;gt;#include &amp;lt;errno.h&amp;gt;然后在编译的时候加上 -D_BSD_SOURCE[1] ，即只需要在我上面的指令基础上变成
+gcc difftree.c -lpthread -D_BSD_SOURCE -o difftree.sh --std=c99 然后就能成功编译了
+上面指令的-lpthread是因为使用的编译器版本的for循环不支持将int型变量定义在括号内的情况，需要指定编译器的版本才能成功进行编译。
+参考  ^ https://www.it1352.com/369511.html  </description>
+    </item>
+    
+    <item>
+      <title>快速排序和归并排序的非递归实现</title>
+      <link>https://example.com/en/2021/05/07/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F%E5%92%8C%E5%BD%92%E5%B9%B6%E6%8E%92%E5%BA%8F%E7%9A%84%E9%9D%9E%E9%80%92%E5%BD%92%E5%AE%9E%E7%8E%B0/</link>
+      <pubDate>Fri, 07 May 2021 01:53:34 +0800</pubDate>
+      
+      <guid>https://example.com/en/2021/05/07/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F%E5%92%8C%E5%BD%92%E5%B9%B6%E6%8E%92%E5%BA%8F%E7%9A%84%E9%9D%9E%E9%80%92%E5%BD%92%E5%AE%9E%E7%8E%B0/</guid>
+      <description>目前网络上和教材种对这两种排序算法大多是采用递归的方式来实现的，但是非递归的方式较少。另外这两种排序算法也各有特点，像是一对孪生兄弟。首先快排是先排序后分块，归并是先分块后排序，这点在递归方式实现中体现地尤为明显；同时快排是不稳定的排序，归并是稳定的排序；快排不需要额外的内存空间，而归并需要一个和输入数组相同的内存空间。
+快速排序的非递归实现 如上所述，快排是要先把一个元素排到对应的位置然后再分块，这个很容易用栈来实现，同时在遇到**将递归转为非递归的问题的时候，我们可以首先思考用栈能否实现。**具体代码如下：
+public static int[] QuickSort(int[] arr, int left, int right) { Stack&amp;lt;Integer&amp;gt; stack = new Stack&amp;lt;&amp;gt;(); if (left &amp;lt; right) { stack.push(left); stack.push(right); while (!stack.isEmpty()) { int height = stack.pop(); int low = stack.pop(); int index = partition(arr, low, height); if (index - 1 &amp;gt; low) { stack.push(low); stack.push(index - 1); } if (index + 1 &amp;lt; height) { stack.push(index + 1); stack.push(height); } } } return arr; } private static int partition(int[] list, int first, int last) { int pivot = list[first]; int low = first + 1; int high = last; while (high &amp;gt; low) { while (low &amp;lt;= high &amp;amp;&amp;amp; list[low] &amp;lt;= pivot) low++; while (low &amp;lt;= high &amp;amp;&amp;amp; list[high] &amp;gt; pivot) high--; if (high &amp;gt; low) { int temp = list[high]; list[high] = list[low]; list[low] = temp; } } while (high &amp;gt; first &amp;amp;&amp;amp; list[high] &amp;gt;= pivot) high--; if (pivot &amp;gt; list[high]) { list[first] = list[high]; list[high] = pivot; return high; } else { return first; } } 归并排序的非递归实现 归并不同于快排，它要求首先把整个数组分成最小的块，每个块是有序的，然后再逐层往上排序。这样就使得没法用栈来实现。具体的代码如下：</description>
+    </item>
+    
+    <item>
+      <title>Linux创建进程，线程实例</title>
+      <link>https://example.com/en/2021/04/22/linux%E5%88%9B%E5%BB%BA%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B%E5%AE%9E%E4%BE%8B/</link>
+      <pubDate>Thu, 22 Apr 2021 01:53:34 +0800</pubDate>
+      
+      <guid>https://example.com/en/2021/04/22/linux%E5%88%9B%E5%BB%BA%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B%E5%AE%9E%E4%BE%8B/</guid>
+      <description>环境准备  本文采用的操作系统是CentOS7 需要事先安装好gcc和g++环境，分别用来编译c和c++代码  安装命令如下[1] ：
+# 安装gcc yum install gcc #安装 g++ yum install gcc-c++ 这里yum为centos的安装命令，Ubuntu的安装命令为apt-get。
+进程实例 1.实例描述
+首先在linux下编写一个应用程序，命名为an_ch2_1b。这个程序不断地输出如下行：
+Those output come from child,[系统时间] 另外写一个应用程序，命名为an_ch2_1a。这个程序创建一个子进程，执行an_ch2_1b。
+2.具体步骤
+首先创建一个索引目录exer用来存放脚本代码，然后转到exer目录下，使用指令
+cat &amp;gt; an_ch2_1b.cpp &amp;lt;&amp;lt; EOF 来创建C++脚本文件，EOF表示在文件中输入EOF退出。
+输入an_ch2_1b.cpp的代码如下：
+#include &amp;lt;iostream&amp;gt;#include &amp;lt;string&amp;gt;#include &amp;lt;stdlib.h&amp;gt;#include &amp;lt;unistd.h&amp;gt;#include &amp;lt;time.h&amp;gt;using namespace std; string getTime() // 获取系统时间 { time_t timep; time(&amp;amp;timep); char tmp[64]; strftime(tmp, sizeof (tmp), &amp;#34;%Y-%m-%d%H:%M:%S&amp;#34; ,localtime(&amp;amp;timep)); return tmp; } int main() { while ( true ) { string tmn = getTime(); cout &amp;lt;&amp;lt; &amp;#34;Those output come from child,&amp;#34; &amp;lt;&amp;lt; tmn &amp;lt;&amp;lt; endl; sleep(1); // 为了便于截屏使用sleep() 函数延迟输出  } return 0; } 编写完成之后就需要对源代码进行编译，输入如下指令进行编译</description>
+    </item>
+    
+    <item>
+      <title>Xshell远程连接ubuntu</title>
+      <link>https://example.com/en/2021/03/23/xshell%E8%BF%9C%E7%A8%8B%E8%BF%9E%E6%8E%A5ubuntu/</link>
+      <pubDate>Tue, 23 Mar 2021 01:53:34 +0800</pubDate>
+      
+      <guid>https://example.com/en/2021/03/23/xshell%E8%BF%9C%E7%A8%8B%E8%BF%9E%E6%8E%A5ubuntu/</guid>
+      <description>本文采用的版本是Xshell7和ubuntu18.04，默认是刚安装ubuntu操作系统时的情况。
+首先打开Xshell，新建会话
+这里名称可以随便起，然后就需要知道要连接主机的ip，同时连接的协议是SSH，首先解决主机IP的问题，打开ubuntu的终端，输入ifconfig，结果发现出现了
+我们按照提示输入指令
+sudo apt install net-tools 这里的sudo是用管理员权限，所以可能需要输入密码，然后可能会出现以下情况，显示资源暂时不可用，如果没有这种情况可以忽略解决这个问题的部分，继续进行下面的步骤：
+这时需要用管理员权限把上面提示的目录删掉，删除命令就是rm
+sudo rm /var/lib/dpkg/lock 这时执行sudo apt install net-tools就能成功安装了，然后执行指令ifconfig就可以看到对应的ip了。
+然后解决SSH的问题，因为系统里可能没有SSH服务，所以同样需要重新安装，然后启动SSH服务，查看状态是否正常，如果状态正常就可以继续进行远程连接了，具体安装SSH服务可以参考下面的博客：
+ubuntu远程连接_ANDY-CSDN博客_ubuntu远程连接blog.csdn.net/qq_34510308/article/details/101433987 看到如下界面表示连接成功
+另外在远程连接过程中需要输入用户名和密码，这里对应的就是ubuntu的系统用户名以及密码。</description>
+    </item>
+    
+  </channel>
+</rss>

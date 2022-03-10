@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Fabric on Albert Wang</title>
+    <link>https://example.com/tags/fabric/</link>
+    <description>Recent content in Fabric on Albert Wang</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 23 Oct 2021 01:53:34 +0800</lastBuildDate><atom:link href="https://example.com/tags/fabric/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Hyperledger Fabric安装与部署</title>
+      <link>https://example.com/en/2021/10/23/hyperledger-fabric%E5%AE%89%E8%A3%85%E4%B8%8E%E9%83%A8%E7%BD%B2/</link>
+      <pubDate>Sat, 23 Oct 2021 01:53:34 +0800</pubDate>
+      
+      <guid>https://example.com/en/2021/10/23/hyperledger-fabric%E5%AE%89%E8%A3%85%E4%B8%8E%E9%83%A8%E7%BD%B2/</guid>
+      <description>本文中用到的宿主环境是Ubuntu18.04。
+目前Fabric采用Docker容器作为链码执行环境，因此即使在本地运行，链码服务器上也必须要安装Docker环境。我们这个安装环境主要包括Docker环境的配置以及Docker之上的一些Fabric镜像的配置。
+整个项目是采用gradle的框架，然后有一个gradle的服务是用来将智能合约部署到服务器，app的文件夹下放置的是整个应用程序的项目。项目的详细信息可以查看下面的仓库地址：
+https://gitlab.com/qubing/blockchain_lab_v2.git 安装公共软件包 在开始之前请确保您的操作系统上安装了以下实用程序
+ 安装ca-certificates，如果路由器里面没导入证书，在部署路由器的时候,路由器可能会不支持从https安装应用。  sudo apt-get install -y apt-transport-https ca-certificates software-properties-common 安装wget，一个从网页自动下载的工具。  sudo apt-get install -y unzip git curl wget vim tree jq 安装gradle  cd /tmp &amp;amp;&amp;amp; wget https://services.gradle.org/distributions/gradle-6.4-bin.zip 解压缩gradle
+unzip gradle-6.4-bin.zip 将grade移动到/usr/local/gradle目录下
+sudo mv gradle-6.4 /usr/local/gradle 设置配置文件
+sudo cat &amp;gt;&amp;gt; ~/.bashrc &amp;lt;&amp;lt;EOF setup gradle environments # ===================== export PATH=$PATH:/usr/local/gradle/bin # ===================== EOF source ~/.bashrc 从http://gitlab.com 下载qubing老师的项目：  git clone https://gitlab.com/qubing/blockchain_lab_v2.git ~/workspace **注意：**这里如果是采用虚拟机下载，可能网速过慢下载不下来，可以选择在Windows上下载下来，然后复制到虚拟机里。</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,275 @@
+<a name="top"></a>
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  	
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Linux创建进程，线程实例 - Albert Wang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/fonts.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega@5.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.12.2"></script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+            <link rel="icon" href="https://example.com/media/logo.JPG">
+
+
+
+
+
+  </head>
+  
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav" >
+      <a href="/" class="nav-logo">
+        <img src="/media/logo.JPG"
+         width="50"
+         height="50"
+         alt="Hugo-ht">
+      </a>
+
+      <ul class="nav-links" >
+       
+       
+       
+       <li><a href="/">Home</a></li>
+       
+       <li><a href="/en/posts/">Posts</a></li>
+       
+       <li><a href="/tags/">Tags</a></li>
+       
+       <li><a href="/categories/">Categories</a></li>
+       
+       <li><a href="/en/about/">About</a></li>
+       
+       <li><a href="/cn/posts/">中文</a></li>
+       
+       
+      </ul>
+</nav>
+      </header>
+
+<main class = "content" role="main">
+<div style="text-align: center">
+
+<h1>Linux创建进程，线程实例</h1>
+
+<p> 
+ / 2021-04-22 
+/ 300 Words/has been Read  <span id="busuanzi_value_page_pv"></span>&nbsp;&nbsp;Times
+
+</p>
+
+
+
+<hr/>
+
+
+</div>
+
+<span class="article-toolbar">
+  
+  
+  
+  
+  
+  
+  
+  <a href='https://github.com/root-zren%5cposts%5c2021%5cLinux%e5%88%9b%e5%bb%ba%e8%bf%9b%e7%a8%8b%ef%bc%8c%e7%ba%bf%e7%a8%8b%e5%ae%9e%e4%be%8b.md'style="font-size: 24px; color: black;" target="_blank"><i class="fa fa-edit" aria-hidden="true" title="Suggest an edit of this page"></i>
+  </a>
+  
+  
+  
+</span>
+
+
+
+<div class="body-text list-text">
+<h2 id="环境准备">环境准备<a href="#环境准备" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<ul>
+<li>本文采用的操作系统是CentOS7</li>
+<li>需要事先安装好gcc和g++环境，分别用来编译c和c++代码</li>
+</ul>
+<p>安装命令如下[<a href="https://zhuanlan.zhihu.com/p/366745149#ref_1" target="_blank" rel="noreferrer noopener">1]</a>
+
+：</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text"># 安装gcc
+yum install gcc
+#安装 g++
+yum install gcc-c++
+</code></pre></div><p>这里yum为centos的安装命令，Ubuntu的安装命令为apt-get。</p>
+<h2 id="进程实例">进程实例<a href="#进程实例" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p><strong>1.实例描述</strong></p>
+<p>首先在linux下编写一个应用程序，命名为an_ch2_1b。这个程序不断地输出如下行：</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">Those output come from child,[系统时间]
+</code></pre></div><p>另外写一个应用程序，命名为an_ch2_1a。这个程序创建一个子进程，执行an_ch2_1b。</p>
+<p><strong>2.具体步骤</strong></p>
+<p>首先创建一个索引目录exer用来存放脚本代码，然后转到exer目录下，使用指令</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">cat &gt; an_ch2_1b.cpp &lt;&lt; EOF
+</code></pre></div><p>来创建C++脚本文件，EOF表示在文件中输入EOF退出。</p>
+<p><img src="/img/past/processAndThreadDemo/1.PNG" alt="img"></p>
+<p>输入an_ch2_1b.cpp的代码如下：</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#bc7a00">#include</span> <span style="color:#bc7a00">&lt;iostream&gt;</span><span style="color:#bc7a00">
+</span><span style="color:#bc7a00">#include</span> <span style="color:#bc7a00">&lt;string&gt;</span><span style="color:#bc7a00">
+</span><span style="color:#bc7a00">#include</span> <span style="color:#bc7a00">&lt;stdlib.h&gt;</span><span style="color:#bc7a00">
+</span><span style="color:#bc7a00">#include</span> <span style="color:#bc7a00">&lt;unistd.h&gt;</span><span style="color:#bc7a00">
+</span><span style="color:#bc7a00">#include</span> <span style="color:#bc7a00">&lt;time.h&gt;</span><span style="color:#bc7a00">
+</span><span style="color:#bc7a00"></span><span style="color:#008000;font-weight:bold">using</span> <span style="color:#008000;font-weight:bold">namespace</span> std;
+string <span style="color:#00f">getTime</span>() <span style="color:#408080;font-style:italic">// 获取系统时间
+</span><span style="color:#408080;font-style:italic"></span>{
+    time_t timep;
+    time(<span style="color:#666">&amp;</span>timep);
+    <span style="color:#b00040">char</span> tmp[<span style="color:#666">64</span>];
+    strftime(tmp, <span style="color:#008000;font-weight:bold">sizeof</span> (tmp), <span style="color:#ba2121">&#34;%Y-%m-%d%H:%M:%S&#34;</span> ,localtime(<span style="color:#666">&amp;</span>timep));
+    <span style="color:#008000;font-weight:bold">return</span> tmp;
+}
+<span style="color:#b00040">int</span> <span style="color:#00f">main</span>()
+{
+    <span style="color:#008000;font-weight:bold">while</span> ( <span style="color:#008000">true</span> )
+    {
+        string tmn <span style="color:#666">=</span> getTime();
+        cout <span style="color:#666">&lt;&lt;</span> <span style="color:#ba2121">&#34;Those output come from child,&#34;</span> <span style="color:#666">&lt;&lt;</span> tmn <span style="color:#666">&lt;&lt;</span> endl;
+        sleep(<span style="color:#666">1</span>); <span style="color:#408080;font-style:italic">// 为了便于截屏使用sleep() 函数延迟输出
+</span><span style="color:#408080;font-style:italic"></span>    }
+<span style="color:#008000;font-weight:bold">return</span> <span style="color:#666">0</span>;
+}
+</code></pre></div><p>编写完成之后就需要对源代码进行编译，输入如下指令进行编译</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">g++ an_ch2_1b.cpp -o an_ch2_1b.sh
+</code></pre></div><p>（注意这里是cpp文件，所以需要用g++来编译，用gcc会报错），指令的意思是把an_ch2_1b.cpp文件编译为an_ch2_1b.sh可执行脚本文件，也可以编译为an_ch2_1b文件，去掉文件后缀。</p>
+<p>然后输入ls命令，可以看到已经成功编译了源代码。</p>
+<p><img src="https://pic4.zhimg.com/80/v2-eb9368d411648d0a1f031eb1fbbfec3f_720w.png" alt="img"></p>
+<p>执行可执行文件，输入指令./an_ch2_1b.sh</p>
+<p><img src="/img/past/processAndThreadDemo/2.PNG" alt="img"></p>
+<p>an_ch2_1b.cpp文件创建好之后按照同样的步骤来创建an_ch2_1a.cpp文件。</p>
+<p>an_ch2_1a.cpp的源代码如下：</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#bc7a00">#include</span> <span style="color:#bc7a00">&lt;iostream&gt;</span><span style="color:#bc7a00">
+</span><span style="color:#bc7a00">#include</span> <span style="color:#bc7a00">&lt;sys/types.h&gt;</span><span style="color:#bc7a00">
+</span><span style="color:#bc7a00">#include</span> <span style="color:#bc7a00">&lt;unistd.h&gt;</span><span style="color:#bc7a00">
+</span><span style="color:#bc7a00">#include</span> <span style="color:#bc7a00">&lt;cstdio&gt;</span><span style="color:#bc7a00">
+</span><span style="color:#bc7a00">#include</span> <span style="color:#bc7a00">&lt;stdlib.h&gt;</span><span style="color:#bc7a00">
+</span><span style="color:#bc7a00"></span><span style="color:#008000;font-weight:bold">using</span> <span style="color:#008000;font-weight:bold">namespace</span> std;
+<span style="color:#b00040">int</span> <span style="color:#00f">main</span>()
+{
+    pid_t pid;
+    pid <span style="color:#666">=</span> fork();
+    <span style="color:#008000;font-weight:bold">if</span> (pid <span style="color:#666">==</span> <span style="color:#666">-</span><span style="color:#666">1</span>) cout <span style="color:#666">&lt;&lt;</span> <span style="color:#ba2121">&#34;fail to create&#34;</span> <span style="color:#666">&lt;&lt;</span> endl;
+    <span style="color:#008000;font-weight:bold">else</span> <span style="color:#008000;font-weight:bold">if</span> (pid <span style="color:#666">==</span> <span style="color:#666">0</span>) system( <span style="color:#ba2121">&#34;./an_ch2_1b.sh&#34;</span> );
+    <span style="color:#008000;font-weight:bold">return</span> <span style="color:#666">0</span>;
+}
+</code></pre></div><p>同样，编译后执行脚本文件，效果如下图</p>
+<p><img src="/img/past/processAndThreadDemo/5.PNG" alt="img"></p>
+<p>程序会一直输出Those output come from child,[系统时间]，用CTRL + C也没法关掉，因为这只能停止一个进程。所以需要用CTRL + D来停止整个终端。</p>
+<h2 id="线程实例">线程实例<a href="#线程实例" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p><strong>1.实例描述</strong></p>
+<p>编写一个控制台应用程序，程序中有一个共享的整型变量shared_var，初始值为0；创建一个线程并使其立即与主线程并发执行。新创建的线程与主线程均不断地循环，并输出shared_var 的值。</p>
+<p>主线程在循环中不断地对shared_var 进行加1操作，即每次循环shared_var 被加1；而新创建的线程则不断地对shared_var 进行减1 操作，即每次循环shared_var 被减1。</p>
+<p><strong>2.具体步骤</strong></p>
+<p>步骤和上面类似，只不过是用C语言来编写这个程序。创建Consoleapp.c 文件，写入代码如下：</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#bc7a00">#include</span> <span style="color:#bc7a00">&lt;sys/types.h&gt;</span><span style="color:#bc7a00">
+</span><span style="color:#bc7a00">#include</span> <span style="color:#bc7a00">&lt;stdio.h&gt;</span><span style="color:#bc7a00">
+</span><span style="color:#bc7a00">#include</span> <span style="color:#bc7a00">&lt;unistd.h&gt;</span><span style="color:#bc7a00">
+</span><span style="color:#bc7a00">#include</span> <span style="color:#bc7a00">&lt;pthread.h&gt;</span><span style="color:#bc7a00">
+</span><span style="color:#bc7a00"></span><span style="color:#b00040">int</span> shared_var <span style="color:#666">=</span> <span style="color:#666">0</span>;
+<span style="color:#b00040">void</span> <span style="color:#666">*</span> <span style="color:#00f">thread</span>( <span style="color:#b00040">void</span> <span style="color:#666">*</span> arg )
+{
+    <span style="color:#008000;font-weight:bold">while</span> (<span style="color:#666">1</span>)
+    {
+        printf( <span style="color:#ba2121">&#34;in the thread shared_var:%d</span><span style="color:#b62;font-weight:bold">\n</span><span style="color:#ba2121">&#34;</span> , <span style="color:#666">--</span>shared_var);
+    }
+}
+<span style="color:#b00040">int</span> <span style="color:#00f">main</span>()
+{
+    pthread_t pt;
+    <span style="color:#b00040">int</span> ret <span style="color:#666">=</span> pthread_create(<span style="color:#666">&amp;</span>pt, <span style="color:#008000">NULL</span>, ( <span style="color:#b00040">void</span> <span style="color:#666">*</span>)<span style="color:#008000;font-weight:bold">thread</span>, <span style="color:#008000">NULL</span>);
+    <span style="color:#008000;font-weight:bold">if</span> (ret <span style="color:#666">!=</span> <span style="color:#666">0</span>) printf( <span style="color:#ba2121">&#34;fail to create thread</span><span style="color:#b62;font-weight:bold">\n</span><span style="color:#ba2121">&#34;</span> );
+    <span style="color:#008000;font-weight:bold">while</span> (<span style="color:#666">1</span>)
+    {
+        printf( <span style="color:#ba2121">&#34;in the main shared_var:%d</span><span style="color:#b62;font-weight:bold">\n</span><span style="color:#ba2121">&#34;</span> , <span style="color:#666">++</span>shared_var);
+    }
+    pthread_join(pt, <span style="color:#008000">NULL</span>);
+    <span style="color:#008000;font-weight:bold">return</span> <span style="color:#666">0</span> ;
+}
+</code></pre></div><p>编译源代码，这里要用gcc来编译，不能用g++，另外由于pthread库不是Linux系统默认的库，连接时需要使用库libpthread.a,所以在使用pthread_create创建线程时，在编译中要加-lpthread参数:</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text"> gcc Consoleapp.c -lpthread  -o Consoleapp.sh
+</code></pre></div><p>执行脚本，观察效果：</p>
+<p><img src="/img/past/processAndThreadDemo/6.PNG" alt="img"></p>
+<p>可以看到整个程序运行过程中公共变量的值始终在增大，并且数字是连续的，说明另外一个现成并没有抢到过CPU资源，这是因为时间太短了，加上CPU的运算速度很快，所以看不到另一个线程作用的效果。等待程序运行一段时间之后观察输出情况就能看出并发了，如下图：</p>
+<p><img src="/img/past/processAndThreadDemo/7.PNG" alt="img"></p>
+<p>同时也可以在原来的主线程打印之后的代码中加入一行代码</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">pthread_yield(<span style="color:#008000">NULL</span>)
+</code></pre></div><p>可以让线程主动释放CPU来运行另一个线程，这样就可以观察到数字递减的情况，如下图：</p>
+<p><img src="/img/past/processAndThreadDemo/8.PNG" alt="img"></p>
+<h2 id="参考">参考<a href="#参考" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<ol>
+<li><a href="https://zhuanlan.zhihu.com/p/366745149#ref_1_0" target="_blank" rel="noreferrer noopener">^</a>
+
+https://blog.csdn.net/analogous_love/article/details/97823301</li>
+</ol>
+
+<p style="color:#777;">Last modified on 2021-04-22</p>
+</div>
+<a href="#top"><i class="fa fa-chevron-up" style="font-size: 30px; color: black;"></i></a>
+
+</main>
+
+<footer class="footer">
+  <script type="text/javascript" src="/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/javascript" src="/js/center-img.js"></script>
+
+
+
+     <ul class="footer-links">
+      
+       
+       
+       
+       <li><a href="/en/posts/index.xml" type="application/rss+xml" title="RSS feed">
+       Subscribe </a>
+       </li>
+       
+       
+       <li>
+       
+        <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
+       
+        License
+        <i class="fa fa-cc" aria-hidden="true" title="Attribution-NonCommercial-ShareAlike 4.0 International"></i> 
+        </a>
+       </li>
+       
+     </ul>
+     <div class="copyright-text">
+            
+            ©
+            
+            Albert Wang
+            
+            2021-2022
+            
+			
+			<span id="busuanzi_container_site_pv"> 本站访问量：<span id="busuanzi_value_site_pv"></span>次</span>&nbsp;
+			<span id="busuanzi_container_site_uv"> 您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者</span>
+     </div>
+</footer>
+
+
+
+
+

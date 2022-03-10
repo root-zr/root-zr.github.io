@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Linux on Albert Wang</title>
+    <link>https://example.com/tags/linux/</link>
+    <description>Recent content in Linux on Albert Wang</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 16 Sep 2021 01:53:34 +0800</lastBuildDate><atom:link href="https://example.com/tags/linux/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>观察Linux的行为与SHELL编程</title>
+      <link>https://example.com/en/2021/09/16/%E8%A7%82%E5%AF%9Flinux%E7%9A%84%E8%A1%8C%E4%B8%BA%E4%B8%8Eshell%E7%BC%96%E7%A8%8B/</link>
+      <pubDate>Thu, 16 Sep 2021 01:53:34 +0800</pubDate>
+      
+      <guid>https://example.com/en/2021/09/16/%E8%A7%82%E5%AF%9Flinux%E7%9A%84%E8%A1%8C%E4%B8%BA%E4%B8%8Eshell%E7%BC%96%E7%A8%8B/</guid>
+      <description>(1) 以root登录linux系统，并进入/proc目录，键入ls命令，查看/proc下的内容 终端显示的界面如下：
+Proc 目录下主要目录和文件的内容有：
+Ioports I/O 端口的使用，Kcore 内核核心印象，Kmsg 内核消息，Ksyms 内核符号表，Loadavg 负载均衡，Locks 内核锁，Misc 杂项，Modules 加载模块列表，Mounts加载的文件系统，Partitions 系统识别的分区表，Rtc 实时时钟，Slabinfo Slab 池信息，还有一些其他的信息可参见下表：
+   文件名 文件内容     proc/apm 高级电源管理信息   /proc/cmdline 加载kernel时所执行的相关参数。此文件可帮助了解系统是如何启动的   /proc/cpuinfo 本机的CPU相关信息，包含频率、类型与运算功能等   /proc/devices 记录了系统各个主要设备的主要设备代号，与mknod有关   /proc/dma 使用的DMA通道   /proc/filesystems 目前系统已经加载的文件系统   /proc/interrupts 目前系统的IRQ分配状态   /proc/ioports 目前系统的各个设备所配置的IO地址   /proc/kcore 内存的大小   /proc/loadavg top和uptime上面的三个平均数值   /proc/meminfo 使用free列出的内存信息，在这也能查阅   /proc/mounts 系统已经挂载的数据，就是用mount命令调出来的数据   /proc/swaps 系统加载的内存，使用的分区记录   /proc/stat 全面统计状态表   /proc/partitions 使用fdisk -l会出现目前所有的分区，这个文件中也有记录   /proc/version 内核版本   /proc/uptime 系统正常运行时间    查看每个文件的读写权限,如fs文件夹,输入指令</description>
+    </item>
+    
+    <item>
+      <title>ubuntu配置mysql数据库</title>
+      <link>https://example.com/en/2021/06/19/ubuntu%E9%85%8D%E7%BD%AEmysql%E6%95%B0%E6%8D%AE%E5%BA%93/</link>
+      <pubDate>Sat, 19 Jun 2021 01:53:34 +0800</pubDate>
+      
+      <guid>https://example.com/en/2021/06/19/ubuntu%E9%85%8D%E7%BD%AEmysql%E6%95%B0%E6%8D%AE%E5%BA%93/</guid>
+      <description>使用的ubuntu版本为18.04，mysql的版本为5.7
+首先使用linux命令下载到本地：
+wget https://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-5.7.25-linux-glibc2.12-x86_64.tar.gz 然后解压缩
+tar -xvf mysql-5.7.25-linux-glibc2.12-x86_64.tar.gz 注意：为了方便，之后的命令一律采用root账户来配置
+移动到/usr/local/并且将mysql-5.7.25-linux-glibc2.12-x86_64重命名为mysql
+mv mysql-5.7.25-linux-glibc2.12-x86_64 /usr/local/mysql 创建mysql用户组和用户并修改权限
+groupadd mysql useradd -r -g mysql mysql 创建数据目录并赋予权限
+mkdir -p /data/mysql #创建目录 chown mysql:mysql -R /data/mysql #赋予权限 配置my.cnf文件，用以下命令打开
+vim /etc/my.cnf 文件的内容如下[1] ：
+[mysqld] bind-address=0.0.0.0 port=3306 user=mysql basedir=/usr/local/mysql datadir=/data/mysql socket=/tmp/mysql.sock log-error=/data/mysql/mysql.err pid-file=/data/mysql/mysql.pid #character config character_set_server=utf8mb4 symbolic-links=0 explicit_defaults_for_timestamp=true 其中bind-address=0.0.0.0是设置允许远程连接，port=3306表示端口号为3306.
+完成上面的步骤之后我们就可以进行数据库的初始化工作了，首先进入mysql的bin目录
+cd /usr/local/mysql/bin/ 然后执行bin目录下的mysqld脚本，用来初始化信息，
+./mysqld --defaults-file=/etc/my.cnf --basedir=/usr/local/mysql/ --datadir=/data/mysql/ --user=mysql --initialize 这里的user=mysql其实不重要，后续可以设置成root
+但是很不幸它报错了，错误信息是./mysqld: error while loading shared libraries: libaio.so.1: cannot open shared object file。其实原因是我们没有下载libaio这个安装包，那我们就下载一个呗，命令如下：</description>
+    </item>
+    
+    <item>
+      <title>Linux创建进程，线程实例</title>
+      <link>https://example.com/en/2021/04/22/linux%E5%88%9B%E5%BB%BA%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B%E5%AE%9E%E4%BE%8B/</link>
+      <pubDate>Thu, 22 Apr 2021 01:53:34 +0800</pubDate>
+      
+      <guid>https://example.com/en/2021/04/22/linux%E5%88%9B%E5%BB%BA%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B%E5%AE%9E%E4%BE%8B/</guid>
+      <description>环境准备  本文采用的操作系统是CentOS7 需要事先安装好gcc和g++环境，分别用来编译c和c++代码  安装命令如下[1] ：
+# 安装gcc yum install gcc #安装 g++ yum install gcc-c++ 这里yum为centos的安装命令，Ubuntu的安装命令为apt-get。
+进程实例 1.实例描述
+首先在linux下编写一个应用程序，命名为an_ch2_1b。这个程序不断地输出如下行：
+Those output come from child,[系统时间] 另外写一个应用程序，命名为an_ch2_1a。这个程序创建一个子进程，执行an_ch2_1b。
+2.具体步骤
+首先创建一个索引目录exer用来存放脚本代码，然后转到exer目录下，使用指令
+cat &amp;gt; an_ch2_1b.cpp &amp;lt;&amp;lt; EOF 来创建C++脚本文件，EOF表示在文件中输入EOF退出。
+输入an_ch2_1b.cpp的代码如下：
+#include &amp;lt;iostream&amp;gt;#include &amp;lt;string&amp;gt;#include &amp;lt;stdlib.h&amp;gt;#include &amp;lt;unistd.h&amp;gt;#include &amp;lt;time.h&amp;gt;using namespace std; string getTime() // 获取系统时间 { time_t timep; time(&amp;amp;timep); char tmp[64]; strftime(tmp, sizeof (tmp), &amp;#34;%Y-%m-%d%H:%M:%S&amp;#34; ,localtime(&amp;amp;timep)); return tmp; } int main() { while ( true ) { string tmn = getTime(); cout &amp;lt;&amp;lt; &amp;#34;Those output come from child,&amp;#34; &amp;lt;&amp;lt; tmn &amp;lt;&amp;lt; endl; sleep(1); // 为了便于截屏使用sleep() 函数延迟输出  } return 0; } 编写完成之后就需要对源代码进行编译，输入如下指令进行编译</description>
+    </item>
+    
+    <item>
+      <title>Xshell远程连接ubuntu</title>
+      <link>https://example.com/en/2021/03/23/xshell%E8%BF%9C%E7%A8%8B%E8%BF%9E%E6%8E%A5ubuntu/</link>
+      <pubDate>Tue, 23 Mar 2021 01:53:34 +0800</pubDate>
+      
+      <guid>https://example.com/en/2021/03/23/xshell%E8%BF%9C%E7%A8%8B%E8%BF%9E%E6%8E%A5ubuntu/</guid>
+      <description>本文采用的版本是Xshell7和ubuntu18.04，默认是刚安装ubuntu操作系统时的情况。
+首先打开Xshell，新建会话
+这里名称可以随便起，然后就需要知道要连接主机的ip，同时连接的协议是SSH，首先解决主机IP的问题，打开ubuntu的终端，输入ifconfig，结果发现出现了
+我们按照提示输入指令
+sudo apt install net-tools 这里的sudo是用管理员权限，所以可能需要输入密码，然后可能会出现以下情况，显示资源暂时不可用，如果没有这种情况可以忽略解决这个问题的部分，继续进行下面的步骤：
+这时需要用管理员权限把上面提示的目录删掉，删除命令就是rm
+sudo rm /var/lib/dpkg/lock 这时执行sudo apt install net-tools就能成功安装了，然后执行指令ifconfig就可以看到对应的ip了。
+然后解决SSH的问题，因为系统里可能没有SSH服务，所以同样需要重新安装，然后启动SSH服务，查看状态是否正常，如果状态正常就可以继续进行远程连接了，具体安装SSH服务可以参考下面的博客：
+ubuntu远程连接_ANDY-CSDN博客_ubuntu远程连接blog.csdn.net/qq_34510308/article/details/101433987 看到如下界面表示连接成功
+另外在远程连接过程中需要输入用户名和密码，这里对应的就是ubuntu的系统用户名以及密码。</description>
+    </item>
+    
+  </channel>
+</rss>

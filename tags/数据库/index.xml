@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>数据库 on Albert Wang</title>
+    <link>https://example.com/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/</link>
+    <description>Recent content in 数据库 on Albert Wang</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 19 Jun 2021 01:53:34 +0800</lastBuildDate><atom:link href="https://example.com/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ubuntu配置mysql数据库</title>
+      <link>https://example.com/en/2021/06/19/ubuntu%E9%85%8D%E7%BD%AEmysql%E6%95%B0%E6%8D%AE%E5%BA%93/</link>
+      <pubDate>Sat, 19 Jun 2021 01:53:34 +0800</pubDate>
+      
+      <guid>https://example.com/en/2021/06/19/ubuntu%E9%85%8D%E7%BD%AEmysql%E6%95%B0%E6%8D%AE%E5%BA%93/</guid>
+      <description>使用的ubuntu版本为18.04，mysql的版本为5.7
+首先使用linux命令下载到本地：
+wget https://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-5.7.25-linux-glibc2.12-x86_64.tar.gz 然后解压缩
+tar -xvf mysql-5.7.25-linux-glibc2.12-x86_64.tar.gz 注意：为了方便，之后的命令一律采用root账户来配置
+移动到/usr/local/并且将mysql-5.7.25-linux-glibc2.12-x86_64重命名为mysql
+mv mysql-5.7.25-linux-glibc2.12-x86_64 /usr/local/mysql 创建mysql用户组和用户并修改权限
+groupadd mysql useradd -r -g mysql mysql 创建数据目录并赋予权限
+mkdir -p /data/mysql #创建目录 chown mysql:mysql -R /data/mysql #赋予权限 配置my.cnf文件，用以下命令打开
+vim /etc/my.cnf 文件的内容如下[1] ：
+[mysqld] bind-address=0.0.0.0 port=3306 user=mysql basedir=/usr/local/mysql datadir=/data/mysql socket=/tmp/mysql.sock log-error=/data/mysql/mysql.err pid-file=/data/mysql/mysql.pid #character config character_set_server=utf8mb4 symbolic-links=0 explicit_defaults_for_timestamp=true 其中bind-address=0.0.0.0是设置允许远程连接，port=3306表示端口号为3306.
+完成上面的步骤之后我们就可以进行数据库的初始化工作了，首先进入mysql的bin目录
+cd /usr/local/mysql/bin/ 然后执行bin目录下的mysqld脚本，用来初始化信息，
+./mysqld --defaults-file=/etc/my.cnf --basedir=/usr/local/mysql/ --datadir=/data/mysql/ --user=mysql --initialize 这里的user=mysql其实不重要，后续可以设置成root
+但是很不幸它报错了，错误信息是./mysqld: error while loading shared libraries: libaio.so.1: cannot open shared object file。其实原因是我们没有下载libaio这个安装包，那我们就下载一个呗，命令如下：</description>
+    </item>
+    
+  </channel>
+</rss>

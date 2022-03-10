@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>项目报错 on Albert Wang</title>
+    <link>https://example.com/tags/%E9%A1%B9%E7%9B%AE%E6%8A%A5%E9%94%99/</link>
+    <description>Recent content in 项目报错 on Albert Wang</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 17 Jun 2021 01:53:34 +0800</lastBuildDate><atom:link href="https://example.com/tags/%E9%A1%B9%E7%9B%AE%E6%8A%A5%E9%94%99/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>错误：‘DT_DIR’未声明(在此函数内第一次使用) 解决办法</title>
+      <link>https://example.com/en/2021/06/17/%E9%94%99%E8%AF%AFdt_dir%E6%9C%AA%E5%A3%B0%E6%98%8E%E5%9C%A8%E6%AD%A4%E5%87%BD%E6%95%B0%E5%86%85%E7%AC%AC%E4%B8%80%E6%AC%A1%E4%BD%BF%E7%94%A8-%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95/</link>
+      <pubDate>Thu, 17 Jun 2021 01:53:34 +0800</pubDate>
+      
+      <guid>https://example.com/en/2021/06/17/%E9%94%99%E8%AF%AFdt_dir%E6%9C%AA%E5%A3%B0%E6%98%8E%E5%9C%A8%E6%AD%A4%E5%87%BD%E6%95%B0%E5%86%85%E7%AC%AC%E4%B8%80%E6%AC%A1%E4%BD%BF%E7%94%A8-%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95/</guid>
+      <description>在编写Linux系统下执行的C语言文件时报错
+错误：‘DT_DIR’未声明(在此函数内第一次使用)
+解决办法： 需要事先导入对应的依赖
+#include &amp;lt;sys/types.h&amp;gt;#include &amp;lt;dirent.h&amp;gt;#include &amp;lt;stdlib.h&amp;gt;#include &amp;lt;errno.h&amp;gt;然后在编译的时候加上 -D_BSD_SOURCE[1] ，即只需要在我上面的指令基础上变成
+gcc difftree.c -lpthread -D_BSD_SOURCE -o difftree.sh --std=c99 然后就能成功编译了
+上面指令的-lpthread是因为使用的编译器版本的for循环不支持将int型变量定义在括号内的情况，需要指定编译器的版本才能成功进行编译。
+参考  ^ https://www.it1352.com/369511.html  </description>
+    </item>
+    
+  </channel>
+</rss>

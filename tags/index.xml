@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on Albert Wang</title>
+    <link>https://example.com/tags/</link>
+    <description>Recent content in Tags on Albert Wang</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 24 Feb 2022 13:39:37 +0800</lastBuildDate><atom:link href="https://example.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>java</title>
+      <link>https://example.com/tags/java/</link>
+      <pubDate>Thu, 24 Feb 2022 13:39:37 +0800</pubDate>
+      
+      <guid>https://example.com/tags/java/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>中文</title>
+      <link>https://example.com/tags/%E4%B8%AD%E6%96%87/</link>
+      <pubDate>Thu, 24 Feb 2022 13:39:37 +0800</pubDate>
+      
+      <guid>https://example.com/tags/%E4%B8%AD%E6%96%87/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>技术</title>
+      <link>https://example.com/tags/%E6%8A%80%E6%9C%AF/</link>
+      <pubDate>Thu, 24 Feb 2022 13:39:37 +0800</pubDate>
+      
+      <guid>https://example.com/tags/%E6%8A%80%E6%9C%AF/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>数据结构与算法</title>
+      <link>https://example.com/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/</link>
+      <pubDate>Thu, 24 Feb 2022 13:39:37 +0800</pubDate>
+      
+      <guid>https://example.com/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>随笔</title>
+      <link>https://example.com/tags/%E9%9A%8F%E7%AC%94/</link>
+      <pubDate>Sun, 13 Feb 2022 13:39:37 +0800</pubDate>
+      
+      <guid>https://example.com/tags/%E9%9A%8F%E7%AC%94/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>C&#43;&#43;</title>
+      <link>https://example.com/tags/c&#43;&#43;/</link>
+      <pubDate>Thu, 23 Dec 2021 01:53:34 +0800</pubDate>
+      
+      <guid>https://example.com/tags/c&#43;&#43;/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Fabric</title>
+      <link>https://example.com/tags/fabric/</link>
+      <pubDate>Sat, 23 Oct 2021 01:53:34 +0800</pubDate>
+      
+      <guid>https://example.com/tags/fabric/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>区块链</title>
+      <link>https://example.com/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/</link>
+      <pubDate>Sat, 23 Oct 2021 01:53:34 +0800</pubDate>
+      
+      <guid>https://example.com/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Linux</title>
+      <link>https://example.com/tags/linux/</link>
+      <pubDate>Thu, 16 Sep 2021 01:53:34 +0800</pubDate>
+      
+      <guid>https://example.com/tags/linux/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>数据库</title>
+      <link>https://example.com/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/</link>
+      <pubDate>Sat, 19 Jun 2021 01:53:34 +0800</pubDate>
+      
+      <guid>https://example.com/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>项目报错</title>
+      <link>https://example.com/tags/%E9%A1%B9%E7%9B%AE%E6%8A%A5%E9%94%99/</link>
+      <pubDate>Thu, 17 Jun 2021 01:53:34 +0800</pubDate>
+      
+      <guid>https://example.com/tags/%E9%A1%B9%E7%9B%AE%E6%8A%A5%E9%94%99/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>article</title>
+      <link>https://example.com/tags/article/</link>
+      <pubDate>Thu, 07 Jan 2021 13:42:27 -0500</pubDate>
+      
+      <guid>https://example.com/tags/article/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>English</title>
+      <link>https://example.com/tags/english/</link>
+      <pubDate>Thu, 07 Jan 2021 13:37:57 -0500</pubDate>
+      
+      <guid>https://example.com/tags/english/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>prose</title>
+      <link>https://example.com/tags/prose/</link>
+      <pubDate>Thu, 01 Oct 1925 00:00:00 +0000</pubDate>
+      
+      <guid>https://example.com/tags/prose/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>poem</title>
+      <link>https://example.com/tags/poem/</link>
+      <pubDate>Fri, 01 Jan 1915 00:00:00 +0000</pubDate>
+      
+      <guid>https://example.com/tags/poem/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

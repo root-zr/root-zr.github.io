@@ -1,0 +1,451 @@
+<a name="top"></a>
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  	
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>观察Linux的行为与SHELL编程 - Albert Wang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/fonts.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega@5.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.12.2"></script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+            <link rel="icon" href="https://example.com/media/logo.JPG">
+
+
+
+
+
+  </head>
+  
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav" >
+      <a href="/" class="nav-logo">
+        <img src="/media/logo.JPG"
+         width="50"
+         height="50"
+         alt="Hugo-ht">
+      </a>
+
+      <ul class="nav-links" >
+       
+       
+       
+       <li><a href="/">Home</a></li>
+       
+       <li><a href="/en/posts/">Posts</a></li>
+       
+       <li><a href="/tags/">Tags</a></li>
+       
+       <li><a href="/categories/">Categories</a></li>
+       
+       <li><a href="/en/about/">About</a></li>
+       
+       <li><a href="/cn/posts/">中文</a></li>
+       
+       
+      </ul>
+</nav>
+      </header>
+
+<main class = "content" role="main">
+<div style="text-align: center">
+
+<h1>观察Linux的行为与SHELL编程</h1>
+
+<p> 
+ / 2021-09-16 
+/ 400 Words/has been Read  <span id="busuanzi_value_page_pv"></span>&nbsp;&nbsp;Times
+
+</p>
+
+
+
+<hr/>
+
+
+</div>
+
+<span class="article-toolbar">
+  
+  
+  
+  
+  
+  
+  
+  <a href='https://github.com/root-zren%5cposts%5c2021%5c%e8%a7%82%e5%af%9fLinux%e7%9a%84%e8%a1%8c%e4%b8%ba%e4%b8%8eSHELL%e7%bc%96%e7%a8%8b.md'style="font-size: 24px; color: black;" target="_blank"><i class="fa fa-edit" aria-hidden="true" title="Suggest an edit of this page"></i>
+  </a>
+  
+  
+  
+</span>
+
+
+
+<div class="body-text list-text">
+<h2 id="1-以root登录linux系统并进入proc目录键入ls命令查看proc下的内容"><strong>(1) 以root登录linux系统，并进入/proc目录，键入ls命令，查看/proc下的内容</strong><a href="#1-以root登录linux系统并进入proc目录键入ls命令查看proc下的内容" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>终端显示的界面如下：</p>
+<p><img src="/img/past/LinuxAndShell/1.png" alt="img"></p>
+<p>Proc 目录下主要目录和文件的内容有：</p>
+<p>Ioports I/O 端口的使用，Kcore 内核核心印象，Kmsg 内核消息，Ksyms 内核符号表，Loadavg 负载均衡，Locks 内核锁，Misc 杂项，Modules 加载模块列表，Mounts加载的文件系统，Partitions 系统识别的分区表，Rtc 实时时钟，Slabinfo Slab 池信息，还有一些其他的信息可参见下表：</p>
+<table>
+<thead>
+<tr>
+<th>文件名</th>
+<th>文件内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>proc/apm</td>
+<td>高级电源管理信息</td>
+</tr>
+<tr>
+<td>/proc/cmdline</td>
+<td>加载kernel时所执行的相关参数。此文件可帮助了解系统是如何启动的</td>
+</tr>
+<tr>
+<td>/proc/cpuinfo</td>
+<td>本机的CPU相关信息，包含频率、类型与运算功能等</td>
+</tr>
+<tr>
+<td>/proc/devices</td>
+<td>记录了系统各个主要设备的主要设备代号，与mknod有关</td>
+</tr>
+<tr>
+<td>/proc/dma</td>
+<td>使用的DMA通道</td>
+</tr>
+<tr>
+<td>/proc/filesystems</td>
+<td>目前系统已经加载的文件系统</td>
+</tr>
+<tr>
+<td>/proc/interrupts</td>
+<td>目前系统的IRQ分配状态</td>
+</tr>
+<tr>
+<td>/proc/ioports</td>
+<td>目前系统的各个设备所配置的IO地址</td>
+</tr>
+<tr>
+<td>/proc/kcore</td>
+<td>内存的大小</td>
+</tr>
+<tr>
+<td>/proc/loadavg</td>
+<td>top和uptime上面的三个平均数值</td>
+</tr>
+<tr>
+<td>/proc/meminfo</td>
+<td>使用free列出的内存信息，在这也能查阅</td>
+</tr>
+<tr>
+<td>/proc/mounts</td>
+<td>系统已经挂载的数据，就是用mount命令调出来的数据</td>
+</tr>
+<tr>
+<td>/proc/swaps</td>
+<td>系统加载的内存，使用的分区记录</td>
+</tr>
+<tr>
+<td>/proc/stat</td>
+<td>全面统计状态表</td>
+</tr>
+<tr>
+<td>/proc/partitions</td>
+<td>使用fdisk -l会出现目前所有的分区，这个文件中也有记录</td>
+</tr>
+<tr>
+<td>/proc/version</td>
+<td>内核版本</td>
+</tr>
+<tr>
+<td>/proc/uptime</td>
+<td>系统正常运行时间</td>
+</tr>
+</tbody>
+</table>
+<p>查看每个文件的读写权限,如fs文件夹,输入指令</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">ls -l fs
+</code></pre></div><p><img src="/img/past/LinuxAndShell/2.png" alt="img"></p>
+<p>读写权限一共有10位数,其中最前面的d代表的是类型, d代表此文件是文件夹，-代表此文件是普通文件，l代表此文件是软链接(相当于windows中的快捷方式)，中间那三个r-x代表的是所有者，然后那三个r-x代表的是组群，最后那三个r-x代表的是其他人.</p>
+<p>r表示文件可以被读（read），w表示文件可以被写（write），x表示文件可以被执行（如果它是程序的话），-表示相应的权限还没有被授予。[<a href="https://zhuanlan.zhihu.com/p/362116345#ref_1" target="_blank" rel="noreferrer noopener">1]</a>
+
+</p>
+<h2 id="2-根据proc下的信息查看cpu的类型和型号当前linux版本从启动到当前时刻所经过的时间当前内存状态"><strong>(2) 根据/proc下的信息，查看CPU的类型和型号、当前Linux版本、从启动到当前时刻所经过的时间、当前内存状态。</strong><a href="#2-根据proc下的信息查看cpu的类型和型号当前linux版本从启动到当前时刻所经过的时间当前内存状态" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>proc 文件系统是一个伪文件系统，它只存在内存当中，而不占用外存空间。它以文件系统的方式为访问系统内核数据的操作提供接口。用户和应用程序可以通过proc 得到系统的信息，并可以改变内核的某些参数。由于系统的信息，如进程，是动态改变的，所以用户或应用程序读取proc文件时，proc文件系统是动态从系统内核读出所需信息并提交的。</p>
+<p>1 ) 查询CPU 的类型和型号，采用指令</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">cat cpuinfo
+</code></pre></div><p>（cat命令是linux下的一个文本输出命令，通常是用于观看某个文件的内容的），可以看到是Intel(R) Core(TM) i5-8250U CPU @ 1.60GHz：</p>
+<p><img src="/img/past/LinuxAndShell/3.png" alt="img"></p>
+<ol start="2">
+<li>查看内存使用情况，使用指令</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">cat meminfo
+</code></pre></div><p><img src="/img/past/LinuxAndShell/4.png" alt="img"></p>
+<ul>
+<li>MemTotal表示内存总数，系统从加电开始到引导完成，BIOS等要保留一些内存，内核要保留一些内存，最后剩下可供系统支配的内存就是MemTotal。这个值在系统运行期间一般是固定不变的。</li>
+<li>MemFree：空闲内存数，表示系统尚未使用的内存。MemUsed=MemTotal-MemFree就是已被用掉的内存。</li>
+<li>MemAvailable：可用内存数，指应用程序可用内存数。系统中有些内存虽然已被使用但是可以回收的，比如cache/buffer、slab都有一部分可以回收，所以MemFree不能代表全部可用的内存，这部分可回收的内存加上MemFree才是系统可用的内存，即：MemAvailable≈MemFree+Buffers+Cached，它是内核使用特定的算法计算出来的，是一个估计值。它与MemFree的关键区别点在于，MemFree是说的系统层面，MemAvailable是说的应用程序层面。</li>
+<li>Buffer：缓冲区内存数</li>
+<li>Cache：缓存区内存数</li>
+<li>Shared：多个进程共享的内存空间[<a href="https://zhuanlan.zhihu.com/p/362116345#ref_2" target="_blank" rel="noreferrer noopener">2]</a>
+
+</li>
+</ul>
+<ol start="3">
+<li>查看linux 版本,输入指令</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">cat version
+</code></pre></div><p><img src="https://pic4.zhimg.com/80/v2-e07c020f539fa366f7ee51cea6e56547_720w.png" alt="img"></p>
+<ol start="4">
+<li>从启动到当前时间所经过的时间，执行指令</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">uptime
+</code></pre></div><p><img src="https://pic2.zhimg.com/80/v2-a5e2d488b80b7c2e133b66f75db7cbe1_720w.png" alt="img"></p>
+<h2 id="3-使用常用的linux命令"><strong>(3) 使用常用的Linux命令</strong><a href="#3-使用常用的linux命令" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>1） 查看当前目录，pwd命令用于显示当前目录，效果如下所示。</p>
+<p><img src="https://pic3.zhimg.com/80/v2-311833804697d39c3f14e391bbe20496_720w.png" alt="img"></p>
+<p>2）罗列文件，ls命令用于查看文件与目录，回到根目录查看列表(..表示返回上一级目录，/表示返回根目录)，效果如下所示。</p>
+<p><img src="https://pic2.zhimg.com/80/v2-cee79692e6b6b5712ef1e4ab6507ffcd_720w.png" alt="img"></p>
+<p>3）拷贝文件或目录，cp命令用于拷贝文件，若拷贝的对象为目录，则需要使用-r参数，回到home/hadoop/目录下，创建test目录，然后拷贝test目录，效果如下所示。</p>
+<p><img src="/img/past/LinuxAndShell/9.png" alt="img"></p>
+<p>4）移动或重命名文件或目录，mv命令用于移动文件，在实际使用中，也常用于重命名文件或目录，把test2移动到test目录下。</p>
+<p><img src="https://pic2.zhimg.com/80/v2-46a9e1fbdf3d4137bad0ac55a981502d_720w.png" alt="img"></p>
+<p>然后进入test目录，效果如下所示</p>
+<p><img src="https://pic4.zhimg.com/80/v2-60061cb1612d9d62510c450cd3792d8f_720w.png" alt="img"></p>
+<p>5）删除文件或目录，rm命令用于删除文件，若删除的对象为目录，则需要使用-r参数，效果如下所示。</p>
+<p><img src="https://pic4.zhimg.com/80/v2-76a9f73971ca6baad583147848634cef_720w.png" alt="img"></p>
+<p>6）压缩与解压文件，tar命令用于文件压缩与解压，参数中的c表示压缩，x表示解压缩，如</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">tar -zxvf /home/hadoop/test/test.tar.gz
+</code></pre></div><p>7）cat命令，主要有三大功能：一次显示整个文件，从键盘创建一个文件（只能创建新文件,不能编辑已有文件），将几个文件合并为一个文件。</p>
+<p>首先创建test1文件，文本编辑为hello file1, 然后退出（ctrl c 或者ctrl d退出），再使用cat命令查看test1文件内容。</p>
+<p><img src="https://pic1.zhimg.com/80/v2-0a04fc4d53afba24dbc1a8cd05ab26c8_720w.png" alt="img"></p>
+<p>然后创建test2文件，把test1和test2合并为一个文件test，如下图所示：</p>
+<p><img src="/img/past/LinuxAndShell/14.png" alt="img"></p>
+<p>注： cat &laquo; EOF的语句，EOF是“end of file”，表示文本结束符，可以把EOF替换成其他东西，意思是把内容当作标准输入传给程序。</p>
+<p>1、cat&laquo;EOF，以EOF输入字符为标准输入结束：</p>
+<p>2、cat&gt;filename，创建文件，并把标准输入输出到filename文件中，以ctrl+d作为输入结束：</p>
+<p>3、cat&gt;filename&laquo;EOF，以EOF作为输入结束，和ctrl+d的作用一样[<a href="https://zhuanlan.zhihu.com/p/362116345#ref_3" target="_blank" rel="noreferrer noopener">3]</a>
+
+</p>
+<p>创建test3，以EOF作为输入结束的标志，如下图：</p>
+<p><img src="/img/past/LinuxAndShell/15.png" alt="img"></p>
+<p>cat指令经常和其他指令组合使用，导致看起来很复杂，例如：cat &raquo; ~/.bashrc</p>
+<p>这里~/是进入当前用户的主目录。比如我用的用户名是Hadoop，则命令 cd ~/ 就进入了/home/Hadoop目录。而.bashrc 是进入.bashrc文件夹，bashrc与profile都用于保存用户的环境信息，bashrc用于非交互式（non-loginshell），而profile用于交互式（login shell）</p>
+<p>所以这个指令就是指<strong>显示用户目录下的.bashrc目录</strong>[<a href="https://zhuanlan.zhihu.com/p/362116345#ref_4" target="_blank" rel="noreferrer noopener">4]</a>
+
+<strong>。</strong></p>
+<p><strong>说明：</strong>‘&lt;’,‘&laquo;’,‘&gt;’,‘&raquo;’的含义，<code>&gt;</code>和<code>&gt;&gt;</code>的区别在与，<code>&gt;</code>的作用是直接将原先内容覆盖掉，替换为新的内容，是<code>w</code>。而<code>&gt;&gt;</code>的作用是在原有的内容上追加内容，是<code>a</code>。符号<code>&lt;</code>，它的作用就是<code>&gt;</code>反过来，从文件中读取内容，然后作为输入[<a href="https://zhuanlan.zhihu.com/p/362116345#ref_5" target="_blank" rel="noreferrer noopener">5]</a>
+
+。</p>
+<p>8）date命令 ，date命令的功能是显示和设置系统日期和时间。</p>
+<ul>
+<li>#date //显示当前日期</li>
+<li>#date -s //设置当前时间，只有root权限才能设置，其他只能查看。</li>
+<li>#date -s 20211010 //设置成20211010，这样会把具体时间设置成空00:00:00</li>
+<li>#date -s 12:23:23 //设置具体时间，不会对日期做更改</li>
+<li>#date -s “12:12:23 2021-10-10″ //这样可以设置全部时间</li>
+</ul>
+<p><img src="https://pic2.zhimg.com/80/v2-60a4da147480e5f6a87c67ffb66ce039_720w.png" alt="img"></p>
+<p>其中，CST：中国标准时间（China Standard Time），UTC：协调世界时，又称世界标准时间，GMT：格林尼治标准时间。</p>
+<p>9）man命令，man命令是Linux下的帮助指令，通过man指令可以查看Linux中的指令帮助、配置文件帮助和编程帮助等信息</p>
+<p>语法：man+（选项）+参数</p>
+<p>其中选项</p>
+<p>-a：在所有的man帮助手册中搜索；</p>
+<p>-f：等价于whatis指令，显示给定关键字的简短描述信息；</p>
+<p>-P：指定内容时使用分页程序；</p>
+<p>-M：指定man手册搜索的路径。</p>
+<p>查看ls指令的作用，</p>
+<p><img src="/img/past/LinuxAndShell/17.png" alt="img"></p>
+<p>10）grep命令，grep 指令用于查找内容包含指定的范本样式的文件，如果发现某文件的内容符合所指定的范本样式，预设 grep 指令会把含有范本样式的那一列显示出来。若不指定任何文件名称，或是所给予的文件名为 -，则 grep 指令会从标准输入设备读取数据。</p>
+<p>使用指令grep file *test在当前目录中，查找后缀有 test 字样的文件中包含 file 字符串的文件，并打印出该行。</p>
+<p><img src="https://pic3.zhimg.com/80/v2-28e93c8923899cb953dc5abb13109bbe_720w.png" alt="img"></p>
+<p>11）tail命令，tail 命令可用于查看文件结尾的内容，</p>
+<ul>
+<li>tail -f filename</li>
+</ul>
+<p>说明：监视filename文件的尾部内容（默认10行，相当于增加参数 -n 10），刷新显示在屏幕上。退出，按下CTRL+C。</p>
+<ul>
+<li>tail -n 20 filename</li>
+</ul>
+<p>说明：显示filename最后20行。</p>
+<p>打开文件test3,在虚拟机里加入一些文本信息，然后执行上面的指令进行测试：</p>
+<p><img src="/img/past/LinuxAndShell/19.png" alt="img"></p>
+<p>12）head指令，head 用来显示档案的开头至标准输出中，和tail指令对应。</p>
+<p>命令参数：</p>
+<p>-q 隐藏文件名</p>
+<p>-v 显示文件名</p>
+<p>-c&lt;字节&gt; 显示字节数</p>
+<p>-n&lt;行数&gt; 显示的行数</p>
+<ul>
+<li>head -q filename</li>
+</ul>
+<p>说明：监视filename文件的头部内容（默认10行，相当于增加参数 -n 10），刷新显示在屏幕上。退出，按下CTRL+C。</p>
+<ul>
+<li>head -n 20 filename</li>
+</ul>
+<p>说明：显示filename最后20行。[<a href="https://zhuanlan.zhihu.com/p/362116345#ref_6" target="_blank" rel="noreferrer noopener">6]</a>
+
+</p>
+<p><img src="/img/past/LinuxAndShell/20.png" alt="img"></p>
+<p>13)wc指令，利用wc指令我们可以计算文件的Byte数、字数、或是列数</p>
+<p>wc -c filename：显示一个文件的字节数</p>
+<p>wc -m filename：显示一个文件的字符数</p>
+<p>wc -l filename：显示一个文件的行数</p>
+<p>wc -L filename：显示一个文件中的最长行的长度</p>
+<p>wc -w filename：显示一个文件的字数</p>
+<p>直接输入指令wc filename输出信息依次是：行数 字数 字节数 文件名称，如下图：</p>
+<p><img src="https://pic1.zhimg.com/80/v2-4a6005dcbf2eae40f08fe6d5e2fdd360_720w.png" alt="img"></p>
+<p>14） who指令，who 命令显示关于当前在本地系统上的所有用户的信息。显示以下内容：登录名、tty、登录日期和时间。输入whoami 显示登录名、tty、您登录的日期和时间。如果用户是从一个远程机器登录的，那么该机器的主机名也会被显示出来。</p>
+<p><img src="/img/past/LinuxAndShell/22.png" alt="img"></p>
+<h2 id="4-使用vi编辑器编辑文件熟悉vi编辑器的各种操作模式和常用命令"><strong>(4) 使用vi编辑器编辑文件，熟悉vi编辑器的各种操作模式和常用命令。</strong><a href="#4-使用vi编辑器编辑文件熟悉vi编辑器的各种操作模式和常用命令" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>在命令行输入“vim 文件名”后，默认进入“命令模式”，不可编辑文档，需按“i”键，方可编辑文档，编辑结束后，需按“ESC”键，先退回命令模式，再按“:”进入末行模式，接着输入“wq”方可保存退出。</p>
+<p>vi/vim共分为三种工作模式：命令模式（Command mode）、输入模式（Insert mode）和末行模式（Last line mode）。用户刚刚启动vi/vim，便进入了命令模式，此状态下敲击键盘动作会被vim识别为命令，而非输入字符，命令模式下是常用的几个命令包括：“i”切换到输入模式，以输入字符；“x”删除当前光标所在处的字符；“:”切换到末行模式，以在最底端一行输入命令。在命令模式下按下“i”就进入了输入模式，在输入模式中，可以使用若干按键完成相应任务，例如字符按键以及Shift组合，输入字符；Insert按键切换光标为输入/替换模式，光标将变成竖线/下划线；ESC按键退出输入模式，切换到命令模式等。在命令模式下按下“:”（英文冒号）就进入末行模式，末行模式下可以输入单个或多个字符的命令，可用的命令非常多，例“q”可以退出程序，“w”用于保存文件等，按ESC键可随时退出末行模式。</p>
+<p><img src="/img/past/LinuxAndShell/%E6%8D%95%E8%8E%B7.PNG" alt="img"></p>
+<p>常用快捷键：</p>
+<p>yy拷贝当前行，5yy拷贝当前行向下的5行，p粘贴;</p>
+<p>dd删除当前行，5dd删除当前行向下的5行。</p>
+<h2 id="5使用vi编辑器编写一段shell程序取名为mycal实现与linux中cal命令类似的功能"><strong>（5）使用vi编辑器编写一段Shell程序，取名为mycal，实现与Linux中cal命令类似的功能</strong><a href="#5使用vi编辑器编写一段shell程序取名为mycal实现与linux中cal命令类似的功能" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>当输入$mycal [月份名] 年时，屏幕输出指定的年月的月历，参数可以是英文或者是数字。例如：</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">$mycal October 2009
+</code></pre></div><p>屏幕输出2009年10月的月历。</p>
+<p>将脚本放到/usr/local/sbin/目录下，利用vim mycal.sh来创建脚本，脚本代码如下[<a href="https://zhuanlan.zhihu.com/p/362116345#ref_7" target="_blank" rel="noreferrer noopener">7]</a>
+
+：</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">#!/bin/bash
+case $1 in
+    &#34;1&#34;|&#34;January&#34;)
+       cal 1 $2;;
+  &#34;2&#34;|&#34;February&#34;)
+       cal 2 $2;;
+    &#34;3&#34;|&#34;March&#34;)
+       cal 3 $2;;
+    &#34;4&#34;|&#34;April&#34;)
+       cal 4 $2;;
+    &#34;5&#34;|&#34;May&#34;)
+       cal 5 $2;;
+    &#34;6&#34;|&#34;June&#34;)
+      cal 6 $2;;
+    &#34;7&#34;|&#34;July&#34;)
+      cal 7 $2;;
+    &#34;8&#34;|&#34;August&#34;)
+     cal 8 $2;;
+    &#34;9&#34;|&#34;September&#34;)
+       cal 9 $2;;
+    &#34;10&#34;|&#34;October&#34;)
+       cal 10 $2;;
+    &#34;11&#34;|&#34;November&#34;)
+       cal 11 $2;;
+    &#34;12&#34;|&#34;December&#34;)
+      cal 12 $2;;
+    &#34;&#34;)
+    echo &#34;Please input mouth and year&#34;
+esac
+</code></pre></div><p>使用指令</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">sh mycal.sh
+</code></pre></div><p>来启动脚本，第一行一定是 “#! /bin/bash” 它代表的意思是，该文件使用的是bash语法。如果不设置该行，shell脚本就不能被执行。’#！’是一个约定标记，用来告诉解释器采用哪一种shell。</p>
+<p><img src="/img/past/LinuxAndShell/23.png" alt="img"></p>
+<p>如果输入指令./mycal.sh4 2021显示没有权限，用</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">chmod +x mycal.sh
+</code></pre></div><p>给脚本赋予权限即可[<a href="https://zhuanlan.zhihu.com/p/362116345#ref_8" target="_blank" rel="noreferrer noopener">8]</a>
+
+。</p>
+<h2 id="参考">参考<a href="#参考" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<ol>
+<li><a href="https://zhuanlan.zhihu.com/p/362116345#ref_1_0" target="_blank" rel="noreferrer noopener">^</a>
+
+https://blog.csdn.net/robin88129/article/details/84462981</li>
+<li><a href="https://zhuanlan.zhihu.com/p/362116345#ref_2_0" target="_blank" rel="noreferrer noopener">^</a>
+
+https://blog.51cto.com/xujpxm/1961072</li>
+<li><a href="https://zhuanlan.zhihu.com/p/362116345#ref_3_0" target="_blank" rel="noreferrer noopener">^</a>
+
+https://www.runoob.com/linux/linux-comm-cat.html</li>
+<li><a href="https://zhuanlan.zhihu.com/p/362116345#ref_4_0" target="_blank" rel="noreferrer noopener">^</a>
+
+https://blog.csdn.net/qing101hua/article/details/53086318</li>
+<li><a href="https://zhuanlan.zhihu.com/p/362116345#ref_5_0" target="_blank" rel="noreferrer noopener">^</a>
+
+https://blog.csdn.net/qq754772661/article/details/111176340</li>
+<li><a href="https://zhuanlan.zhihu.com/p/362116345#ref_6_0" target="_blank" rel="noreferrer noopener">^</a>
+
+https://blog.csdn.net/youmatterhsp/article/details/80298360</li>
+<li><a href="https://zhuanlan.zhihu.com/p/362116345#ref_7_0" target="_blank" rel="noreferrer noopener">^</a>
+
+https://max.book118.com/html/2018/0608/171535845.shtm</li>
+<li><a href="https://zhuanlan.zhihu.com/p/362116345#ref_8_0" target="_blank" rel="noreferrer noopener">^</a>
+
+https://www.cnblogs.com/zhang-jun-jie/p/9266858.html</li>
+</ol>
+
+<p style="color:#777;">Last modified on 2021-09-16</p>
+</div>
+<a href="#top"><i class="fa fa-chevron-up" style="font-size: 30px; color: black;"></i></a>
+
+</main>
+
+<footer class="footer">
+  <script type="text/javascript" src="/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/javascript" src="/js/center-img.js"></script>
+
+
+
+     <ul class="footer-links">
+      
+       
+       
+       
+       <li><a href="/en/posts/index.xml" type="application/rss+xml" title="RSS feed">
+       Subscribe </a>
+       </li>
+       
+       
+       <li>
+       
+        <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
+       
+        License
+        <i class="fa fa-cc" aria-hidden="true" title="Attribution-NonCommercial-ShareAlike 4.0 International"></i> 
+        </a>
+       </li>
+       
+     </ul>
+     <div class="copyright-text">
+            
+            ©
+            
+            Albert Wang
+            
+            2021-2022
+            
+			
+			<span id="busuanzi_container_site_pv"> 本站访问量：<span id="busuanzi_value_site_pv"></span>次</span>&nbsp;
+			<span id="busuanzi_container_site_uv"> 您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者</span>
+     </div>
+</footer>
+
+
+
+
+
