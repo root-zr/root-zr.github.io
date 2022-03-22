@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>中文 on Albert Wang</title>
-    <link>https://root-zr.github.io/tags/%E4%B8%AD%E6%96%87/</link>
-    <description>Recent content in 中文 on Albert Wang</description>
+    <title>生活 on Albert Wang</title>
+    <link>https://root-zr.github.io/tags/%E7%94%9F%E6%B4%BB/</link>
+    <description>Recent content in 生活 on Albert Wang</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 19 Mar 2022 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/tags/%E4%B8%AD%E6%96%87/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 19 Mar 2022 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/tags/%E7%94%9F%E6%B4%BB/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>My Internship Experience | 我的5个月实习心得</title>
       <link>https://root-zr.github.io/en/2022/03/19/my-internship-experience-%E6%88%91%E7%9A%845%E4%B8%AA%E6%9C%88%E5%AE%9E%E4%B9%A0%E5%BF%83%E5%BE%97/</link>
@@ -24,31 +24,6 @@
 工作的问题目前已经不是困扰我的主要因素了，而我的实习经历也才开始了两个月左右，这时我想把自己重心完全放在工作上，想做出一点成绩。我的第三位引路人C同事也出现了，他把他的一些边缘任务分给我，然后慢慢深入，让我对整个项目要做的事情有一个了解。我的任务开始慢慢重了起来，而与此同时，我所犯的错误也开始多了起来。当时我要发布一个新的版本要到生产环境，可是因为换了新的部门，而我的信息还停留在之前的部门，所以发布就出现了延迟。老板催问进度，这时我应该及时告诉老板的，但是内向的性格有开始兴风作浪，想着这儿是管上百人的领导啊，他这么忙，我去打扰他好像不太合适。况且这个任务虽然是我在做，但毕竟我遇到问题，C同事会帮我，所以就沉默了。现在回想，这是做的特别不好的事情，既然我想锻炼自己，就应该把自己等同于一个正式的员工，即便我做的工作可能并不算核心，我也应该及时让老板知道。而且这也是老板一开始就希望我们做到的东西，他更愿意我们去了解真实的项目，即使我们在这个项目里做的东西是边缘的。换句话说，他希望我们知道自己做的一个任务即使再小，也能知道它在整个项目中发挥的作用，这种大局观的意识是我的又一个收获，我希望我能在后面的工作中能坚持去做这件事。
 不管是我的老板还是leader，他们都是希望我能有一个大局观的视野，对业务有一个清晰的了解。可是我是更希望能够去了解一些技术的细节，所以这之间应该是存在者一点分歧。不过在我以后会做的项目中，我应该会愿意去花一些时间去培养对整个项目的大局观。
 转眼就来到了12月，后续虽然也实习了一个多月，但是因为赶上国外的同事过圣诞，国内的同事也要休剩下的年假，所以基本没有过多的任务量，比较平淡地度过了最后这段时期。复盘我的整段实习经历，我对自己的表现其实不算是特别满意，主要是因为我感觉自己和领导，同事之间缺乏交流，对项目的了解也不算特别清晰，最主要的是我一直考虑的是这段实习能带给我什么，却没有考虑到我的到来可能会为部门带去什么，哪怕是为部门带去一种比较年轻的思想也行。但是在当时的情境之下我似乎又没有更好的办法，当实习，秋招和辅修毕设连在一起，我只能说自己应该是尽力了。总而言之，这是我第一段工作的经历，它带给我很多的回忆，包括友善的同事，幽默又睿智的领导，公司开放的氛围等等，所以应当是我一段很美好的经历！</description>
-    </item>
-    
-    <item>
-      <title>Knapsack Problem | 背包问题</title>
-      <link>https://root-zr.github.io/en/2022/02/24/knapsack-problem-%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98/</link>
-      <pubDate>Thu, 24 Feb 2022 13:39:37 +0800</pubDate>
-      
-      <guid>https://root-zr.github.io/en/2022/02/24/knapsack-problem-%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98/</guid>
-      <description>01背包问题 有N 件物品和一个容量为bag 的背包。第i 件物品的重量是w[i]，价值是v[i]。 求解将哪些物品装入背包可使价值总和最大。
-暴力算法 我们首先想到的应该是穷举所有的可能，然后把最好的那一个给返回。而在穷举的过程种我们需要考虑的问题仅仅是对于第i个物品，到底要不要把它放入背包。所以可以用递归的方式很自然地解决。
-/** * * @param w 物品的重量 * @param v 物品的价值 * @param i 第i个物品 * @param alreadyW 已经放入背包的重量 * @param bag 背包所能承受的最大重量 * @return 最大价值 */ public static int recur(int[] w,int[] v,int i,int alreadyW,int bag){ if(alreadyW &amp;gt; bag || i &amp;gt;= w.length) return 0; //背包超重或者没有物品可以装  int totalVal1 = 0,totalVal2 = 0; totalVal1 = recur(w,v,i+1,alreadyW,bag); //第i个物品不放入背包  if(alreadyW+ w[i] &amp;lt;= bag) totalVal2 = recur(w,v,i+1,alreadyW+ w[i],bag) + v[i]; //第i个物品放入背包  return Math.</description>
-    </item>
-    
-    <item>
-      <title>Why Do I Start to Write Blog| 为什么要开始写博客</title>
-      <link>https://root-zr.github.io/en/2022/02/13/why-do-i-start-to-write-blog-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%BC%80%E5%A7%8B%E5%86%99%E5%8D%9A%E5%AE%A2/</link>
-      <pubDate>Sun, 13 Feb 2022 13:39:37 +0800</pubDate>
-      
-      <guid>https://root-zr.github.io/en/2022/02/13/why-do-i-start-to-write-blog-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%BC%80%E5%A7%8B%E5%86%99%E5%8D%9A%E5%AE%A2/</guid>
-      <description>我开始写博客应该是2020年的时候。那时正处于新冠疫情期间，由于只能在家里上课，学习的效率难免受到影响，再加上那时的课业压力有点大，所以我便开始尝试来写技术博客来记录自己遇到的一些问题和学习的心得。
-最开始的时候都是把文章保存在本地磁盘，因为害怕自己写的东西可能会存在一些错误，从而误导读者，所以不敢发布到网络平台上。后面我开始逐渐说服了自己，因为即便是文章有错误被读者指正了，我也能够改正这个也许一直都不曾发现的问题。从另外一个角度来说，如果自己的一些经验可以帮到千里之外的某一个人的话那更是一件让人非常高兴的事。
-于是我开始渐渐将自己写的博客发到自己的知乎上，看着每一篇文章都能被几百个人阅读感觉还是非常不错的。不过慢慢我也发现了知乎存在的一些问题。
-首先它是一款带有社交性质的产品，所以我在平台的一言一行可能都想服从于我给自己设定的一些“人设”，有些真正的心里话反而不敢，也不愿意发出来；除此之外我发现虽然目前知乎的用户群体学历是最高的，但从宏观的角度看其实也跟“刚下飞机，年薪百万”差了很远，人们对于技术类的博客可能也并不是特别的关注；最后我发现人们问的问题往往都带着一个预期的答案，比如如果有人的问题是“我大三了绩点比较低还有机会保研吗”，可能他会希望看到类似于&amp;quot;no problem!&amp;ldquo;这种答案，真正去对这个问题分类讨论往往不会受到更多关注。
-于是乎，我觉得自己可以搭建一个个人博客，这样的话我就能够完全将自己的所思所想发出来，这样就不用有太多顾率。说干就干，在网上大致了解了一下hugo的用法，然后花了大半天的时间完成了这个个人博客的搭建，虽然大部分的时间都花在了浏览不同的网站主题上面。
-最后，非常感激和荣幸您能阅读我的博客！</description>
     </item>
     
   </channel>
