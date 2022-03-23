@@ -6,7 +6,24 @@
     <description>Recent content in English Posts on Albert Wang</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 19 Mar 2022 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/en/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 23 Mar 2022 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/en/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>A Method Convert Latex to Word| 一个将latex公式转换为word公式的小窍门</title>
+      <link>https://root-zr.github.io/en/2022/03/23/a-method-convert-latex-to-word-%E4%B8%80%E4%B8%AA%E5%B0%86latex%E5%85%AC%E5%BC%8F%E8%BD%AC%E6%8D%A2%E4%B8%BAword%E5%85%AC%E5%BC%8F%E7%9A%84%E5%B0%8F%E7%AA%8D%E9%97%A8/</link>
+      <pubDate>Wed, 23 Mar 2022 13:39:37 +0800</pubDate>
+      
+      <guid>https://root-zr.github.io/en/2022/03/23/a-method-convert-latex-to-word-%E4%B8%80%E4%B8%AA%E5%B0%86latex%E5%85%AC%E5%BC%8F%E8%BD%AC%E6%8D%A2%E4%B8%BAword%E5%85%AC%E5%BC%8F%E7%9A%84%E5%B0%8F%E7%AA%8D%E9%97%A8/</guid>
+      <description>今天在看IEEE网页上的论文的时候发现它的公式竟然可以被复制成多种格式.
+欣喜至于便去了解了一下这种技巧。然后发现其实是因为它的网页中引入了MathJax.js脚本。
+&amp;lt;script type=&amp;#34;text/javascript&amp;#34; src=&amp;#34;/xploreAssets/MathJax-274/MathJax.js?config=default&amp;#34;&amp;gt;&amp;lt;/script&amp;gt; 同样的道理，我们也可以按照这种方式来编写latex公式，然后通过浏览器解析之后再将它复制成word对应的代码文本。道理很简单，那么具体该怎么做呢？
+首先我们就需要一个.html的文件了，因为是要浏览器来解析的。然后将脚本导入进来。可以看到整个页面中基本只引入了MathJax的脚本，不需要别的什么设置。然后把我们需要的公式用latex的方式写在里。
+&amp;lt;!DOCTYPE html&amp;gt; &amp;lt;html&amp;gt; &amp;lt;head&amp;gt; &amp;lt;script type=&amp;#34;text/javascript&amp;#34; src=&amp;#34;http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&amp;#34;&amp;gt; &amp;lt;/script&amp;gt; &amp;lt;title&amp;gt;tex to word&amp;lt;/title&amp;gt; &amp;lt;/head&amp;gt; &amp;lt;body&amp;gt; \begin{equation*} q_{j}=W\cdot\vec{x}_{j:j+R-1}+\vec{b} \tag{1} \end{equation*} &amp;lt;/body&amp;gt; &amp;lt;/html&amp;gt; 然后通过浏览器打开，鼠标右键将其保存为MathML code，如下图所示：
+然后在word中选择插入公式，将拷贝出来的文本以纯文本的形式粘贴到公式块中就完成了。如果要转换不同的公式只需要在上面的标签中不断添加公式就可以了。
+不过还是可以看到一个小缺陷，我们在tex格式里是加了\tag{1}的，而且网页也能显示，但是粘贴到word里就没有了。
+参考资料：
+https://tex.stackexchange.com/questions/25223/embed-latex-math-equations-into-microsoft-word</description>
+    </item>
+    
     <item>
       <title>My Internship Experience | 我的5个月实习心得</title>
       <link>https://root-zr.github.io/en/2022/03/19/my-internship-experience-%E6%88%91%E7%9A%845%E4%B8%AA%E6%9C%88%E5%AE%9E%E4%B9%A0%E5%BF%83%E5%BE%97/</link>

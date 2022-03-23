@@ -1,0 +1,175 @@
+<a name="top"></a>
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  	
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>A Method Convert Latex to Word| 一个将latex公式转换为word公式的小窍门 - Albert Wang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/font.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega@5.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.12.2"></script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+            <link rel="icon" href="https://root-zr.github.io/media/logo.JPG">
+
+
+
+
+
+  </head>
+  
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav" >
+      <a href="/" class="nav-logo">
+        <img src="/media/logo.JPG"
+         width="50"
+         height="50"
+         alt="Hugo-ht">
+      </a>
+
+      <ul class="nav-links" >
+       
+       
+       
+       <li><a href="/">Home</a></li>
+       
+       <li><a href="/en/posts/">Posts</a></li>
+       
+       <li><a href="/tags/">Tags</a></li>
+       
+       <li><a href="/categories/">Categories</a></li>
+       
+       <li><a href="/en/about/">About</a></li>
+       
+       
+      </ul>
+</nav>
+      </header>
+
+<main class = "content" role="main">
+<div style="text-align: center">
+
+<h1>A Method Convert Latex to Word| 一个将latex公式转换为word公式的小窍门</h1>
+
+<p>Albert Wang 
+ / 2022-03-23 
+/ 100 Words/has been Read  <span id="busuanzi_value_page_pv"></span>&nbsp;&nbsp;Times
+
+</p>
+
+
+
+<hr/>
+
+
+</div>
+
+<span class="article-toolbar">
+  
+  
+  
+  
+  
+  
+  
+  <a href='https://github.com/root-zren%5cposts%5c2022%5c%e4%b8%80%e4%b8%aa%e5%b0%86latex%e5%85%ac%e5%bc%8f%e8%bd%ac%e6%8d%a2%e4%b8%baword%e5%85%ac%e5%bc%8f%e7%9a%84%e5%b0%8f%e7%aa%8d%e9%97%a8.md'style="font-size: 24px; color: black;" target="_blank"><i class="fa fa-edit" aria-hidden="true" title="Suggest an edit of this page"></i>
+  </a>
+  
+  
+  
+</span>
+
+
+
+<div class="body-text list-text">
+<p>今天在看IEEE网页上的论文的时候发现它的公式竟然可以被复制成多种格式.</p>
+<p><img src="/img/2022/03/ieee-page.jpg" alt=""></p>
+<p>欣喜至于便去了解了一下这种技巧。然后发现其实是因为它的网页中引入了MathJax.js脚本。</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#008000;font-weight:bold">script</span> <span style="color:#7d9029">type</span><span style="color:#666">=</span><span style="color:#ba2121">&#34;text/javascript&#34;</span> <span style="color:#7d9029">src</span><span style="color:#666">=</span><span style="color:#ba2121">&#34;/xploreAssets/MathJax-274/MathJax.js?config=default&#34;</span>&gt;&lt;/<span style="color:#008000;font-weight:bold">script</span>&gt;
+</code></pre></div><p>同样的道理，我们也可以按照这种方式来编写latex公式，然后通过浏览器解析之后再将它复制成word对应的代码文本。道理很简单，那么具体该怎么做呢？</p>
+<p>首先我们就需要一个.html的文件了，因为是要浏览器来解析的。然后将脚本导入进来。可以看到整个页面中基本只引入了MathJax的脚本，不需要别的什么设置。然后把我们需要的公式用latex的方式写在<body>里。</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html"><span style="color:#bc7a00">&lt;!DOCTYPE html&gt;</span>
+&lt;<span style="color:#008000;font-weight:bold">html</span>&gt;
+&lt;<span style="color:#008000;font-weight:bold">head</span>&gt;
+&lt;<span style="color:#008000;font-weight:bold">script</span> <span style="color:#7d9029">type</span><span style="color:#666">=</span><span style="color:#ba2121">&#34;text/javascript&#34;</span>
+  <span style="color:#7d9029">src</span><span style="color:#666">=</span><span style="color:#ba2121">&#34;http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&#34;</span>&gt;
+&lt;/<span style="color:#008000;font-weight:bold">script</span>&gt;
+&lt;<span style="color:#008000;font-weight:bold">title</span>&gt;tex to word&lt;/<span style="color:#008000;font-weight:bold">title</span>&gt;
+&lt;/<span style="color:#008000;font-weight:bold">head</span>&gt;
+&lt;<span style="color:#008000;font-weight:bold">body</span>&gt;
+
+\begin{equation*}
+q_{j}=W\cdot\vec{x}_{j:j+R-1}+\vec{b}
+\tag{1}
+\end{equation*}
+
+&lt;/<span style="color:#008000;font-weight:bold">body</span>&gt;
+&lt;/<span style="color:#008000;font-weight:bold">html</span>&gt;
+</code></pre></div><p>然后通过浏览器打开，鼠标右键将其保存为MathML code，如下图所示：</p>
+<p><img src="/img/2022/03/web-page.jpg" alt=""></p>
+<p>然后在word中选择插入公式，将拷贝出来的文本以纯文本的形式粘贴到公式块中就完成了。如果要转换不同的公式只需要在上面的<body>标签中不断添加公式就可以了。</p>
+<p><img src="/img/2022/03/word-page.jpg" alt=""></p>
+<p>不过还是可以看到一个小缺陷，我们在tex格式里是加了\tag{1}的，而且网页也能显示，但是粘贴到word里就没有了。</p>
+<p>参考资料：</p>
+<p>https://tex.stackexchange.com/questions/25223/embed-latex-math-equations-into-microsoft-word</p>
+
+<p style="color:#777;">Last modified on 2022-03-23</p>
+</div>
+<a href="#top"><i class="fa fa-chevron-up" style="font-size: 30px; color: black;"></i></a>
+
+</main>
+
+<footer class="footer">
+  <script type="text/javascript" src="/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/javascript" src="/js/center-img.js"></script>
+
+
+
+     <ul class="footer-links">
+      
+       
+       
+       
+       <li><a href="/en/posts/index.xml" type="application/rss+xml" title="RSS feed">
+       Subscribe </a>
+       </li>
+       
+       
+       <li>
+       
+        <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
+       
+        License
+        <i class="fa fa-cc" aria-hidden="true" title="Attribution-NonCommercial-ShareAlike 4.0 International"></i> 
+        </a>
+       </li>
+       
+     </ul>
+     
+	    <span id="busuanzi_container_site_pv"> 本站访问量：<span id="busuanzi_value_site_pv"></span>次</span>&nbsp;
+	    <span id="busuanzi_container_site_uv"> 您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者</span>
+     
+</footer>
+
+
+
+
+
