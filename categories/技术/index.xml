@@ -19,7 +19,8 @@
 首先我们就需要一个.html的文件了，因为是要浏览器来解析的。然后将脚本导入进来。可以看到整个页面中基本只引入了MathJax的脚本，不需要别的什么设置。然后把我们需要的公式用latex的方式写在里。
 &amp;lt;!DOCTYPE html&amp;gt; &amp;lt;html&amp;gt; &amp;lt;head&amp;gt; &amp;lt;script type=&amp;#34;text/javascript&amp;#34; src=&amp;#34;http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&amp;#34;&amp;gt; &amp;lt;/script&amp;gt; &amp;lt;title&amp;gt;tex to word&amp;lt;/title&amp;gt; &amp;lt;/head&amp;gt; &amp;lt;body&amp;gt; \begin{equation*} q_{j}=W\cdot\vec{x}_{j:j+R-1}+\vec{b} \tag{1} \end{equation*} &amp;lt;/body&amp;gt; &amp;lt;/html&amp;gt; 然后通过浏览器打开，鼠标右键将其保存为MathML code，如下图所示：
 然后在word中选择插入公式，将拷贝出来的文本以纯文本的形式粘贴到公式块中就完成了。如果要转换不同的公式只需要在上面的标签中不断添加公式就可以了。
-不过还是可以看到一个小缺陷，我们在tex格式里是加了\tag{1}的，而且网页也能显示，但是粘贴到word里就没有了。
+不过还是可以看到一个小缺陷，我们在tex格式里是加了\tag{1}的，而且网页也能显示，但是粘贴到word里就没有了。所以只能用word的方式来插入，选择插入——&amp;gt;文档部件，选择域，如下图：
+然后在公式编辑区域里输入#(数字)，按下回车就可以成功编号了。
 参考资料：
 https://tex.stackexchange.com/questions/25223/embed-latex-math-equations-into-microsoft-word</description>
     </item>
