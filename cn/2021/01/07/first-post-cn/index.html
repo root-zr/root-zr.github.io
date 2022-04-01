@@ -252,34 +252,42 @@ Table of Contents:
 <h2 id="视频">视频<a href="#视频" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
 
 
-<style>
-.aspect-ratio {
-    position: relative;
-    width: 100%;
-    height: 0;
-    padding-bottom: 75%;
-    }
-      
-.aspect-ratio iframe {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    left: 0;
-    top: 0;
-    }
-</style>
-      
+    <style type="text/css">
+      .aspect-ratio {
+        position: relative;
+        width: 100%;
+        height: 0;
+        padding-bottom: 75%;
+      }
 
-<div align=center class="aspect-ratio">
-    <iframe src="https://player.bilibili.com/player.html?aid=883818925&&page=1&as_wide=1&high_quality=1&danmaku=0" 
-    scrolling="no" 
-    border="0" 
-    frameborder="no" 
-    framespacing="0" 
-    allowfullscreen="true"> 
-    </iframe>
-</div>
+      .aspect-ratio iframe {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+      }
+    </style>
+  </head>
 
+  <body>
+    <div class="aspect-ratio">
+      <iframe
+              src="https://player.bilibili.com/player.html?bvid=883818925&page=1&high_quality=1&danmaku=1"
+              scrolling="no" 
+              border="0" 
+              frameborder="no" 
+              framespacing="0" 
+              allowfullscreen="true"
+              sandbox="allow-top-navigation allow-same-origin allow-forms allow-scripts"
+              >
+      </iframe>
+      
+      
+    </div>
+  </body>
+
+</html>
 <h2 id="自定义模块">自定义模块<a href="#自定义模块" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
 <p><div class="note">
 一则通知。
