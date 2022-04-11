@@ -1,0 +1,269 @@
+<a name="top"></a>
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  	
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Source Code Analysis of qsort Function in C Language| C语言qsort源码分析 - Albert Wang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/font.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega@5.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.12.2"></script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+            <link rel="icon" href="https://root-zr.github.io/media/logo.JPG">
+
+
+
+
+
+  </head>
+  
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav" >
+      <a href="/" class="nav-logo">
+        <img src="/media/logo.JPG"
+         width="50"
+         height="50"
+         alt="Hugo-ht">
+      </a>
+
+      <ul class="nav-links" >
+       
+       
+       
+       <li><a href="/">Home</a></li>
+       
+       <li><a href="/en/posts/">Posts</a></li>
+       
+       <li><a href="/tags/">Tags</a></li>
+       
+       <li><a href="/categories/">Categories</a></li>
+       
+       <li><a href="/en/about/">About</a></li>
+       
+       
+      </ul>
+</nav>
+      </header>
+
+<main class = "content" role="main">
+<div style="text-align: center">
+
+<h1>Source Code Analysis of qsort Function in C Language| C语言qsort源码分析</h1>
+
+<p>Albert Wang 
+ / 2022-04-10 
+/ 500 Words/has been Read  <span id="busuanzi_value_page_pv"></span>&nbsp;&nbsp;Times
+
+</p>
+
+
+
+<hr/>
+
+
+</div>
+
+<span class="article-toolbar">
+  
+  
+  
+  
+  
+  
+  
+  <a href='https://github.com/root-zren%5cposts%5c2022%5cC%e8%af%ad%e8%a8%80qsort%e6%ba%90%e7%a0%81%e5%88%86%e6%9e%90.md'style="font-size: 24px; color: black;" target="_blank"><i class="fa fa-edit" aria-hidden="true" title="Suggest an edit of this page"></i>
+  </a>
+  
+  
+  
+</span>
+
+
+
+<div class="body-text list-text">
+<p>在阅读这篇博客之前请确保您已经理解了快速排序的思想。</p>
+<p>qsort函数位于GLIBC的stdlib目录下，内部实现了快速排序的功能，我们先不去管这个函数内部具体是怎么实现的，先来考虑如果我们要调用它，该怎么去调用呢。很显然，我们需要给它传入一个待排序的数组array，由于C语言会将数组参数转为指针，所以很自然地要传入一个数组长度的值，一般表示数组长度就是arraySize。看起来没什么问题，那我们来看一下它对外封装的接口是不是如我们所想呢。</p>
+<p><img src="/img/2022/04/qsort.png" alt="image-20220411110212264"></p>
+<p>看来我们的考虑还是欠佳，封装的接口有四个参数，除了传入的数组以外还要传入数组个数，每个元素的大小和一个比较函数。比较函数还是很容易理解的，因为我们毕竟不能保证始终要求它给我们升序排列，也不能保证随便什么内容都要求程序可以不出错的给我们排好序。但是为什么传入数组大小的时候必须要分开传参呢，我们自己写函数的时候也是只传了一个参数表示数组长度的呀。在分析原因之前我们先按照提供的接口简单测试一个例子吧。</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#bc7a00">#include</span> <span style="color:#bc7a00">&lt;stdio.h&gt;</span><span style="color:#bc7a00">
+</span><span style="color:#bc7a00">#include</span> <span style="color:#bc7a00">&lt;stdlib.h&gt;</span><span style="color:#bc7a00">
+</span><span style="color:#bc7a00"></span>
+<span style="color:#b00040">int</span> <span style="color:#00f">Cmp</span>(<span style="color:#008000;font-weight:bold">const</span> <span style="color:#b00040">void</span> <span style="color:#666">*</span> a, <span style="color:#008000;font-weight:bold">const</span> <span style="color:#b00040">void</span> <span style="color:#666">*</span> b)
+{
+   <span style="color:#008000;font-weight:bold">return</span> ( <span style="color:#666">*</span>(<span style="color:#b00040">int</span><span style="color:#666">*</span>)a <span style="color:#666">-</span> <span style="color:#666">*</span>(<span style="color:#b00040">int</span><span style="color:#666">*</span>)b );
+}
+
+<span style="color:#b00040">int</span> <span style="color:#00f">main</span>()
+{
+   <span style="color:#b00040">int</span> n;
+   <span style="color:#b00040">int</span> values[] <span style="color:#666">=</span> { <span style="color:#666">2</span>, <span style="color:#666">5</span>, <span style="color:#666">4</span>, <span style="color:#666">1</span>, <span style="color:#666">3</span> };
+   printf(<span style="color:#ba2121">&#34;排序之前的列表：</span><span style="color:#b62;font-weight:bold">\n</span><span style="color:#ba2121">&#34;</span>);
+   <span style="color:#008000;font-weight:bold">for</span>( n <span style="color:#666">=</span> <span style="color:#666">0</span> ; n <span style="color:#666">&lt;</span> <span style="color:#666">5</span>; n<span style="color:#666">++</span> ) {
+      printf(<span style="color:#ba2121">&#34;%d &#34;</span>, values[n]);
+   }
+
+   qsort(values, <span style="color:#666">5</span>, <span style="color:#008000;font-weight:bold">sizeof</span>(<span style="color:#b00040">int</span>), Cmp);
+
+   printf(<span style="color:#ba2121">&#34;</span><span style="color:#b62;font-weight:bold">\n</span><span style="color:#ba2121">排序之后的列表：</span><span style="color:#b62;font-weight:bold">\n</span><span style="color:#ba2121">&#34;</span>);
+   <span style="color:#008000;font-weight:bold">for</span>( n <span style="color:#666">=</span> <span style="color:#666">0</span> ; n <span style="color:#666">&lt;</span> <span style="color:#666">5</span>; n<span style="color:#666">++</span> ) {
+      printf(<span style="color:#ba2121">&#34;%d &#34;</span>, values[n]);
+   }
+ 
+  <span style="color:#008000;font-weight:bold">return</span>(<span style="color:#666">0</span>);
+}
+</code></pre></div><p>排序的结果如下图，</p>
+<p><img src="/img/2022/04/demo.png" alt="image-20220411141815867"></p>
+<p>看来确实得用官方给的方式来调用，那为什么要分两次传数组的长度呢，比较函数又是怎么用的呢，这就需要我们从源码中找答案了，首先我们看下面的代码实现，</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#b00040">void</span> _quicksort (<span style="color:#b00040">void</span> <span style="color:#666">*</span><span style="color:#008000;font-weight:bold">const</span> pbase, size_t total_elems, size_t size,
+	    __compar_d_fn_t cmp, <span style="color:#b00040">void</span> <span style="color:#666">*</span>arg)
+</code></pre></div><p>这是里面的函数封装，可以看到pbase是void类型的，也就是说程序不知道我们给它的数组是什么类型，那它就只能通过指针和我们给它类型的长度来遍历元素了，这也是为什么要分数组元素个数和数组中每个元素的大小来传参了。我们平时自己封装的函数都是已知类型的，所以就只需要传一个参数就可以了。我们看下面的代码块中left_ptr  = lo + size;和right_ptr = hi - size;就是通过这种方式来实现元素转移的。同时我们还注意到const只修饰了pbase指针，也就是说pbase指针指向不能改，但指向的值是可以修改的。</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#408080;font-style:italic">/* Select median value from among LO, MID, and HI. Rearrange
+</span><span style="color:#408080;font-style:italic">	     LO and HI so the three values are sorted. This lowers the
+</span><span style="color:#408080;font-style:italic">	     probability of picking a pathological pivot value and
+</span><span style="color:#408080;font-style:italic">	     skips a comparison for both the LEFT_PTR and RIGHT_PTR in
+</span><span style="color:#408080;font-style:italic">	     the while loops. */</span>
+
+<span style="color:#b00040">char</span> <span style="color:#666">*</span>mid <span style="color:#666">=</span> lo <span style="color:#666">+</span> size <span style="color:#666">*</span> ((hi <span style="color:#666">-</span> lo) <span style="color:#666">/</span> size <span style="color:#666">&gt;&gt;</span> <span style="color:#666">1</span>);
+
+<span style="color:#008000;font-weight:bold">if</span> ((<span style="color:#666">*</span>cmp) ((<span style="color:#b00040">void</span> <span style="color:#666">*</span>) mid, (<span style="color:#b00040">void</span> <span style="color:#666">*</span>) lo, arg) <span style="color:#666">&lt;</span> <span style="color:#666">0</span>)
+    SWAP (mid, lo, size);
+<span style="color:#008000;font-weight:bold">if</span> ((<span style="color:#666">*</span>cmp) ((<span style="color:#b00040">void</span> <span style="color:#666">*</span>) hi, (<span style="color:#b00040">void</span> <span style="color:#666">*</span>) mid, arg) <span style="color:#666">&lt;</span> <span style="color:#666">0</span>)
+    SWAP (mid, hi, size);
+<span style="color:#008000;font-weight:bold">else</span>
+    <span style="color:#008000;font-weight:bold">goto</span> jump_over;
+<span style="color:#008000;font-weight:bold">if</span> ((<span style="color:#666">*</span>cmp) ((<span style="color:#b00040">void</span> <span style="color:#666">*</span>) mid, (<span style="color:#b00040">void</span> <span style="color:#666">*</span>) lo, arg) <span style="color:#666">&lt;</span> <span style="color:#666">0</span>)
+    SWAP (mid, lo, size);
+<span style="color:#a0a000">jump_over</span>:;
+
+left_ptr  <span style="color:#666">=</span> lo <span style="color:#666">+</span> size;
+right_ptr <span style="color:#666">=</span> hi <span style="color:#666">-</span> size;
+</code></pre></div><p>我们再观察上面的代码，发现给它传入的比较函数cmp也派上用场了，并且用函数指针的方式来调用它。因为我们事实上传给qsort的就是一个函数指针，在最开始的例子中，我们调用qsort的方式是 qsort(values, 5, sizeof(int), Cmp)，用的是Cmp而不是Cmp()，当然后者表示函数调用，如果成功将会返回一个返回值类型的数。关于函数指针的更详细解释可以参考<a href="https://www.runoob.com/cprogramming/c-fun-pointer-callback.html" target="_blank" rel="noreferrer noopener">菜鸟教程</a>
+
+。</p>
+<p>我们继续分析这个调用的过程，下面这行代码传入的参数类型一律被强转成了void类型的指针，而我们根据前面的分析知道这里的参数类型实际上是Cmp()函数的参数。也就是说我们最开始在编写Cmp()函数的参数类型的时候就要把它设定为void *。</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#008000;font-weight:bold">if</span> ((<span style="color:#666">*</span>cmp) ((<span style="color:#b00040">void</span> <span style="color:#666">*</span>) mid, (<span style="color:#b00040">void</span> <span style="color:#666">*</span>) lo, arg) <span style="color:#666">&lt;</span> <span style="color:#666">0</span>)
+</code></pre></div><p>到这里我们已经了解了整个函数参数的功能和意义，下面来看一下具体算法的实现吧。这里只列出关键代码，详细信息请参阅<a href="https://www.gnu.org/software/libc/" target="_blank" rel="noreferrer noopener">官方网站</a>
+
+。可以看到官方用的是do-while的方式使得pivot位置左边的值都比它小，右边的值都比它大。然后是用栈的方式来划分下一次迭代时左右指针的位置的。</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">  <span style="color:#008000;font-weight:bold">do</span>
+  {
+      <span style="color:#008000;font-weight:bold">while</span> ((<span style="color:#666">*</span>cmp) ((<span style="color:#b00040">void</span> <span style="color:#666">*</span>) left_ptr, (<span style="color:#b00040">void</span> <span style="color:#666">*</span>) mid, arg) <span style="color:#666">&lt;</span> <span style="color:#666">0</span>)
+          left_ptr <span style="color:#666">+=</span> size;
+
+      <span style="color:#008000;font-weight:bold">while</span> ((<span style="color:#666">*</span>cmp) ((<span style="color:#b00040">void</span> <span style="color:#666">*</span>) mid, (<span style="color:#b00040">void</span> <span style="color:#666">*</span>) right_ptr, arg) <span style="color:#666">&lt;</span> <span style="color:#666">0</span>)
+          right_ptr <span style="color:#666">-=</span> size;
+
+      <span style="color:#008000;font-weight:bold">if</span> (left_ptr <span style="color:#666">&lt;</span> right_ptr)
+      {
+          SWAP (left_ptr, right_ptr, size);
+          <span style="color:#008000;font-weight:bold">if</span> (mid <span style="color:#666">==</span> left_ptr)
+              mid <span style="color:#666">=</span> right_ptr;
+          <span style="color:#008000;font-weight:bold">else</span> <span style="color:#00f">if</span> (mid <span style="color:#666">==</span> right_ptr)
+              mid <span style="color:#666">=</span> left_ptr;
+          left_ptr <span style="color:#666">+=</span> size;
+          right_ptr <span style="color:#666">-=</span> size;
+      }
+      <span style="color:#008000;font-weight:bold">else</span> <span style="color:#008000;font-weight:bold">if</span> (left_ptr <span style="color:#666">==</span> right_ptr)
+      {
+          left_ptr <span style="color:#666">+=</span> size;
+          right_ptr <span style="color:#666">-=</span> size;
+          <span style="color:#008000;font-weight:bold">break</span>;
+      }
+  }
+<span style="color:#008000;font-weight:bold">while</span> (left_ptr <span style="color:#666">&lt;=</span> right_ptr);
+
+<span style="color:#408080;font-style:italic">/* Set up pointers for next iteration.  First determine whether
+</span><span style="color:#408080;font-style:italic">             left and right partitions are below the threshold size.  If so,
+</span><span style="color:#408080;font-style:italic">             ignore one or both.  Otherwise, push the larger partition&#39;s
+</span><span style="color:#408080;font-style:italic">             bounds on the stack and continue sorting the smaller one. */</span>
+
+<span style="color:#008000;font-weight:bold">if</span> ((size_t) (right_ptr <span style="color:#666">-</span> lo) <span style="color:#666">&lt;=</span> max_thresh)
+{
+    <span style="color:#008000;font-weight:bold">if</span> ((size_t) (hi <span style="color:#666">-</span> left_ptr) <span style="color:#666">&lt;=</span> max_thresh)
+        <span style="color:#408080;font-style:italic">/* Ignore both small partitions. */</span>
+        POP (lo, hi);
+    <span style="color:#008000;font-weight:bold">else</span>
+        <span style="color:#408080;font-style:italic">/* Ignore small left partition. */</span>
+        lo <span style="color:#666">=</span> left_ptr;
+}
+<span style="color:#008000;font-weight:bold">else</span> <span style="color:#008000;font-weight:bold">if</span> ((size_t) (hi <span style="color:#666">-</span> left_ptr) <span style="color:#666">&lt;=</span> max_thresh)
+    <span style="color:#408080;font-style:italic">/* Ignore small right partition. */</span>
+    hi <span style="color:#666">=</span> right_ptr;
+<span style="color:#008000;font-weight:bold">else</span> <span style="color:#00f">if</span> ((right_ptr <span style="color:#666">-</span> lo) <span style="color:#666">&gt;</span> (hi <span style="color:#666">-</span> left_ptr))
+{
+    <span style="color:#408080;font-style:italic">/* Push larger left partition indices. */</span>
+    PUSH (lo, right_ptr);
+    lo <span style="color:#666">=</span> left_ptr;
+}
+<span style="color:#008000;font-weight:bold">else</span>
+{
+    <span style="color:#408080;font-style:italic">/* Push larger right partition indices. */</span>
+    PUSH (left_ptr, hi);
+    hi <span style="color:#666">=</span> right_ptr;
+}
+}
+}
+</code></pre></div><p>最后值得注意的是，一旦 BASE_PTR 数组被快速排序部分排序，其余部分则是完全使用插入排序来进行排序的。以上就是qsort的大致实现，主要是从使用者的角度向大家分享的，所以并不涉及到太多实现的细节，如果对这方面感兴趣，推荐您去查阅官方文档或者阅读源码。</p>
+<p>因为我接触C语言的时间也不长，难免其中会有很多错误，欢迎大家指出文中的错误，好让我们共同进步！！</p>
+
+<p style="color:#777;">Last modified on 2022-04-30</p>
+</div>
+<a href="#top"><i class="fa fa-chevron-up" style="font-size: 30px; color: black;"></i></a>
+
+</main>
+
+<footer class="footer">
+  <script type="text/javascript" src="/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/javascript" src="/js/center-img.js"></script>
+
+
+
+     <ul class="footer-links">
+      
+       
+       
+       
+       <li><a href="/en/posts/index.xml" type="application/rss+xml" title="RSS feed">
+       Subscribe </a>
+       </li>
+       
+       
+       <li>
+       
+        <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
+       
+        License
+        <i class="fa fa-cc" aria-hidden="true" title="Attribution-NonCommercial-ShareAlike 4.0 International"></i> 
+        </a>
+       </li>
+       
+     </ul>
+     
+	    <span id="busuanzi_container_site_pv"> 本站访问量：<span id="busuanzi_value_site_pv"></span>次</span>&nbsp;
+	    <span id="busuanzi_container_site_uv"> 您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者</span>
+     
+</footer>
+
+
+
+
+
