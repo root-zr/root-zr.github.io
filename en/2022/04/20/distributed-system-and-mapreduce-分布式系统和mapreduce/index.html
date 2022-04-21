@@ -118,14 +118,22 @@ Table of Contents:
 <ul>
 <li>可用性（Availability）：我们要能用这个系统，但是它又时常会出问题，那我们只能定期去把数据<strong>备份</strong>起来了，所以备份可以保证这个系统是可用的；</li>
 <li>可恢复性（Recoverability)：我们已经备份了数据，那就要保证在出问题的时候能恢复到出错前的状态。这里可用的一些操作就是更新日志，设置一些检查点，使用非易失性的存储介质（如硬盘），不能一不小心停电了然后什么都没了。</li>
-<li>一致性（Consistency)：我们现在有了备份，那多个副本中的数据是不是能保证一致呢？比如在一个&lt;key,value&gt;的数据库中，张三要取1000元前，然后发送请求导致主数据库更新了数据，但是就在发送更新副本的时候网段了，这就导致了数据的不一致。</li>
+<li>一致性（Consistency)：我们现在有了备份，那多个副本中的数据是不是能保证一致呢？比如在一个&lt;key,value&gt;的数据库中，张三要取1000元钱，然后发送请求导致主数据库更新了数据，但是就在发送更新副本的时候网断了，这就导致了数据的不一致。</li>
 </ul>
 <p>而且就备份来说，它应该距离主体非常远，如果两台机器共用一个电源然后断电了或者该地发生了不可预见的地震，后果都是难以承受的。另外分布式系统作为一个基础设施，它有三个很重要的组成，就是存储系统，通信系统和计算系统。</p>
 <h2 id="mapreduce">MapReduce<a href="#mapreduce" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
 <p>MapReduce是谷歌大数据三驾马车中的其中一篇论文，它被提出的目的是用来解决海量网页数据索引和排序之类的问题。它包含Map和Reduce两个过程，以WordCount为例，它的计算过程如下图所示：</p>
 <p><img src="/img/2022/04/mapreduce/1.png" alt="image-20220421010250907"></p>
-<p>当我们面临着一个大文件的时候，谷歌的文件系统GFS(Google File System)会把它差分成多个64kb的块，用来做任务分配的master服务器知道它们具体在哪台机器上，然后……</p>
-<p>to be continue.</p>
+<p>当我们面临着一个大文件的时候，谷歌的文件系统GFS(Google File System)会把它差分成多个64kb的块，用来做任务分配的master服务器知道它们具体在哪台机器上，然后它会指定work machine去执行Map的操作。加入这些文件块的存放位置和work machine不是同一台机器，那就需要通过网络通信来进行数据交换，可是这样会导致效率下降，所以一般都会将它们放在同一台机器上，work machine只需要做一个文件读取的操作就可以了。Map(k,v)的v指的就是某一个块的全部文字，所以下面只需要将单词拆分开然后变成key,1的形式就可以了。</p>
+<pre tabindex="0"><code>Inuput: Map(k,v)
+split v into words
+	for each word
+		emit(w,&quot;1&quot;)
+</code></pre><p>在整个Map的过程中master是不需要去一致盯着每台机器去做运算的，每个work machine会将自己运算的中间结果保存在自己的本地磁盘上。以上图中的INPUT 1为例，它最终会保存（a,1)和(b,1)两个值。</p>
+<p>然后是Reduce的过程，MapReduce worker通过网络收集所有完成了map worker中&lt;key(i), 1&gt;的任务task，从存储在各个Map worker磁盘上收集数据。这里并不要求每一个Map的所有任务都完成，如果只请求(a,1)这个Map过程，只要work machine完成了这一个任务，就可以将结果返回，不用等全部工作完成。Reduce的伪代码可以表示如下：</p>
+<pre tabindex="0"><code>Inuput: Reduce(k,v)
+emit(len(v))
+</code></pre><p>它的实现相对简单一点，只是对这些收集到的信息做一个加总的操作，计算出长度就行了。</p>
 
 <p style="color:#777;">Last modified on 2022-04-20</p>
 </div>
