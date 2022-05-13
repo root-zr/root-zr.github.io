@@ -6,7 +6,23 @@
     <description>Recent content in 中文 on Albert Wang</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 20 Apr 2022 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/tags/%E4%B8%AD%E6%96%87/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 12 May 2022 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/tags/%E4%B8%AD%E6%96%87/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title> From Maximum Convention Number to Cryptography| 从最大公约数到密码学</title>
+      <link>https://root-zr.github.io/en/2022/05/12/from-maximum-convention-number-to-cryptography-%E4%BB%8E%E6%9C%80%E5%A4%A7%E5%85%AC%E7%BA%A6%E6%95%B0%E5%88%B0%E5%AF%86%E7%A0%81%E5%AD%A6/</link>
+      <pubDate>Thu, 12 May 2022 13:39:37 +0800</pubDate>
+      
+      <guid>https://root-zr.github.io/en/2022/05/12/from-maximum-convention-number-to-cryptography-%E4%BB%8E%E6%9C%80%E5%A4%A7%E5%85%AC%E7%BA%A6%E6%95%B0%E5%88%B0%E5%AF%86%E7%A0%81%E5%AD%A6/</guid>
+      <description>这篇博客主要从我们小学时了解的最大公约数概念出发，一步步去了解数之间的关系，最后讲述它们是怎么被应用在密码学当中的。因为篇幅所限，再加上下文中提到的很多相关定理都需要用到离散数学的知识，所以本文中并不涉及到它们的证明，如果您对这些定理的证明感兴趣，请自行查阅相关的书籍。
+最大公约数 我们的故事首先从最大公约数讲起，最大公约数是我们非常熟悉的内容了，如果有两个数a和b，存在一个数m，使得m能同时被a和b整除，并且不存在另外比m大且能同时被a和b整除的数，我们就称m是a和b的最大公约数，可以记为 $$ gcd(a,b) = m $$ 这个概念非常明确，如果真的给定了两个数，要去求它的最大公约数，我们也能很显然地相除一种暴力的解法。那就是让i从1到min(a,b)开始不断去判断是否满足同时被a和b整除，满足条件的最大值就是最大公约数。这种做法的时间复杂度也是很显然的，它是O(min(a/2,b/2))。这种做法在a，b都很大的时候显然不是一个值得提倡的做法，所以人们也想了很多办法去优化它，欧几里得算法就是一个很好的优化方案。
+我们不妨假设a &amp;gt; b，则a一定可以表示为下面这种形式 $$ a = p \times b + r $$ 其中p表示a除以b的商，r表示余数。同样的b可以表示为 $$ b = q \times r + r_2 $$ 其中q表示b除以r的商，$r_2$表示余数。如此往复，最终我们将会得到余数$r_i$为0的情况，这时它上面的余数就是a和b的最大公约数。我们可以从一个简单的例子来看这个算法，加入a = 64，b = 42，整个过程可以表述为下面的情况。 $$ 64 = 1 \times 42 + 22
+$$
+$$ 42 = 1 \times 22 + 20
+$$
+$$ 22 = 1 \times 20 + 2 $$
+$$ 20 = 10 \times 2 + 0 $$</description>
+    </item>
+    
     <item>
       <title>Distributed System and MapReduce | 分布式系统和MapReduce</title>
       <link>https://root-zr.github.io/en/2022/04/20/distributed-system-and-mapreduce-%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%92%8Cmapreduce/</link>
