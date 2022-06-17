@@ -148,25 +148,24 @@ Table of Contents:
 <p>KMP算法是用来解决字符串的匹配问题的。对于字符串匹配问题，我们首先想到的就是暴力破解法。</p>
 <p>用指针i,j来说明，第一个位置下标以0开始。如果匹配则继续比较下一位。否则将j的值清0，i的值也要回到最开始匹配成功的位置重新开始比较，如下图。</p>
 <p><img src="/img/past/KMP/1.png" alt="img"></p>
-<pre tabindex="0"><code>public static int violentMatch(String source,String target){
-        int i, j = 0;
-        for( i = 0 ; i &lt; source.length() &amp;&amp; j &lt; target.length(); i++){
-            if (source.charAt(i) == target.charAt(j)){ //如果当前字符匹配成功
-                j++;
-            }
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#008000;font-weight:bold">public</span> <span style="color:#b00040">int</span> <span style="color:#00f">strStr</span><span style="color:#666">(</span>String haystack<span style="color:#666">,</span> String needle<span style="color:#666">)</span> <span style="color:#666">{</span>
+    <span style="color:#008000;font-weight:bold">if</span> <span style="color:#666">(</span>needle <span style="color:#666">==</span> <span style="color:#ba2121">&#34;&#34;</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+        <span style="color:#008000;font-weight:bold">return</span> 0<span style="color:#666">;</span>
+    <span style="color:#666">}</span>
 
-            else {//匹配失败
-                i = i - j;
-                j = 0;
-            }
-        }
-
-        if (j == target.length()) //匹配成功，返回首字符的位置
-            return i - j;
-        else
-            return -1;
-}
-</code></pre><p>暴力算法有一个很严重的问题就是一旦不匹配就要从目标字符串的第一个字符开始从头计算。如果是人为来寻找的话，我们肯定不会这样做，因为主串匹配失败的位置(i=3)前面除了第一个A之外再也没有A了，我们为什么能知道主串前面只有一个A？因为我们已经知道前面三个字符都是匹配的[<a href="https://www.zhihu.com/people/gu-yu-50-55/posts?page=2#ref_1" target="_blank" rel="noreferrer noopener">1]</a>
+    <span style="color:#008000;font-weight:bold">for</span> <span style="color:#666">(</span><span style="color:#b00040">int</span> i <span style="color:#666">=</span> 0<span style="color:#666">;</span> i <span style="color:#666">&lt;</span> haystack<span style="color:#666">.</span><span style="color:#7d9029">length</span><span style="color:#666">()</span> <span style="color:#666">-</span> needle<span style="color:#666">.</span><span style="color:#7d9029">length</span><span style="color:#666">()</span> <span style="color:#666">+</span> 1<span style="color:#666">;</span> i<span style="color:#666">++)</span> <span style="color:#666">{</span>
+        <span style="color:#008000;font-weight:bold">for</span> <span style="color:#666">(</span><span style="color:#b00040">int</span> j <span style="color:#666">=</span> 0<span style="color:#666">;</span> j <span style="color:#666">&lt;</span> needle<span style="color:#666">.</span><span style="color:#7d9029">length</span><span style="color:#666">();</span> j<span style="color:#666">++)</span> <span style="color:#666">{</span>
+            <span style="color:#008000;font-weight:bold">if</span> <span style="color:#666">(</span>needle<span style="color:#666">.</span><span style="color:#7d9029">charAt</span><span style="color:#666">(</span>j<span style="color:#666">)</span> <span style="color:#666">!=</span> haystack<span style="color:#666">.</span><span style="color:#7d9029">charAt</span><span style="color:#666">(</span>j <span style="color:#666">+</span> i<span style="color:#666">))</span> <span style="color:#666">{</span>
+                <span style="color:#008000;font-weight:bold">break</span><span style="color:#666">;</span>
+            <span style="color:#666">}</span>
+            <span style="color:#008000;font-weight:bold">if</span> <span style="color:#666">(</span>j <span style="color:#666">==</span> needle<span style="color:#666">.</span><span style="color:#7d9029">length</span><span style="color:#666">()</span> <span style="color:#666">-</span> 1<span style="color:#666">)</span> <span style="color:#666">{</span>
+                <span style="color:#008000;font-weight:bold">return</span> i<span style="color:#666">;</span>
+            <span style="color:#666">}</span>
+        <span style="color:#666">}</span>
+    <span style="color:#666">}</span>
+    <span style="color:#008000;font-weight:bold">return</span> <span style="color:#666">-</span>1<span style="color:#666">;</span>
+<span style="color:#666">}</span>
+</code></pre></div><p>暴力算法有一个很严重的问题就是一旦不匹配就要从目标字符串的第一个字符开始从头计算。如果是人为来寻找的话，我们肯定不会这样做，因为主串匹配失败的位置(i=3)前面除了第一个A之外再也没有A了，我们为什么能知道主串前面只有一个A？因为我们已经知道前面三个字符都是匹配的[<a href="https://www.zhihu.com/people/gu-yu-50-55/posts?page=2#ref_1" target="_blank" rel="noreferrer noopener">1]</a>
 
 。换句话说是我们知道匹配失败位置之前的元素都不是A，所以我们可以直接将i指针移动到下图所示的位置：</p>
 <p><img src="/img/past/KMP/2.png" alt="img"></p>
@@ -214,52 +213,43 @@ Table of Contents:
 </div></p>
 <p>这个公式的大致意思是说，只要前后缀末尾的字符不相等，那就把前缀的下标值-1，然后继续匹配，直到对应的值相等。同样这里要保证j&gt;0, 因为0是初始位置，到初始位置就不能再回退了；相等的话就表示成功匹配，将最大公共字符串长度+1，也即让前后缀下标+1继续匹配下一个（只不过后缀下标+1是在循环体里实现的）。</p>
 <p>代码实现如下：</p>
-<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">    <span style="color:#408080;font-style:italic">//获取到一个字符串(子串) 的部分匹配值表
-</span><span style="color:#408080;font-style:italic"></span>    <span style="color:#008000;font-weight:bold">public</span>  <span style="color:#b00040">int</span><span style="color:#666">[]</span> <span style="color:#00f">kmpNext</span><span style="color:#666">(</span>String dest<span style="color:#666">)</span> <span style="color:#666">{</span>
-        <span style="color:#408080;font-style:italic">//创建一个next 数组保存部分匹配值
-</span><span style="color:#408080;font-style:italic"></span>        <span style="color:#b00040">int</span><span style="color:#666">[]</span> next <span style="color:#666">=</span> <span style="color:#008000;font-weight:bold">new</span> <span style="color:#b00040">int</span><span style="color:#666">[</span>dest<span style="color:#666">.</span><span style="color:#7d9029">length</span><span style="color:#666">()];</span>
-        next<span style="color:#666">[</span>0<span style="color:#666">]</span> <span style="color:#666">=</span> 0<span style="color:#666">;</span> <span style="color:#408080;font-style:italic">//如果字符串是长度为1 部分匹配值就是0
-</span><span style="color:#408080;font-style:italic"></span>        <span style="color:#008000;font-weight:bold">for</span><span style="color:#666">(</span><span style="color:#b00040">int</span> i <span style="color:#666">=</span> 1<span style="color:#666">,</span> j <span style="color:#666">=</span> 0<span style="color:#666">;</span> i <span style="color:#666">&lt;</span> dest<span style="color:#666">.</span><span style="color:#7d9029">length</span><span style="color:#666">();</span> i<span style="color:#666">++)</span> <span style="color:#666">{</span>
-            <span style="color:#408080;font-style:italic">//当dest.charAt(i) != dest.charAt(j) ，我们需要从next[j-1]获取新的j	
-</span><span style="color:#408080;font-style:italic"></span>            <span style="color:#008000;font-weight:bold">while</span><span style="color:#666">(</span>j <span style="color:#666">&gt;</span> 0 <span style="color:#666">&amp;&amp;</span> dest<span style="color:#666">.</span><span style="color:#7d9029">charAt</span><span style="color:#666">(</span>i<span style="color:#666">)</span> <span style="color:#666">!=</span> dest<span style="color:#666">.</span><span style="color:#7d9029">charAt</span><span style="color:#666">(</span>j<span style="color:#666">))</span> <span style="color:#666">{</span>
-                j <span style="color:#666">=</span> next<span style="color:#666">[</span>j<span style="color:#666">-</span>1<span style="color:#666">];</span>
-            <span style="color:#666">}</span>
-
-            <span style="color:#408080;font-style:italic">//当dest.charAt(i) == dest.charAt(j) 满足时，部分匹配值就是+1
-</span><span style="color:#408080;font-style:italic"></span>            <span style="color:#008000;font-weight:bold">if</span><span style="color:#666">(</span>dest<span style="color:#666">.</span><span style="color:#7d9029">charAt</span><span style="color:#666">(</span>i<span style="color:#666">)</span> <span style="color:#666">==</span> dest<span style="color:#666">.</span><span style="color:#7d9029">charAt</span><span style="color:#666">(</span>j<span style="color:#666">))</span> <span style="color:#666">{</span>
-                j<span style="color:#666">++;</span>
-            <span style="color:#666">}</span>
-            next<span style="color:#666">[</span>i<span style="color:#666">]</span> <span style="color:#666">=</span> j<span style="color:#666">;</span> 
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#008000;font-weight:bold">public</span> <span style="color:#b00040">int</span><span style="color:#666">[]</span> <span style="color:#00f">kmpNext</span><span style="color:#666">(</span>String dest<span style="color:#666">)</span> <span style="color:#666">{</span>
+    <span style="color:#b00040">int</span><span style="color:#666">[]</span> next <span style="color:#666">=</span> <span style="color:#008000;font-weight:bold">new</span> <span style="color:#b00040">int</span><span style="color:#666">[</span>dest<span style="color:#666">.</span><span style="color:#7d9029">length</span><span style="color:#666">()];</span>
+    next<span style="color:#666">[</span>0<span style="color:#666">]</span> <span style="color:#666">=</span> 0<span style="color:#666">;</span> <span style="color:#408080;font-style:italic">//如果字符串是长度为1 部分匹配值就是0
+</span><span style="color:#408080;font-style:italic"></span>    <span style="color:#008000;font-weight:bold">for</span> <span style="color:#666">(</span><span style="color:#b00040">int</span> i <span style="color:#666">=</span> 1<span style="color:#666">,</span> j <span style="color:#666">=</span> 0<span style="color:#666">;</span> i <span style="color:#666">&lt;</span> dest<span style="color:#666">.</span><span style="color:#7d9029">length</span><span style="color:#666">();</span> i<span style="color:#666">++)</span> <span style="color:#666">{</span>      
+        <span style="color:#008000;font-weight:bold">while</span> <span style="color:#666">(</span>j <span style="color:#666">&gt;</span> 0 <span style="color:#666">&amp;&amp;</span> dest<span style="color:#666">.</span><span style="color:#7d9029">charAt</span><span style="color:#666">(</span>i<span style="color:#666">)</span> <span style="color:#666">!=</span> dest<span style="color:#666">.</span><span style="color:#7d9029">charAt</span><span style="color:#666">(</span>j<span style="color:#666">))</span> <span style="color:#666">{</span>
+            j <span style="color:#666">=</span> next<span style="color:#666">[</span>j <span style="color:#666">-</span> 1<span style="color:#666">];</span>
         <span style="color:#666">}</span>
-        <span style="color:#008000;font-weight:bold">return</span> next<span style="color:#666">;</span>
+        <span style="color:#008000;font-weight:bold">if</span> <span style="color:#666">(</span>dest<span style="color:#666">.</span><span style="color:#7d9029">charAt</span><span style="color:#666">(</span>i<span style="color:#666">)</span> <span style="color:#666">==</span> dest<span style="color:#666">.</span><span style="color:#7d9029">charAt</span><span style="color:#666">(</span>j<span style="color:#666">))</span> <span style="color:#666">{</span>
+            j<span style="color:#666">++;</span>
+        <span style="color:#666">}</span>
+        next<span style="color:#666">[</span>i<span style="color:#666">]</span> <span style="color:#666">=</span> j<span style="color:#666">;</span> 
     <span style="color:#666">}</span>
+    <span style="color:#008000;font-weight:bold">return</span> next<span style="color:#666">;</span>
+<span style="color:#666">}</span>
 </code></pre></div><p>上面的循环中如果i表示字符串的长度，从长度为1的字符串对应的最长公共前后缀开始，直到字符串的长度是dest.length()。对于长度为k的字符串来说，在dest.charAt(k) != dest.charAt(j)的情况下，它的最长公共前后缀就是当前已知的j-1对应的值。否则就是j++。因为前缀必须是从下标0处开始的，所以只用j就能知道结果。到这一步我们就已经得到了next数组所对应的值，可以进行下一步的操作了。</p>
 <p>下一步就是要实现整个KMP算法了，我们继续完成前面的问题：</p>
 <p>source = &ldquo;abaabaabca&rdquo;,target = &ldquo;abaabca&rdquo;</p>
 <p>代码如下：</p>
-<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#008000;font-weight:bold">public</span>  <span style="color:#008000;font-weight:bold">static</span>  <span style="color:#b00040">int</span>  <span style="color:#00f">match</span><span style="color:#666">(</span>String source<span style="color:#666">,</span>String target<span style="color:#666">){</span>
-        <span style="color:#b00040">int</span><span style="color:#666">[]</span> next <span style="color:#666">=</span> kmpNext<span style="color:#666">(</span>target<span style="color:#666">);</span> <span style="color:#408080;font-style:italic">//先得到next数组
-</span><span style="color:#408080;font-style:italic"></span>        <span style="color:#b00040">int</span> i<span style="color:#666">,</span> j <span style="color:#666">=</span> 0<span style="color:#666">;</span>
-        <span style="color:#008000;font-weight:bold">for</span><span style="color:#666">(</span> i <span style="color:#666">=</span> 0 <span style="color:#666">;</span> i <span style="color:#666">&lt;</span> source<span style="color:#666">.</span><span style="color:#7d9029">length</span><span style="color:#666">()</span> <span style="color:#666">&amp;&amp;</span> j <span style="color:#666">&lt;</span> target<span style="color:#666">.</span><span style="color:#7d9029">length</span><span style="color:#666">();</span> i<span style="color:#666">++){</span>
-            <span style="color:#008000;font-weight:bold">if</span> <span style="color:#666">(</span>source<span style="color:#666">.</span><span style="color:#7d9029">charAt</span><span style="color:#666">(</span>i<span style="color:#666">)</span> <span style="color:#666">==</span> target<span style="color:#666">.</span><span style="color:#7d9029">charAt</span><span style="color:#666">(</span>j<span style="color:#666">)){</span> <span style="color:#408080;font-style:italic">//如果当前字符匹配成功
-</span><span style="color:#408080;font-style:italic"></span>                j<span style="color:#666">++;</span>
-            <span style="color:#666">}</span>
-
-            <span style="color:#008000;font-weight:bold">else</span> <span style="color:#666">{</span><span style="color:#408080;font-style:italic">//匹配失败
-</span><span style="color:#408080;font-style:italic"></span>                j <span style="color:#666">=</span> j <span style="color:#666">&gt;</span> 0 <span style="color:#666">?</span> next<span style="color:#666">[</span>j<span style="color:#666">-</span>1<span style="color:#666">]:</span> next<span style="color:#666">[</span>0<span style="color:#666">];</span>
-                i <span style="color:#666">=</span> i<span style="color:#666">-</span>1 <span style="color:#666">;</span>
-            <span style="color:#666">}</span>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#008000;font-weight:bold">public</span> <span style="color:#b00040">int</span> <span style="color:#00f">strStr</span><span style="color:#666">(</span>String haystack<span style="color:#666">,</span> String needle<span style="color:#666">)</span> <span style="color:#666">{</span>
+    <span style="color:#008000;font-weight:bold">if</span> <span style="color:#666">(</span>needle <span style="color:#666">==</span> <span style="color:#ba2121">&#34;&#34;</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+        <span style="color:#008000;font-weight:bold">return</span> 0<span style="color:#666">;</span>
+    <span style="color:#666">}</span>
+    <span style="color:#b00040">int</span><span style="color:#666">[]</span> next <span style="color:#666">=</span> kmpNext<span style="color:#666">(</span>needle<span style="color:#666">);</span>
+    <span style="color:#008000;font-weight:bold">for</span> <span style="color:#666">(</span><span style="color:#b00040">int</span> i <span style="color:#666">=</span> 0<span style="color:#666">,</span> j <span style="color:#666">=</span> 0<span style="color:#666">;</span> i <span style="color:#666">&lt;</span> haystack<span style="color:#666">.</span><span style="color:#7d9029">length</span><span style="color:#666">();</span> i<span style="color:#666">++)</span> <span style="color:#666">{</span>
+        <span style="color:#008000;font-weight:bold">while</span> <span style="color:#666">(</span>j <span style="color:#666">&gt;</span> 0 <span style="color:#666">&amp;&amp;</span> needle<span style="color:#666">.</span><span style="color:#7d9029">charAt</span><span style="color:#666">(</span>j<span style="color:#666">)</span> <span style="color:#666">!=</span> haystack<span style="color:#666">.</span><span style="color:#7d9029">charAt</span><span style="color:#666">(</span>i<span style="color:#666">))</span> <span style="color:#666">{</span>
+            j <span style="color:#666">=</span> next<span style="color:#666">[</span>j <span style="color:#666">-</span> 1<span style="color:#666">];</span>
+        <span style="color:#666">}</span> 
+        <span style="color:#008000;font-weight:bold">if</span> <span style="color:#666">(</span>needle<span style="color:#666">.</span><span style="color:#7d9029">charAt</span><span style="color:#666">(</span>j<span style="color:#666">)</span> <span style="color:#666">==</span> haystack<span style="color:#666">.</span><span style="color:#7d9029">charAt</span><span style="color:#666">(</span>i<span style="color:#666">))</span> <span style="color:#666">{</span>
+            j<span style="color:#666">++;</span>
+        <span style="color:#666">}</span> 
+        <span style="color:#008000;font-weight:bold">if</span> <span style="color:#666">(</span>j <span style="color:#666">==</span> needle<span style="color:#666">.</span><span style="color:#7d9029">length</span><span style="color:#666">())</span> <span style="color:#666">{</span>
+            <span style="color:#008000;font-weight:bold">return</span> i <span style="color:#666">-</span> j <span style="color:#666">+</span> 1<span style="color:#666">;</span>
         <span style="color:#666">}</span>
-
-        <span style="color:#008000;font-weight:bold">if</span> <span style="color:#666">(</span>j <span style="color:#666">==</span> target<span style="color:#666">.</span><span style="color:#7d9029">length</span><span style="color:#666">())</span> <span style="color:#408080;font-style:italic">//匹配成功，返回首字符的位置
-</span><span style="color:#408080;font-style:italic"></span>            <span style="color:#008000;font-weight:bold">return</span> i <span style="color:#666">-</span> j<span style="color:#666">;</span>
-        <span style="color:#008000;font-weight:bold">else</span>
-            <span style="color:#008000;font-weight:bold">return</span> <span style="color:#666">-</span>1<span style="color:#666">;</span>
+    <span style="color:#666">}</span>
+    <span style="color:#008000;font-weight:bold">return</span> <span style="color:#666">-</span>1<span style="color:#666">;</span>
 <span style="color:#666">}</span>
-</code></pre></div><p>比较暴力匹配算法我们可以看到，基本只有当匹配失败之后j指针的变化需要根据next指针进行修改，并且因为i在循环体中还要+1，这样就跳到匹配失败后的下一个位置了，所以我们还要再-1来消除这部分。其余部分都是一致的。通过这里我们可以看到整个原字符串的指针几乎没有发生回退，不像暴力匹配中需要连续回退目标字符串的长度，大大提高了效率。</p>
-<p>上面代码需要注意的是当匹配失败的时候对j赋值的语句是</p>
-<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"> j <span style="color:#666">=</span> j <span style="color:#666">&gt;</span>0<span style="color:#666">?</span> next<span style="color:#666">[</span>j<span style="color:#666">-</span>1<span style="color:#666">]:</span> next<span style="color:#666">[</span>0<span style="color:#666">];</span>
-</code></pre></div><p>这是因为我们要获取的值是匹配失败的字符之前的子串的值，所以对应的下标是j-1，同样假如是最开始的字符的话就直接用初始值就可以，所以这里用了三路运算符。为了简化这个过程，有时候在实现next数组的过程中有人会<strong>把整个数组的值向右右移一位</strong>，然后将第0位赋值为-1，这样就可以直接使用匹配失败的下标，而不用再-1了。</p>
+</code></pre></div><p>比较暴力匹配算法我们可以看到，基本只有当匹配失败之后j指针的变化需要根据next指针进行修改。</p>
 <p>到这里KMP算法基本就完成了，还有一种解释方法是用有限状态自动机来解释，如果想更深入地了解KMP算法，可以参考这篇博客[<a href="https://www.zhihu.com/people/gu-yu-50-55/posts?page=2#ref_2" target="_blank" rel="noreferrer noopener">2]</a>
 
  或者是人民邮电出版社出版的<strong>算法（第四版）第5章</strong>的部分，这些都涉及到了有限状态自动机的部分。</p>

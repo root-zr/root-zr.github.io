@@ -141,11 +141,8 @@ class Node&amp;lt;Key,Value&amp;gt;{ Key key; Value val; Node&amp;lt;Key,Value&a
       <guid>https://root-zr.github.io/en/2021/07/23/kmp-algorithm-kmp%E7%AE%97%E6%B3%95/</guid>
       <description>背景 KMP算法是用来解决字符串的匹配问题的。对于字符串匹配问题，我们首先想到的就是暴力破解法。
 用指针i,j来说明，第一个位置下标以0开始。如果匹配则继续比较下一位。否则将j的值清0，i的值也要回到最开始匹配成功的位置重新开始比较，如下图。
-public static int violentMatch(String source,String target){ int i, j = 0; for( i = 0 ; i &amp;lt; source.length() &amp;amp;&amp;amp; j &amp;lt; target.length(); i++){ if (source.charAt(i) == target.charAt(j)){ //如果当前字符匹配成功 j++; } else {//匹配失败 i = i - j; j = 0; } } if (j == target.length()) //匹配成功，返回首字符的位置 return i - j; else return -1; } 暴力算法有一个很严重的问题就是一旦不匹配就要从目标字符串的第一个字符开始从头计算。如果是人为来寻找的话，我们肯定不会这样做，因为主串匹配失败的位置(i=3)前面除了第一个A之外再也没有A了，我们为什么能知道主串前面只有一个A？因为我们已经知道前面三个字符都是匹配的[1] 。换句话说是我们知道匹配失败位置之前的元素都不是A，所以我们可以直接将i指针移动到下图所示的位置：
-这样就避免了回退的问题，其实前面的例子中要匹配的字符串（ABCE）中并没有出现相同的字符，所以多少会有一点巧合的意思。现在我们用另外一个例子来说明。假设文档的字符串source = &amp;ldquo;abaabaabca&amp;rdquo;, 目标字符串target = &amp;ldquo;abaabca&amp;rdquo;
-匹配到高亮显示的位置就需要重新调整j的值，这时自然不能像最开始的例子那样直接跳到不匹配的位置,这样最终会返回匹配失败。其实应该跳到的位置如下图所示：
-但其实按照上面所描述的这样，如果不匹配，其实原字符串的指针和目标字符串的指针也都向后回退了，虽然回退的步数有所减少。我们能不能想到一个办法让指针不发生回退呢，即直接从匹配失败的位置处继续往下扫描，如下图所示：
-从上面的图可以看出指针i依然停留在原来的位置，指针j则跳回了它对应的位置。这次移动是非常理想的，同时要完成这个效果，我们也必须考虑到一个条件，就是要求k之前的字符都要和原字符串中的字符是匹配的，并且匹配的个数应该最多。</description>
+public int strStr(String haystack, String needle) { if (needle == &amp;#34;&amp;#34;) { return 0; } for (int i = 0; i &amp;lt; haystack.length() - needle.length() + 1; i++) { for (int j = 0; j &amp;lt; needle.length(); j++) { if (needle.charAt(j) != haystack.charAt(j + i)) { break; } if (j == needle.length() - 1) { return i; } } } return -1; } 暴力算法有一个很严重的问题就是一旦不匹配就要从目标字符串的第一个字符开始从头计算。如果是人为来寻找的话，我们肯定不会这样做，因为主串匹配失败的位置(i=3)前面除了第一个A之外再也没有A了，我们为什么能知道主串前面只有一个A？因为我们已经知道前面三个字符都是匹配的[1] 。换句话说是我们知道匹配失败位置之前的元素都不是A，所以我们可以直接将i指针移动到下图所示的位置：
+这样就避免了回退的问题，其实前面的例子中要匹配的字符串（ABCE）中并没有出现相同的字符，所以多少会有一点巧合的意思。现在我们用另外一个例子来说明。假设文档的字符串source = &amp;ldquo;abaabaabca&amp;rdquo;, 目标字符串target = &amp;ldquo;abaabca&amp;rdquo;</description>
     </item>
     
     <item>

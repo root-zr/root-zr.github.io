@@ -6,13 +6,27 @@
     <description>Recent content in 大数据 on Albert Wang</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 20 Apr 2022 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 15 Jun 2022 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Distributed System and MapReduce | 分布式系统和MapReduce</title>
-      <link>https://root-zr.github.io/en/2022/04/20/distributed-system-and-mapreduce-%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%92%8Cmapreduce/</link>
+      <title>Distributed System and MapReduce 02 | 分布式系统和MapReduce 02</title>
+      <link>https://root-zr.github.io/en/2022/06/15/distributed-system-and-mapreduce-02-%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%92%8Cmapreduce-02/</link>
+      <pubDate>Wed, 15 Jun 2022 13:39:37 +0800</pubDate>
+      
+      <guid>https://root-zr.github.io/en/2022/06/15/distributed-system-and-mapreduce-02-%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%92%8Cmapreduce-02/</guid>
+      <description>这篇博客主要是关于 MIT 的公开课 6.824 分布式系统 的 lab 1相关内容，lab 1 要求我们实现一个分布式的mapreduce系统，并且已经为我们提供了一些基础的代码，lab 的地址请点击这里 。下面让我们从文件的架构开始一点点去了解我们所要做的事情。下面是一个精简了的代码结构图，它可以帮助我们理解 lab 1的内容。
+单机mapreduce任务 首先我们需要明确的是main目录下的文件是我们的程序入口处， 如果我们执行mrsequential.go 文件将会启动一个单机的mapreduce任务，执行的命令如下
+go run -race mrsequential.go wc.so pg*.txt 可以看到在执行的时候还传了两个参数，这两个参数的作用是什么呢？我们从代码中来观察一下，
+if len(os.Args) &amp;lt; 3 { fmt.Fprintf(os.Stderr, &amp;#34;Usage: mrsequential xxx.so inputfiles...\n&amp;#34;) os.Exit(1) } mapf, reducef := loadPlugin(os.Args[1]) 可以看到 wc.so 是用来加载 map 和 reduce 函数的， 而 wc.so 文件则是由下面这个命令生成的，通过-buildmode=plugin可以以插件的形式将wc.go 文件里的函数封装起来，然后通过loadPlugin 函数重新加载出来。
+go build -race -buildmode=plugin ../mrapps/wc.go loadPlugin 函数是作者自己编写的，具体是封装了plugin.Open 和 p.Lookup两个函数的功能，最终的结果是获取到map 和 reduce 两个函数。
+func loadPlugin(filename string) (func(string, string) []mr.</description>
+    </item>
+    
+    <item>
+      <title>Distributed System and MapReduce 01 | 分布式系统和MapReduce 01</title>
+      <link>https://root-zr.github.io/en/2022/04/20/distributed-system-and-mapreduce-01-%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%92%8Cmapreduce-01/</link>
       <pubDate>Wed, 20 Apr 2022 13:39:37 +0800</pubDate>
       
-      <guid>https://root-zr.github.io/en/2022/04/20/distributed-system-and-mapreduce-%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%92%8Cmapreduce/</guid>
+      <guid>https://root-zr.github.io/en/2022/04/20/distributed-system-and-mapreduce-01-%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%92%8Cmapreduce-01/</guid>
       <description>这篇博客主要是学习MIT的公开课6.824分布式系统 的学习笔记，在课程一开始老师主要介绍了分布式系统的和MapReduce的基本概念，后续有关于实现一个具体的MapReduce的实验。
 分布式系统的基本概念 首先当用户要访问信息的时候，一般需要一个WEB的网页接口去和后台的数据库操作。当用户量很大的时候一台机器就不足以支撑这么大的并发量了，同时数据库所在的服务器也有可能会出现问题。所以很自然的想法就是用多台机器来分担压力。如果足够理想，两台机器就可以把压力减小一般，一直这样下去……不过可惜的是现实中这是不可能的。
 现在想法是有了，但是怎样去实现它呢？我们知道一台机器是不容易出现问题的，一台电脑是可以陪伴我们很多年的。但是在一个具有成千上万台机器的分布式集群中出现问题确实非常常见的事，所以人们只能尽可能保证容错，而容错机制主要包括下面三个特性：
