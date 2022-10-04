@@ -6,7 +6,22 @@
     <description>Recent content in 中文 on Albert Wang</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 16 Jul 2022 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/tags/%E4%B8%AD%E6%96%87/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 04 Oct 2022 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/tags/%E4%B8%AD%E6%96%87/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Run Linux with Bochs | Bochs运行Linux操作系统</title>
+      <link>https://root-zr.github.io/en/2022/10/04/run-linux-with-bochs-bochs%E8%BF%90%E8%A1%8Clinux%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/</link>
+      <pubDate>Tue, 04 Oct 2022 13:39:37 +0800</pubDate>
+      
+      <guid>https://root-zr.github.io/en/2022/10/04/run-linux-with-bochs-bochs%E8%BF%90%E8%A1%8Clinux%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/</guid>
+      <description>操作系统是一个神奇的软件，它管理了各种硬件，所以它本身足够复杂。同样也是这个原因导致我们要对操作系统的代码进行调试变得非常困难。
+本文是一篇介绍怎样用 Bochs 来运行和调试 Linux 0.11 的博客。选择 Bochs 而不是 VM Ware 的原因是 Bochs 仿真了 X86 的硬件环境和外设，而VM Ware 则是仿真了一些 I/O 功能，其他是依靠 X86实时硬件执行的。这样虽然 Bochs 在速度上不如 VM Ware，但是因为它具备更加精确的状态和时序，所以更适合开发底层系统软件。 Linux 选择 0.11 的原因则是当前的 Linux 版本太过于庞大，基本不可能完全阅读完它的代码。相比之前 0.11 版本的代码总共也就几万行，而且是一个相对完整的操作系统，所以用它是比较适合的。
+Bochs安装和运行Linux 我们之前认为 Bochs 更适合操作系统，幸运的是大家都是这么想的，所以我们已经有完善的软件包可以帮助我们完成这一步了。点击这里 可以下载Linux 0.11 的软件包，解压缩之后可以看到下面的内容。
+上图中第一个.exe的文件就是Windows 下 Bochs 的安装文件，.rpm 是 Linux 下的安装文件。本文以 Windows 下为例，双击按照常规安装应用软件的方式安装即可。
+上图中 .bxrc 文件是 Bochs 的配置文件，它们的参数各不相同。这里简单介绍一下 bochsrc-hd.bxrc。这个配置文件从启动软盘（A盘）加载内核映像文件 booting-0.11-hd，使用硬盘映像文件 hdc-0.11-new.img 第一个分区中的跟文件系统。
+在安装完 Bochs 后直接点击 bochsrc-hd.bxrc 就能进入模拟环境，如下图所示。我们看到当前目录下有 hello 的可执行文件，我们可以直接运行它，会在控制台打印出 hello world！
+Linux 代码调试 调试代码要用到的是 Bochs 的 debug 功能，类似于 GDB。首先我们要修改 debug.</description>
+    </item>
+    
     <item>
       <title>Summary of My University Life | 我的大学四年总结</title>
       <link>https://root-zr.github.io/en/2022/07/16/summary-of-my-university-life-%E6%88%91%E7%9A%84%E5%A4%A7%E5%AD%A6%E5%9B%9B%E5%B9%B4%E6%80%BB%E7%BB%93/</link>

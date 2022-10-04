@@ -1,0 +1,213 @@
+<a name="top"></a>
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  	
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Run Linux with Bochs | Bochs运行Linux操作系统 - Albert Wang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/font.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega@5.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.12.2"></script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+
+
+  </head>
+  
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav" >
+      <a href="/" class="nav-logo">
+        <img src="/media/logo.JPG"
+         width="50"
+         height="50"
+         alt="Hugo-ht">
+      </a>
+
+      <ul class="nav-links" >
+       
+       
+       
+       <li><a href="/">Home</a></li>
+       
+       <li><a href="/en/posts/">Blog</a></li>
+       
+       <li><a href="/categories/">Categories</a></li>
+       
+       <li><a href="/en/project/">Project</a></li>
+       
+       <li><a href="/en/about/">About</a></li>
+       
+       
+      </ul>
+</nav>
+		<script type="text/javascript"
+        async
+        src="https://cdn.bootcss.com/mathjax/2.7.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\[\[','\]\]']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+});
+
+MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<style>
+code.has-jax {
+    font: inherit;
+    font-size: 100%;
+    background: inherit;
+    border: inherit;
+    color: #515151;
+}
+</style>
+      </header>
+
+<main class = "content" role="main">
+<div style="text-align: center">
+
+<h1>Run Linux with Bochs | Bochs运行Linux操作系统</h1>
+
+<p>Albert Wang 
+ / 2022-10-04 
+/ 200 Words/has been Read  <span id="busuanzi_value_page_pv"></span>&nbsp;&nbsp;Times
+
+</p>
+
+
+
+<hr/>
+
+
+</div>
+
+<span class="article-toolbar">
+  
+  
+  
+  
+  
+  
+  
+  <a href='https://github.com/root-zren%5cposts%5c2022%5cBochs%e8%bf%90%e8%a1%8clinux%e6%93%8d%e4%bd%9c%e7%b3%bb%e7%bb%9f.md'style="font-size: 24px; color: black;" target="_blank"><i class="fa fa-edit" aria-hidden="true" title="Suggest an edit of this page"></i>
+  </a>
+  
+  
+  
+</span>
+
+
+<aside class="toc">
+Table of Contents:
+<nav id="TableOfContents">
+  <ol>
+    <li><a href="#bochs安装和运行linux">Bochs安装和运行Linux</a></li>
+    <li><a href="#linux-代码调试">Linux 代码调试</a></li>
+  </ol>
+</nav>
+</aside>
+
+
+<div class="body-text list-text">
+<p>操作系统是一个神奇的软件，它管理了各种硬件，所以它本身足够复杂。同样也是这个原因导致我们要对操作系统的代码进行调试变得非常困难。</p>
+<p>本文是一篇介绍怎样用 Bochs 来运行和调试 Linux 0.11 的博客。选择 Bochs 而不是 VM Ware 的原因是 Bochs 仿真了 X86 的硬件环境和外设，而VM Ware 则是仿真了一些 I/O 功能，其他是依靠 X86实时硬件执行的。这样虽然 Bochs  在速度上不如 VM Ware，但是因为它具备更加精确的状态和时序，所以更适合开发底层系统软件。 Linux 选择 0.11 的原因则是当前的 Linux 版本太过于庞大，基本不可能完全阅读完它的代码。相比之前 0.11 版本的代码总共也就几万行，而且是一个相对完整的操作系统，所以用它是比较适合的。</p>
+<h2 id="bochs安装和运行linux">Bochs安装和运行Linux<a href="#bochs安装和运行linux" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>我们之前认为 Bochs 更适合操作系统，幸运的是大家都是这么想的，所以我们已经有完善的软件包可以帮助我们完成这一步了。点击<a href="http://oldlinux.org/Linux.old/bochs/linux-0.11-devel-050518.zip" target="_blank" rel="noreferrer noopener">这里</a>
+
+可以下载Linux 0.11 的软件包，解压缩之后可以看到下面的内容。</p>
+<p><img src="/img/2022/10/bochs/1.PNG" alt=""></p>
+<p>上图中第一个.exe的文件就是Windows 下 Bochs 的安装文件，.rpm 是 Linux 下的安装文件。本文以 Windows 下为例，双击按照常规安装应用软件的方式安装即可。</p>
+<p>上图中 .bxrc 文件是 Bochs 的配置文件，它们的参数各不相同。这里简单介绍一下 bochsrc-hd.bxrc。这个配置文件从启动软盘（A盘）加载内核映像文件 booting-0.11-hd，使用硬盘映像文件 hdc-0.11-new.img 第一个分区中的跟文件系统。</p>
+<p>在安装完 Bochs 后直接点击 bochsrc-hd.bxrc 就能进入模拟环境，如下图所示。我们看到当前目录下有 hello 的可执行文件，我们可以直接运行它，会在控制台打印出 hello world！</p>
+<p><img src="/img/2022/10/bochs/2.PNG" alt=""></p>
+<h2 id="linux-代码调试">Linux 代码调试<a href="#linux-代码调试" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>调试代码要用到的是 Bochs 的 debug 功能，类似于 GDB。首先我们要修改 debug.bat 配置文件，如果您的目录下没有这个文件也可以自己新增一个。</p>
+<p><img src="/img/2022/10/bochs/3.PNG" alt=""></p>
+<p>文件内只有一行指令，前面是指出了 Bochs 的 bochsdbg 文件位置， 后面则是和我们的 bochsrc-hd.bxrc 配置文件进行关联。</p>
+<pre tabindex="0"><code>&quot;D:\ertraSoft2\Bochs\Bochs\Bochs-2.2.pre4\bochsdbg&quot; -q -f bochsrc-hd.bxrc
+</code></pre><p>然后在 cmd 运行这个文件查看效果如下</p>
+<p><img src="/img/2022/10/bochs/4.PNG" alt=""></p>
+<p>我们可以可以使用 help 查看帮助，也可以在程序最开始执行的位置——神奇的 0x7c00 位置处打个断点，观察它的效果。这时程序的主窗口就会显示处 Boot from floop&hellip;的信息。</p>
+<p><img src="/img/2022/10/bochs/5.PNG" alt=""></p>
+<p><img src="/img/2022/10/bochs/6.PNG" alt=""></p>
+<p>然后我们可以用 n 进行单步调试，一步步观察程序的启动过程了。</p>
+<p><img src="/img/2022/10/bochs/7.PNG" alt=""></p>
+
+<p style="color:#777;">Last modified on 2022-10-04</p>
+</div>
+<a href="#top"><i class="fa fa-chevron-up" style="font-size: 30px; color: black;"></i></a>
+
+</main>
+
+<footer class="footer">
+  <script type="text/javascript" src="/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/javascript" src="/js/center-img.js"></script>
+
+<script type="text/javascript" src="//rf.revolvermaps.com/0/0/6.js?i=5sz67w4rqwe&amp;m=0&amp;c=ff0000&amp;cr1=ffffff&amp;f=times_new_roman&amp;l=1" async="async"></script>
+
+     <ul class="footer-links">
+      
+       
+       
+       
+       <li><a href="/en/posts/index.xml" type="application/rss+xml" title="RSS feed">
+       Subscribe </a>
+       </li>
+       
+       
+       <li>
+       
+        <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
+       
+        License
+        <i class="fa fa-cc" aria-hidden="true" title="Attribution-NonCommercial-ShareAlike 4.0 International"></i> 
+        </a>
+       </li>
+       
+     </ul>
+     
+	    <span id="busuanzi_container_site_pv"> 本站访问量：<span id="busuanzi_value_site_pv"></span>次</span>&nbsp;
+	    <span id="busuanzi_container_site_uv"> 您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者</span>
+
+		
+     
+</footer>
+
+
+
+
+
