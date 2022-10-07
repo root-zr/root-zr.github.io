@@ -143,7 +143,7 @@ Table of Contents:
 
 <div class="body-text list-text">
 <h2 id="内存区域划分">内存区域划分<a href="#内存区域划分" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
-<p>Linux 0.11 内核默认最多支持 16M 物理内存。它的内核模块在物理内存的最前端。然后是高速缓冲区，告诉缓冲区是磁盘等块设备临时存放数据的地方，告诉缓冲区的最高内存地址可以是 4M，下图中告诉缓冲区还要扣除显存和 BIOS ROM 占用的部分。剩余部分才是主内存区，如果系统中还有 RAM 虚拟磁盘，主内存区的前段还要扣除虚拟盘所占的内存空间。如下图所示，</p>
+<p>Linux 0.11 内核默认最多支持 16M 物理内存。它的内核模块在物理内存的最前端。然后是高速缓冲区，高速缓冲区是磁盘等块设备临时存放数据的地方，高速缓冲区的最高内存地址可以是 4M，下图中高速缓冲区还要扣除显存和 BIOS ROM 占用的部分。剩余部分才是主内存区，如果系统中还有 RAM 虚拟磁盘，主内存区的前段还要扣除虚拟盘所占的内存空间。如下图所示，</p>
 <p><img src="/img/2022/10/memm/1.PNG" alt=""></p>
 <p>我们来看一下具体在代码中的实现， 下面代码中 ROOT_DEV 表示根设备号， buffer_memory_end 表示高速缓冲区的末端地址， memory_end 表示机器的内存数，main_memory_start 则表示主存的开始地址。</p>
 <div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">ROOT_DEV <span style="color:#666">=</span> ORIG_ROOT_DEV; <span style="color:#408080;font-style:italic">// 0x901fc
