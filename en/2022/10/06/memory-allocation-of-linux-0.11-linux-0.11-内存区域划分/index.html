@@ -1,0 +1,282 @@
+<a name="top"></a>
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  	
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Memory Allocation of Linux 0.11 | Linux 0.11 内存区域划分 - Albert Wang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/font.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega@5.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.12.2"></script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+
+
+  </head>
+  
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav" >
+      <a href="/" class="nav-logo">
+        <img src="/media/logo.JPG"
+         width="50"
+         height="50"
+         alt="Hugo-ht">
+      </a>
+
+      <ul class="nav-links" >
+       
+       
+       
+       <li><a href="/">Home</a></li>
+       
+       <li><a href="/en/posts/">Blog</a></li>
+       
+       <li><a href="/categories/">Categories</a></li>
+       
+       <li><a href="/en/project/">Project</a></li>
+       
+       <li><a href="/en/about/">About</a></li>
+       
+       
+      </ul>
+</nav>
+		<script type="text/javascript"
+        async
+        src="https://cdn.bootcss.com/mathjax/2.7.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\[\[','\]\]']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+});
+
+MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<style>
+code.has-jax {
+    font: inherit;
+    font-size: 100%;
+    background: inherit;
+    border: inherit;
+    color: #515151;
+}
+</style>
+      </header>
+
+<main class = "content" role="main">
+<div style="text-align: center">
+
+<h1>Memory Allocation of Linux 0.11 | Linux 0.11 内存区域划分</h1>
+
+<p>Albert Wang 
+ / 2022-10-06 
+/ 500 Words/has been Read  <span id="busuanzi_value_page_pv"></span>&nbsp;&nbsp;Times
+
+</p>
+
+
+
+<hr/>
+
+
+</div>
+
+<span class="article-toolbar">
+  
+  
+  
+  
+  
+  
+  
+  <a href='https://github.com/root-zren%5cposts%5c2022%5cLinux0.11%e5%86%85%e5%ad%98%e5%8c%ba%e5%9f%9f%e5%88%92%e5%88%86.md'style="font-size: 24px; color: black;" target="_blank"><i class="fa fa-edit" aria-hidden="true" title="Suggest an edit of this page"></i>
+  </a>
+  
+  
+  
+</span>
+
+
+<aside class="toc">
+Table of Contents:
+<nav id="TableOfContents">
+  <ol>
+    <li><a href="#内存区域划分">内存区域划分</a></li>
+    <li><a href="#内存区域索引">内存区域索引</a></li>
+  </ol>
+</nav>
+</aside>
+
+
+<div class="body-text list-text">
+<h2 id="内存区域划分">内存区域划分<a href="#内存区域划分" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>Linux 0.11 内核默认最多支持 16M 物理内存。它的内核模块在物理内存的最前端。然后是高速缓冲区，告诉缓冲区是磁盘等块设备临时存放数据的地方，告诉缓冲区的最高内存地址可以是 4M，下图中告诉缓冲区还要扣除显存和 BIOS ROM 占用的部分。剩余部分才是主内存区，如果系统中还有 RAM 虚拟磁盘，主内存区的前段还要扣除虚拟盘所占的内存空间。如下图所示，</p>
+<p><img src="/img/2022/10/memm/1.PNG" alt=""></p>
+<p>我们来看一下具体在代码中的实现， 下面代码中 ROOT_DEV 表示根设备号， buffer_memory_end 表示高速缓冲区的末端地址， memory_end 表示机器的内存数，main_memory_start 则表示主存的开始地址。</p>
+<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">ROOT_DEV <span style="color:#666">=</span> ORIG_ROOT_DEV; <span style="color:#408080;font-style:italic">// 0x901fc
+</span><span style="color:#408080;font-style:italic"></span>drive_info <span style="color:#666">=</span> DRIVE_INFO; <span style="color:#408080;font-style:italic">// 0x90080
+</span><span style="color:#408080;font-style:italic"></span>memory_end <span style="color:#666">=</span> (<span style="color:#666">1</span><span style="color:#666">&lt;&lt;</span><span style="color:#666">20</span>) <span style="color:#666">+</span> (EXT_MEM_K<span style="color:#666">&lt;&lt;</span><span style="color:#666">10</span>);
+memory_end <span style="color:#666">&amp;=</span> <span style="color:#666">0xfffff000</span>;
+<span style="color:#008000;font-weight:bold">if</span> (memory_end <span style="color:#666">&gt;</span> <span style="color:#666">16</span><span style="color:#666">*</span><span style="color:#666">1024</span><span style="color:#666">*</span><span style="color:#666">1024</span>)
+    memory_end <span style="color:#666">=</span> <span style="color:#666">16</span><span style="color:#666">*</span><span style="color:#666">1024</span><span style="color:#666">*</span><span style="color:#666">1024</span>;
+<span style="color:#008000;font-weight:bold">if</span> (memory_end <span style="color:#666">&gt;</span> <span style="color:#666">12</span><span style="color:#666">*</span><span style="color:#666">1024</span><span style="color:#666">*</span><span style="color:#666">1024</span>) 
+    buffer_memory_end <span style="color:#666">=</span> <span style="color:#666">4</span><span style="color:#666">*</span><span style="color:#666">1024</span><span style="color:#666">*</span><span style="color:#666">1024</span>;
+<span style="color:#008000;font-weight:bold">else</span> <span style="color:#00f">if</span> (memory_end <span style="color:#666">&gt;</span> <span style="color:#666">6</span><span style="color:#666">*</span><span style="color:#666">1024</span><span style="color:#666">*</span><span style="color:#666">1024</span>)
+    buffer_memory_end <span style="color:#666">=</span> <span style="color:#666">2</span><span style="color:#666">*</span><span style="color:#666">1024</span><span style="color:#666">*</span><span style="color:#666">1024</span>;
+<span style="color:#008000;font-weight:bold">else</span>
+    buffer_memory_end <span style="color:#666">=</span> <span style="color:#666">1</span><span style="color:#666">*</span><span style="color:#666">1024</span><span style="color:#666">*</span><span style="color:#666">1024</span>;
+main_memory_start <span style="color:#666">=</span> buffer_memory_end;
+<span style="color:#bc7a00">#ifdef RAMDISK
+</span><span style="color:#bc7a00"></span>	main_memory_start <span style="color:#666">+=</span> rd_init(main_memory_start, RAMDISK<span style="color:#666">*</span><span style="color:#666">1024</span>);
+<span style="color:#bc7a00">#endif
+</span><span style="color:#bc7a00"></span>	mem_init(main_memory_start,memory_end);
+</code></pre></div><p>上面的代码首先初始化了根设备号和硬盘参数表，然后设置内存的大小为 1M + 扩展内存 * 1024 字节，memory_end &amp;= 0xfffff000; 则是表示忽略不到 4K 的内存数。</p>
+<p>然后是对内存的划分，如果发现包括扩展内存后的内存大小超过 16M 则按照 16 M 来算。如果发现内存大小超过 12M，则将缓冲区的末端地址设置到 4M 位置处，如果内存超过 6 M 但小于 12M， 则将缓冲区末端地址设置到 2M，否则就设置 1M 位置.</p>
+<p>最后内存的起始位置就是高速缓冲区的末端地址。特别地，如果设置了虚拟内存的话主存的起始地址要往后推。rd_init 的第一个参数表示起始地址，第二个参数表示申请的长度。</p>
+<p>最后调用 mem_init 进行主存的初始化，</p>
+<h2 id="内存区域索引">内存区域索引<a href="#内存区域索引" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>下面我们来看看这 16M 的内存是怎么进行索引的。首先 Linux 将内存划分成了一个一个的页，每个页大小为 4K。 然后建立对页的索引，用来构建索引的数据结构是页表。一个页表大小也是 4K，只不过它里面存的值是对每一个页的索引，页表里每一个页表项的结构如下图所示，</p>
+<p><img src="/img/2022/10/memm/2.PNG" alt=""></p>
+<p>我们可以看到每一个页表项大小是 4个字节，其中高 20 位用来索引每一个页帧的地址，低 12 位是一些标志位，用来表示可以对这些页的操作。因为一个页表项是 4 个字节，页表的大小是 4K，所以我们也很容易得出一个页表能索引的页是 1024。所以这里笔者猜测当时 Linus 也是想着凑个整才把一个页的大小设置为 4K 而不是 1K，这样除以每一个页表项的大小刚好是 $2^{10}$。</p>
+<p>下面我们来推一下要索引 16M 的内存需要多少个页表，已知一个页表能索引 1024 个页，一个页的大小是 4K， 所以一个页表能索引 4M 的物理内存，那 16 M 就需要 4个页表。这四个页表在 head.s 里被定义。</p>
+<p>下面我们来看一下具体的代码实现，</p>
+<pre tabindex="0"><code>/*
+ * I put the kernel page tables right after the page directory,
+ * using 4 of them to span 16 Mb of physical memory. People with
+ * more than 16MB will have to expand this.
+ */
+.org 0x1000
+pg0:
+
+.org 0x2000
+pg1:
+
+.org 0x3000
+pg2:
+
+.org 0x4000
+pg3:
+
+.org 0x5000
+</code></pre><p>我们可以看到第一个页表的起始位置不是0x0000，而是 0x1000。这是为什么呢？主要是因为当页表多了以后我们怎么知道哪个页表的位置呢，这就需要一个页目录来管理。页目录的结构和页表项的结构一样，只不过里面的索引是页表的索引，它的起始地址 pg_dir 就是0x0000。下面是对页表初始化的代码，</p>
+<pre tabindex="0"><code>.align 2
+setup_paging:
+	movl $1024*5,%ecx		/* 5 pages - pg_dir+4 page tables */
+	xorl %eax,%eax
+	xorl %edi,%edi			/* pg_dir is at 0x000 */
+	cld;rep;stosl
+	movl $pg0+7,pg_dir		/* set present bit/user r/w */
+	movl $pg1+7,pg_dir+4		/*  --------- &quot; &quot; --------- */
+	movl $pg2+7,pg_dir+8		/*  --------- &quot; &quot; --------- */
+	movl $pg3+7,pg_dir+12		/*  --------- &quot; &quot; --------- */
+	movl $pg3+4092,%edi
+	movl $0xfff007,%eax		/*  16Mb - 4096 + 7 (r/w user,p) */
+	std
+1:	stosl			/* fill pages backwards - more efficient :-) */
+	subl $0x1000,%eax
+	jge 1b
+	xorl %eax,%eax		/* pg_dir is at 0x0000 */
+	movl %eax,%cr3		/* cr3 - page directory start */
+	movl %cr0,%eax
+	orl $0x80000000,%eax
+	movl %eax,%cr0		/* set paging (PG) bit */
+	ret			/* this also flushes prefetch-queue */
+</code></pre><p>第一行表示按照 4 字节方式对齐，然后对前 5 页的内存地址清零。然后是对每一个页表的设置，我们需要逐行阅读这段汇编代码。首先下面这行代码的 pg0+7 表示的是 0x1000 + 7，也就是二进制的0001 0000 0000 0111。我们拿它和 0xFFFFF000相与可以得到页表的起始地址，用它和 0XFFF项羽可以得到我们对这个页表的一些标志位。然后将这个值传送到0x0000就完成了对页表 0 的初始化。</p>
+<pre tabindex="0"><code>movl $pg0+7,pg_dir		/* set present bit/user r/w */
+</code></pre><p>同样的方式可以完成对剩下三个页表的初始化</p>
+<pre tabindex="0"><code>movl $pg1+7,pg_dir+4		/*  --------- &quot; &quot; --------- */
+movl $pg2+7,pg_dir+8		/*  --------- &quot; &quot; --------- */
+movl $pg3+7,pg_dir+12		/*  --------- &quot; &quot; --------- */
+</code></pre><p>然后从最后一个页表的最后一个页表项开始倒叙往前初始化页表</p>
+<pre tabindex="0"><code>movl $pg3+4092,%edi
+movl $0xfff007,%eax		/*  16Mb - 4096 + 7 (r/w user,p) */
+	std
+1:	stosl			/* fill pages backwards - more efficient :-) */
+	subl $0x1000,%eax
+	jge 1b
+</code></pre><p>完成之后需要初始化页目录表基址寄存器 eax，这里是 0x0000，然后 cr3中保存页目录表的物理地址。之后是启动分页处理，完成之后返回到 main 函数处真正开始执行启动操作系统的代码。</p>
+<pre tabindex="0"><code>xorl %eax,%eax		/* pg_dir is at 0x0000 */
+movl %eax,%cr3		/* cr3 - page directory start */
+movl %cr0,%eax
+orl $0x80000000,%eax
+movl %eax,%cr0		/* set paging (PG) bit */
+ret			/* this also flushes prefetch-queue */
+</code></pre>
+<p style="color:#777;">Last modified on 2022-10-06</p>
+</div>
+<a href="#top"><i class="fa fa-chevron-up" style="font-size: 30px; color: black;"></i></a>
+
+</main>
+
+<footer class="footer">
+  <script type="text/javascript" src="/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/javascript" src="/js/center-img.js"></script>
+
+<script type="text/javascript" src="//rf.revolvermaps.com/0/0/6.js?i=5sz67w4rqwe&amp;m=0&amp;c=ff0000&amp;cr1=ffffff&amp;f=times_new_roman&amp;l=1" async="async"></script>
+
+     <ul class="footer-links">
+      
+       
+       
+       
+       <li><a href="/en/posts/index.xml" type="application/rss+xml" title="RSS feed">
+       Subscribe </a>
+       </li>
+       
+       
+       <li>
+       
+        <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
+       
+        License
+        <i class="fa fa-cc" aria-hidden="true" title="Attribution-NonCommercial-ShareAlike 4.0 International"></i> 
+        </a>
+       </li>
+       
+     </ul>
+     
+	    <span id="busuanzi_container_site_pv"> 本站访问量：<span id="busuanzi_value_site_pv"></span>次</span>&nbsp;
+	    <span id="busuanzi_container_site_uv"> 您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者</span>
+
+		
+     
+</footer>
+
+
+
+
+

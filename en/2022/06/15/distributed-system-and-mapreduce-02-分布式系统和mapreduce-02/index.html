@@ -150,192 +150,192 @@ Table of Contents:
 <p><img src="/img/2022/06/mapreduce/index-frame.png" alt=""></p>
 <h2 id="单机mapreduce任务">单机mapreduce任务<a href="#单机mapreduce任务" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
 <p>首先我们需要明确的是main目录下的文件是我们的程序入口处， 如果我们执行mrsequential.go 文件将会启动一个单机的mapreduce任务，执行的命令如下</p>
-<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#008000;font-weight:bold">go</span> run <span style="color:#666">-</span>race mrsequential.<span style="color:#008000;font-weight:bold">go</span> wc.so pg<span style="color:#666">*</span>.txt
-</code></pre></div><p>可以看到在执行的时候还传了两个参数，这两个参数的作用是什么呢？我们从代码中来观察一下，</p>
-<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#008000;font-weight:bold">if</span> <span style="color:#008000">len</span>(os.Args) &lt; <span style="color:#666">3</span> {
-    fmt.<span style="color:#00f">Fprintf</span>(os.Stderr, <span style="color:#ba2121">&#34;Usage: mrsequential xxx.so inputfiles...\n&#34;</span>)
-    os.<span style="color:#00f">Exit</span>(<span style="color:#666">1</span>)
+<pre tabindex="0"><code>go run -race mrsequential.go wc.so pg*.txt
+</code></pre><p>可以看到在执行的时候还传了两个参数，这两个参数的作用是什么呢？我们从代码中来观察一下，</p>
+<pre tabindex="0"><code>if len(os.Args) &lt; 3 {
+    fmt.Fprintf(os.Stderr, &quot;Usage: mrsequential xxx.so inputfiles...\n&quot;)
+    os.Exit(1)
 }
 
-mapf, reducef <span style="color:#666">:=</span> <span style="color:#00f">loadPlugin</span>(os.Args[<span style="color:#666">1</span>])
-</code></pre></div><p>可以看到 wc.so 是用来加载 map 和 reduce 函数的， 而 wc.so 文件则是由下面这个命令生成的，通过-buildmode=plugin可以以插件的形式将wc.go 文件里的函数封装起来，然后通过loadPlugin 函数重新加载出来。</p>
-<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"> <span style="color:#008000;font-weight:bold">go</span> build <span style="color:#666">-</span>race <span style="color:#666">-</span>buildmode=plugin ..<span style="color:#666">/</span>mrapps<span style="color:#666">/</span>wc.<span style="color:#008000;font-weight:bold">go</span>
-</code></pre></div><p>loadPlugin 函数是作者自己编写的，具体是封装了plugin.Open 和 p.Lookup两个函数的功能，最终的结果是获取到map 和 reduce 两个函数。</p>
-<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#008000;font-weight:bold">func</span> <span style="color:#00f">loadPlugin</span>(filename <span style="color:#b00040">string</span>) (<span style="color:#008000;font-weight:bold">func</span>(<span style="color:#b00040">string</span>, <span style="color:#b00040">string</span>) []mr.KeyValue, <span style="color:#008000;font-weight:bold">func</span>(<span style="color:#b00040">string</span>, []<span style="color:#b00040">string</span>) <span style="color:#b00040">string</span>) {
-	p, err <span style="color:#666">:=</span> plugin.<span style="color:#00f">Open</span>(filename)
-	<span style="color:#008000;font-weight:bold">if</span> err <span style="color:#666">!=</span> <span style="color:#008000;font-weight:bold">nil</span> {
-		log.<span style="color:#00f">Fatalf</span>(<span style="color:#ba2121">&#34;cannot load plugin %v&#34;</span>, filename)
+mapf, reducef := loadPlugin(os.Args[1])
+</code></pre><p>可以看到 wc.so 是用来加载 map 和 reduce 函数的， 而 wc.so 文件则是由下面这个命令生成的，通过-buildmode=plugin可以以插件的形式将wc.go 文件里的函数封装起来，然后通过loadPlugin 函数重新加载出来。</p>
+<pre tabindex="0"><code> go build -race -buildmode=plugin ../mrapps/wc.go
+</code></pre><p>loadPlugin 函数是作者自己编写的，具体是封装了plugin.Open 和 p.Lookup两个函数的功能，最终的结果是获取到map 和 reduce 两个函数。</p>
+<pre tabindex="0"><code>func loadPlugin(filename string) (func(string, string) []mr.KeyValue, func(string, []string) string) {
+	p, err := plugin.Open(filename)
+	if err != nil {
+		log.Fatalf(&quot;cannot load plugin %v&quot;, filename)
 	}
-	xmapf, err <span style="color:#666">:=</span> p.<span style="color:#00f">Lookup</span>(<span style="color:#ba2121">&#34;Map&#34;</span>)
-	<span style="color:#008000;font-weight:bold">if</span> err <span style="color:#666">!=</span> <span style="color:#008000;font-weight:bold">nil</span> {
-		log.<span style="color:#00f">Fatalf</span>(<span style="color:#ba2121">&#34;cannot find Map in %v&#34;</span>, filename)
+	xmapf, err := p.Lookup(&quot;Map&quot;)
+	if err != nil {
+		log.Fatalf(&quot;cannot find Map in %v&quot;, filename)
 	}
-	mapf <span style="color:#666">:=</span> xmapf.(<span style="color:#008000;font-weight:bold">func</span>(<span style="color:#b00040">string</span>, <span style="color:#b00040">string</span>) []mr.KeyValue)
-	xreducef, err <span style="color:#666">:=</span> p.<span style="color:#00f">Lookup</span>(<span style="color:#ba2121">&#34;Reduce&#34;</span>)
-	<span style="color:#008000;font-weight:bold">if</span> err <span style="color:#666">!=</span> <span style="color:#008000;font-weight:bold">nil</span> {
-		log.<span style="color:#00f">Fatalf</span>(<span style="color:#ba2121">&#34;cannot find Reduce in %v&#34;</span>, filename)
+	mapf := xmapf.(func(string, string) []mr.KeyValue)
+	xreducef, err := p.Lookup(&quot;Reduce&quot;)
+	if err != nil {
+		log.Fatalf(&quot;cannot find Reduce in %v&quot;, filename)
 	}
-	reducef <span style="color:#666">:=</span> xreducef.(<span style="color:#008000;font-weight:bold">func</span>(<span style="color:#b00040">string</span>, []<span style="color:#b00040">string</span>) <span style="color:#b00040">string</span>)
+	reducef := xreducef.(func(string, []string) string)
 
-	<span style="color:#008000;font-weight:bold">return</span> mapf, reducef
+	return mapf, reducef
 }
-</code></pre></div><p>第二个参数的作用则是需要我们统计的文件的名称，我们可以在main/ 目录下看到这些文件。</p>
+</code></pre><p>第二个参数的作用则是需要我们统计的文件的名称，我们可以在main/ 目录下看到这些文件。</p>
 <p>我们说这是一个单机的mapreduce任务，它的单机就表现在下面的代码中。</p>
-<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">intermediate <span style="color:#666">:=</span> []mr.KeyValue{}
-<span style="color:#008000;font-weight:bold">for</span> _, filename <span style="color:#666">:=</span> <span style="color:#008000;font-weight:bold">range</span> os.Args[<span style="color:#666">2</span>:] {
-    file, err <span style="color:#666">:=</span> os.<span style="color:#00f">Open</span>(filename)
-    <span style="color:#008000;font-weight:bold">if</span> err <span style="color:#666">!=</span> <span style="color:#008000;font-weight:bold">nil</span> {
-        log.<span style="color:#00f">Fatalf</span>(<span style="color:#ba2121">&#34;cannot open %v&#34;</span>, filename)
+<pre tabindex="0"><code>intermediate := []mr.KeyValue{}
+for _, filename := range os.Args[2:] {
+    file, err := os.Open(filename)
+    if err != nil {
+        log.Fatalf(&quot;cannot open %v&quot;, filename)
     }
-    content, err <span style="color:#666">:=</span> ioutil.<span style="color:#00f">ReadAll</span>(file)
-    <span style="color:#008000;font-weight:bold">if</span> err <span style="color:#666">!=</span> <span style="color:#008000;font-weight:bold">nil</span> {
-        log.<span style="color:#00f">Fatalf</span>(<span style="color:#ba2121">&#34;cannot read %v&#34;</span>, filename)
+    content, err := ioutil.ReadAll(file)
+    if err != nil {
+        log.Fatalf(&quot;cannot read %v&quot;, filename)
     }
-    file.<span style="color:#00f">Close</span>()
-    kva <span style="color:#666">:=</span> <span style="color:#00f">mapf</span>(filename, <span style="color:#008000">string</span>(content))
-    intermediate = <span style="color:#008000">append</span>(intermediate, kva<span style="color:#666">...</span>)
+    file.Close()
+    kva := mapf(filename, string(content))
+    intermediate = append(intermediate, kva...)
 }
-</code></pre></div><p>这里我们通过一个循环来遍历所有的文件，然后对每一个文件执行map函数，具体的操作就是将文件的每一个单词进行拆分，然后变成&lt;key, value&gt;的形式，最后将这个map返回。可以看到这里的文件名乘这个参数是没有用的，而且每一个文件其实都是由一台机器处理的。我们要做的事就是把这些文件分给不同的机器去处理。</p>
+</code></pre><p>这里我们通过一个循环来遍历所有的文件，然后对每一个文件执行map函数，具体的操作就是将文件的每一个单词进行拆分，然后变成&lt;key, value&gt;的形式，最后将这个map返回。可以看到这里的文件名乘这个参数是没有用的，而且每一个文件其实都是由一台机器处理的。我们要做的事就是把这些文件分给不同的机器去处理。</p>
 <p>在单机过程中，对map 过程得到的中间数据是通过sort来合并的</p>
-<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">sort.<span style="color:#00f">Sort</span>(<span style="color:#00f">ByKey</span>(intermediate))
-</code></pre></div><p>下面就是reduce的过程了，这个过程中只需要先将相同key 的元素都放入一个切片中，然后调用reduce函数统计切片的长度，并将最终的结果写入文件中就可以了。</p>
-<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">oname <span style="color:#666">:=</span> <span style="color:#ba2121">&#34;mr-out-0&#34;</span>
-ofile, _ <span style="color:#666">:=</span> os.<span style="color:#00f">Create</span>(oname)
-i <span style="color:#666">:=</span> <span style="color:#666">0</span>
-<span style="color:#008000;font-weight:bold">for</span> i &lt; <span style="color:#008000">len</span>(intermediate) {
-    j <span style="color:#666">:=</span> i <span style="color:#666">+</span> <span style="color:#666">1</span>
-    <span style="color:#008000;font-weight:bold">for</span> j &lt; <span style="color:#008000">len</span>(intermediate) <span style="color:#666">&amp;&amp;</span> intermediate[j].Key <span style="color:#666">==</span> intermediate[i].Key {
-        j<span style="color:#666">++</span>
+<pre tabindex="0"><code>sort.Sort(ByKey(intermediate))
+</code></pre><p>下面就是reduce的过程了，这个过程中只需要先将相同key 的元素都放入一个切片中，然后调用reduce函数统计切片的长度，并将最终的结果写入文件中就可以了。</p>
+<pre tabindex="0"><code>oname := &quot;mr-out-0&quot;
+ofile, _ := os.Create(oname)
+i := 0
+for i &lt; len(intermediate) {
+    j := i + 1
+    for j &lt; len(intermediate) &amp;&amp; intermediate[j].Key == intermediate[i].Key {
+        j++
     }
-    values <span style="color:#666">:=</span> []<span style="color:#b00040">string</span>{}
-    <span style="color:#008000;font-weight:bold">for</span> k <span style="color:#666">:=</span> i; k &lt; j; k<span style="color:#666">++</span> {
-        values = <span style="color:#008000">append</span>(values, intermediate[k].Value)
+    values := []string{}
+    for k := i; k &lt; j; k++ {
+        values = append(values, intermediate[k].Value)
     }
-    output <span style="color:#666">:=</span> <span style="color:#00f">reducef</span>(intermediate[i].Key, values)
+    output := reducef(intermediate[i].Key, values)
 
-    <span style="color:#408080;font-style:italic">// this is the correct format for each line of Reduce output.
-</span><span style="color:#408080;font-style:italic"></span>    fmt.<span style="color:#00f">Fprintf</span>(ofile, <span style="color:#ba2121">&#34;%v %v\n&#34;</span>, intermediate[i].Key, output)
+    // this is the correct format for each line of Reduce output.
+    fmt.Fprintf(ofile, &quot;%v %v\n&quot;, intermediate[i].Key, output)
 
     i = j
 }
 
-ofile.<span style="color:#00f">Close</span>()
-</code></pre></div><p>通过上面的任务我们可以发现 map函数和 reduce 函数其实是属于被一直重复调用的代码块，我们可以选择让不同的机器去调用它而不是让一台机器去重复执行这个过程。下面的改进主要就来自于此。</p>
+ofile.Close()
+</code></pre><p>通过上面的任务我们可以发现 map函数和 reduce 函数其实是属于被一直重复调用的代码块，我们可以选择让不同的机器去调用它而不是让一台机器去重复执行这个过程。下面的改进主要就来自于此。</p>
 <h2 id="分布式mapreduce任务">分布式mapreduce任务<a href="#分布式mapreduce任务" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
 <p>在分布式任务中我们首先需要确定一个 Coordinator  和多个worker ，Coordinator  就相当于领导，它不干具体的事物，只负责统计有哪些任务需要完成，还有哪些任务尚未完成，哪些任务正在做，要给 worker 分配哪些任务等等。而 worker 节点要做的事就是在自己没有工作要做的时候向 Coordinator  申请任务，然后执行任务。</p>
 <p>它们之间以 rpc 的方式进行通信，rpc 会实现商定通信的一些规范和准则，可以使整个过程更加高效。我们要做的所有任务都在mr/ 这个目录下。我们先从main/ 目录下的mrcoordinator.go 入手来看具体需要我们做什么。</p>
-<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#008000;font-weight:bold">go</span> run mrcoordinator.<span style="color:#008000;font-weight:bold">go</span> pg<span style="color:#666">*</span>.txt
-</code></pre></div><p>首先执行上面的命令可以启动一个主节点的服务，参数 pg*.txt 表示待处理的文件名称。它里面执行的代码也很简单，就是调用了 mr/ 包下的 MakeCoordinator 函数，第一个参数是文件名，第二个参数表示reduce任务使用的数量。</p>
-<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#008000;font-weight:bold">if</span> <span style="color:#008000">len</span>(os.Args) &lt; <span style="color:#666">2</span> {
-    fmt.<span style="color:#00f">Fprintf</span>(os.Stderr, <span style="color:#ba2121">&#34;Usage: mrcoordinator inputfiles...\n&#34;</span>)
-    os.<span style="color:#00f">Exit</span>(<span style="color:#666">1</span>)
+<pre tabindex="0"><code>go run mrcoordinator.go pg*.txt
+</code></pre><p>首先执行上面的命令可以启动一个主节点的服务，参数 pg*.txt 表示待处理的文件名称。它里面执行的代码也很简单，就是调用了 mr/ 包下的 MakeCoordinator 函数，第一个参数是文件名，第二个参数表示reduce任务使用的数量。</p>
+<pre tabindex="0"><code>if len(os.Args) &lt; 2 {
+    fmt.Fprintf(os.Stderr, &quot;Usage: mrcoordinator inputfiles...\n&quot;)
+    os.Exit(1)
 }
 
-m <span style="color:#666">:=</span> mr.<span style="color:#00f">MakeCoordinator</span>(os.Args[<span style="color:#666">1</span>:], <span style="color:#666">10</span>)
-<span style="color:#008000;font-weight:bold">for</span> m.<span style="color:#00f">Done</span>() <span style="color:#666">==</span> <span style="color:#008000;font-weight:bold">false</span> {
-    time.<span style="color:#00f">Sleep</span>(time.Second)
+m := mr.MakeCoordinator(os.Args[1:], 10)
+for m.Done() == false {
+    time.Sleep(time.Second)
 }
 
-time.<span style="color:#00f">Sleep</span>(time.Second)
-</code></pre></div><p>这个函数目前提供给我们的只有下面这几行代码，其中 Coordinator 是一个结构体，它里面的变量需要我们自己去定义。</p>
-<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#008000;font-weight:bold">func</span> <span style="color:#00f">MakeCoordinator</span>(files []<span style="color:#b00040">string</span>, nReduce <span style="color:#b00040">int</span>) <span style="color:#666">*</span>Coordinator {
-	c <span style="color:#666">:=</span> Coordinator{}
+time.Sleep(time.Second)
+</code></pre><p>这个函数目前提供给我们的只有下面这几行代码，其中 Coordinator 是一个结构体，它里面的变量需要我们自己去定义。</p>
+<pre tabindex="0"><code>func MakeCoordinator(files []string, nReduce int) *Coordinator {
+	c := Coordinator{}
 
-	<span style="color:#408080;font-style:italic">// Your code here.
-</span><span style="color:#408080;font-style:italic"></span>
+	// Your code here.
 
-	c.<span style="color:#00f">server</span>()
-	<span style="color:#008000;font-weight:bold">return</span> <span style="color:#666">&amp;</span>c
+
+	c.server()
+	return &amp;c
 }
-</code></pre></div><p>然后我们可以发现程序调用了 Coordinator 结构体的 server() 方法，它所做的事就是开启了 rpc 的监听，等待 worker 节点来申请任务。</p>
-<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#008000;font-weight:bold">func</span> (c <span style="color:#666">*</span>Coordinator) <span style="color:#00f">server</span>() {
-	rpc.<span style="color:#00f">Register</span>(c)
-	rpc.<span style="color:#00f">HandleHTTP</span>()
-	<span style="color:#408080;font-style:italic">//l, e := net.Listen(&#34;tcp&#34;, &#34;:1234&#34;)
-</span><span style="color:#408080;font-style:italic"></span>	sockname <span style="color:#666">:=</span> <span style="color:#00f">coordinatorSock</span>()
-	os.<span style="color:#00f">Remove</span>(sockname)
-	l, e <span style="color:#666">:=</span> net.<span style="color:#00f">Listen</span>(<span style="color:#ba2121">&#34;unix&#34;</span>, sockname)
-	<span style="color:#008000;font-weight:bold">if</span> e <span style="color:#666">!=</span> <span style="color:#008000;font-weight:bold">nil</span> {
-		log.<span style="color:#00f">Fatal</span>(<span style="color:#ba2121">&#34;listen error:&#34;</span>, e)
+</code></pre><p>然后我们可以发现程序调用了 Coordinator 结构体的 server() 方法，它所做的事就是开启了 rpc 的监听，等待 worker 节点来申请任务。</p>
+<pre tabindex="0"><code>func (c *Coordinator) server() {
+	rpc.Register(c)
+	rpc.HandleHTTP()
+	//l, e := net.Listen(&quot;tcp&quot;, &quot;:1234&quot;)
+	sockname := coordinatorSock()
+	os.Remove(sockname)
+	l, e := net.Listen(&quot;unix&quot;, sockname)
+	if e != nil {
+		log.Fatal(&quot;listen error:&quot;, e)
 	}
-	<span style="color:#008000;font-weight:bold">go</span> http.<span style="color:#00f">Serve</span>(l, <span style="color:#008000;font-weight:bold">nil</span>)
+	go http.Serve(l, nil)
 }
-</code></pre></div><p>到目前为止我们似乎只能确定我们需要定义一个结构体 Coordinator， 然后需要定义 rpc 的一些规范，其他的尚不明确。不过不用着急，我们可以再从  mrworker.go 出发看能不能得到更加有用的信息。执行下面的命令就可以执行这个文件。</p>
-<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#008000;font-weight:bold">go</span> run mrworker.<span style="color:#008000;font-weight:bold">go</span> wc.so
-</code></pre></div><p>这段代码也很简洁，前几行代码我们已经很熟悉了，它的作用就是加载map 和 reduce 函数，然后再执行 mr 包下的 Worker 函数。</p>
-<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#008000;font-weight:bold">if</span> <span style="color:#008000">len</span>(os.Args) <span style="color:#666">!=</span> <span style="color:#666">2</span> {
-    fmt.<span style="color:#00f">Fprintf</span>(os.Stderr, <span style="color:#ba2121">&#34;Usage: mrworker xxx.so\n&#34;</span>)
-    os.<span style="color:#00f">Exit</span>(<span style="color:#666">1</span>)
+</code></pre><p>到目前为止我们似乎只能确定我们需要定义一个结构体 Coordinator， 然后需要定义 rpc 的一些规范，其他的尚不明确。不过不用着急，我们可以再从  mrworker.go 出发看能不能得到更加有用的信息。执行下面的命令就可以执行这个文件。</p>
+<pre tabindex="0"><code>go run mrworker.go wc.so
+</code></pre><p>这段代码也很简洁，前几行代码我们已经很熟悉了，它的作用就是加载map 和 reduce 函数，然后再执行 mr 包下的 Worker 函数。</p>
+<pre tabindex="0"><code>if len(os.Args) != 2 {
+    fmt.Fprintf(os.Stderr, &quot;Usage: mrworker xxx.so\n&quot;)
+    os.Exit(1)
 }
 
-mapf, reducef <span style="color:#666">:=</span> <span style="color:#00f">loadPlugin</span>(os.Args[<span style="color:#666">1</span>])
+mapf, reducef := loadPlugin(os.Args[1])
 
-mr.<span style="color:#00f">Worker</span>(mapf, reducef)
-</code></pre></div><p>但是 Worker 函数里的内容完全需要我们自己去实现。</p>
-<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#008000;font-weight:bold">func</span> <span style="color:#00f">Worker</span>(mapf <span style="color:#008000;font-weight:bold">func</span>(<span style="color:#b00040">string</span>, <span style="color:#b00040">string</span>) []KeyValue,
-	reducef <span style="color:#008000;font-weight:bold">func</span>(<span style="color:#b00040">string</span>, []<span style="color:#b00040">string</span>) <span style="color:#b00040">string</span>) {
+mr.Worker(mapf, reducef)
+</code></pre><p>但是 Worker 函数里的内容完全需要我们自己去实现。</p>
+<pre tabindex="0"><code>func Worker(mapf func(string, string) []KeyValue,
+	reducef func(string, []string) string) {
 
-	<span style="color:#408080;font-style:italic">// Your worker implementation here.
-</span><span style="color:#408080;font-style:italic"></span>
-	<span style="color:#408080;font-style:italic">// uncomment to send the Example RPC to the coordinator.
-</span><span style="color:#408080;font-style:italic"></span>	<span style="color:#408080;font-style:italic">// CallExample()
-</span><span style="color:#408080;font-style:italic"></span>
+	// Your worker implementation here.
+
+	// uncomment to send the Example RPC to the coordinator.
+	// CallExample()
+
 }
-</code></pre></div><p>到目前为止我们已经明确了要做的事。从头梳理一遍要求，我们会发现目前有两件事比较迫切，第一是 rpc 里需要我们约定的内容，第二是 coordinator 里 Coordinator 结构体里的东西。</p>
+</code></pre><p>到目前为止我们已经明确了要做的事。从头梳理一遍要求，我们会发现目前有两件事比较迫切，第一是 rpc 里需要我们约定的内容，第二是 coordinator 里 Coordinator 结构体里的东西。</p>
 <p>我们先来解决第一件事， Worker 和 Coordinator 要通信的唯一目的就是任务（Task），所以我们应该先对 Task进行抽象，本文对 Task 抽象为 Task 的 id，这个 Task 需要处理的文件名称（在本实验中一个 MAP 任务只需要处理一个文件，但在真实的场景中可能需要处理多个不同的块），还有该任务的当前状态。当前状态是用 Mapreduce 论文里的方式来设定的，分为 IDE，IN_PROGRESS和COMPLETED三种状态。</p>
-<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#008000;font-weight:bold">type</span> TaskStatus <span style="color:#b00040">int32</span>
+<pre tabindex="0"><code>type TaskStatus int32
 
-<span style="color:#008000;font-weight:bold">const</span> (
-	IDE         TaskStatus = <span style="color:#666">1</span>
-	IN_PROGRESS TaskStatus = <span style="color:#666">2</span>
-	COMPLETED   TaskStatus = <span style="color:#666">3</span>
+const (
+	IDE         TaskStatus = 1
+	IN_PROGRESS TaskStatus = 2
+	COMPLETED   TaskStatus = 3
 )
 
-<span style="color:#008000;font-weight:bold">type</span> Task <span style="color:#008000;font-weight:bold">struct</span> {
-	id       <span style="color:#b00040">int</span>
-	fileName []<span style="color:#b00040">string</span>
+type Task struct {
+	id       int
+	fileName []string
 	status   TaskStatus
 }
-</code></pre></div><p>Worker  向  Coordinator 请求任务的时候，Coordinator 返回的结果应该包括该任务的类型，考虑到这个任务类型只在 rpc过程中会有应用，所以并没有把它放入 Task 中，类型可以分为下面这四种</p>
-<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#008000;font-weight:bold">type</span> TaskTypes <span style="color:#b00040">int32</span> <span style="color:#408080;font-style:italic">// 任务类型在 rpc 过程中会用到
-</span><span style="color:#408080;font-style:italic"></span>
-<span style="color:#008000;font-weight:bold">const</span> (
-	MAP      TaskTypes = <span style="color:#666">1</span>
-	REDUCE   TaskTypes = <span style="color:#666">2</span>
-	WAITTING TaskTypes = <span style="color:#666">3</span>
-	FINISHED TaskTypes = <span style="color:#666">4</span>
+</code></pre><p>Worker  向  Coordinator 请求任务的时候，Coordinator 返回的结果应该包括该任务的类型，考虑到这个任务类型只在 rpc过程中会有应用，所以并没有把它放入 Task 中，类型可以分为下面这四种</p>
+<pre tabindex="0"><code>type TaskTypes int32 // 任务类型在 rpc 过程中会用到
+
+const (
+	MAP      TaskTypes = 1
+	REDUCE   TaskTypes = 2
+	WAITTING TaskTypes = 3
+	FINISHED TaskTypes = 4
 )
-</code></pre></div><p>同样的，因为在 Worker  的 任务中只需要知道要处理的文件名称和任务编号，并不需要知道当前任务的状态，所以也没有将 Task 整体假如 CoordinatorResponse，只是选择了有用的类型。</p>
-<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#008000;font-weight:bold">type</span> CoordinatorResponse <span style="color:#008000;font-weight:bold">struct</span> {
-	TaskNumber     <span style="color:#b00040">int</span>
-	ReduceTasks    <span style="color:#b00040">int</span> <span style="color:#408080;font-style:italic">// number of reduce tasks
-</span><span style="color:#408080;font-style:italic"></span>	TaskType       TaskTypes
-	FilesToProcess []<span style="color:#b00040">string</span> <span style="color:#408080;font-style:italic">// currently single file for Map Task
-</span><span style="color:#408080;font-style:italic"></span>}
-</code></pre></div><p>Worker  完成任务之后要将中间文件的信息返回给 Coordinator ，传入的参数可以封装如下。</p>
-<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#008000;font-weight:bold">type</span> WorkerRequest <span style="color:#008000;font-weight:bold">struct</span> {
-	TaskNumber                 <span style="color:#b00040">int</span>
-	TaskType                   TaskTypes
-	CompletedIntermediateFiles []<span style="color:#b00040">string</span>
+</code></pre><p>同样的，因为在 Worker  的 任务中只需要知道要处理的文件名称和任务编号，并不需要知道当前任务的状态，所以也没有将 Task 整体假如 CoordinatorResponse，只是选择了有用的类型。</p>
+<pre tabindex="0"><code>type CoordinatorResponse struct {
+	TaskNumber     int
+	ReduceTasks    int // number of reduce tasks
+	TaskType       TaskTypes
+	FilesToProcess []string // currently single file for Map Task
 }
-</code></pre></div><p>至此，我们就完成了 RPC 部分的工作。然后我们可以看一下 Coordinator 结构体的内容</p>
-<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#008000;font-weight:bold">type</span> Coordinator <span style="color:#008000;font-weight:bold">struct</span> {
-	<span style="color:#408080;font-style:italic">// Your definitions here.
-</span><span style="color:#408080;font-style:italic"></span>	mu          sync.Mutex
-	mapTasks    <span style="color:#008000;font-weight:bold">map</span>[<span style="color:#b00040">int</span>]Task
-	reduceTasks <span style="color:#008000;font-weight:bold">map</span>[<span style="color:#b00040">int</span>]Task
+</code></pre><p>Worker  完成任务之后要将中间文件的信息返回给 Coordinator ，传入的参数可以封装如下。</p>
+<pre tabindex="0"><code>type WorkerRequest struct {
+	TaskNumber                 int
+	TaskType                   TaskTypes
+	CompletedIntermediateFiles []string
+}
+</code></pre><p>至此，我们就完成了 RPC 部分的工作。然后我们可以看一下 Coordinator 结构体的内容</p>
+<pre tabindex="0"><code>type Coordinator struct {
+	// Your definitions here.
+	mu          sync.Mutex
+	mapTasks    map[int]Task
+	reduceTasks map[int]Task
 
-	finishedMapTaskNum <span style="color:#b00040">int</span>
-	finishedReduceNum  <span style="color:#b00040">int</span>
+	finishedMapTaskNum int
+	finishedReduceNum  int
 
-	mapTasksCount    <span style="color:#b00040">int</span> <span style="color:#408080;font-style:italic">// map 任务总数
-</span><span style="color:#408080;font-style:italic"></span>	reduceTasksCount <span style="color:#b00040">int</span> <span style="color:#408080;font-style:italic">// reduce 任务总数
-</span><span style="color:#408080;font-style:italic"></span>}
-</code></pre></div><p>这个结构体里保存了 map 任务和 reduce 任务的 map 类型数据结构，同时记录了 map 和 reduce 任务的总数，</p>
+	mapTasksCount    int // map 任务总数
+	reduceTasksCount int // reduce 任务总数
+}
+</code></pre><p>这个结构体里保存了 map 任务和 reduce 任务的 map 类型数据结构，同时记录了 map 和 reduce 任务的总数，</p>
 <p>finishedMapTaskNum 和 finishedReduceNum 则表示已经完成的两类任务总数。这是一种实现方式，我们也可以只用一个 Task 队列来存储全部的任务。队列里先存储 map 的任务，然后再存储 reduce 的任务，因为队列是先进先出的，所以也可以保证先把所有的 map 任务做完，然后再去执行 reduce 任务。</p>
 <p>完成之后执行下面的命令就可以测试代码是否能通过检测</p>
-<div class="highlight"><pre tabindex="0" style=";-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">bash test-mr.sh
-</code></pre></div><p>最终结果如下图所示，如果出现 PASS ALL TESTS 表示通过了全部的测试。</p>
+<pre tabindex="0"><code>bash test-mr.sh
+</code></pre><p>最终结果如下图所示，如果出现 PASS ALL TESTS 表示通过了全部的测试。</p>
 <p><img src="/img/2022/06/mapreduce/result.jpg" alt=""></p>
 
 <p style="color:#777;">Last modified on 2022-06-15</p>

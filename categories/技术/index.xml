@@ -28,8 +28,8 @@ PPT 采用zoho 来托管，您可以点击这里 获取到PPT原文
       <description>这篇博客主要是关于 MIT 的公开课 6.824 分布式系统 的 lab 1相关内容，lab 1 要求我们实现一个分布式的mapreduce系统，并且已经为我们提供了一些基础的代码，lab 的地址请点击这里 。下面让我们从文件的架构开始一点点去了解我们所要做的事情。下面是一个精简了的代码结构图，它可以帮助我们理解 lab 1的内容。
 单机mapreduce任务 首先我们需要明确的是main目录下的文件是我们的程序入口处， 如果我们执行mrsequential.go 文件将会启动一个单机的mapreduce任务，执行的命令如下
 go run -race mrsequential.go wc.so pg*.txt 可以看到在执行的时候还传了两个参数，这两个参数的作用是什么呢？我们从代码中来观察一下，
-if len(os.Args) &amp;lt; 3 { fmt.Fprintf(os.Stderr, &amp;#34;Usage: mrsequential xxx.so inputfiles...\n&amp;#34;) os.Exit(1) } mapf, reducef := loadPlugin(os.Args[1]) 可以看到 wc.so 是用来加载 map 和 reduce 函数的， 而 wc.so 文件则是由下面这个命令生成的，通过-buildmode=plugin可以以插件的形式将wc.go 文件里的函数封装起来，然后通过loadPlugin 函数重新加载出来。
-go build -race -buildmode=plugin ../mrapps/wc.go loadPlugin 函数是作者自己编写的，具体是封装了plugin.Open 和 p.Lookup两个函数的功能，最终的结果是获取到map 和 reduce 两个函数。
+if len(os.Args) &amp;lt; 3 { fmt.Fprintf(os.Stderr, &amp;quot;Usage: mrsequential xxx.so inputfiles...\n&amp;quot;) os.Exit(1) } mapf, reducef := loadPlugin(os.Args[1]) 可以看到 wc.so 是用来加载 map 和 reduce 函数的， 而 wc.so 文件则是由下面这个命令生成的，通过-buildmode=plugin可以以插件的形式将wc.go 文件里的函数封装起来，然后通过loadPlugin 函数重新加载出来。
+ go build -race -buildmode=plugin ../mrapps/wc.go loadPlugin 函数是作者自己编写的，具体是封装了plugin.Open 和 p.Lookup两个函数的功能，最终的结果是获取到map 和 reduce 两个函数。
 func loadPlugin(filename string) (func(string, string) []mr.</description>
     </item>
     
