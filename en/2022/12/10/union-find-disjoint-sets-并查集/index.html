@@ -1,0 +1,389 @@
+<a name="top"></a>
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  	
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Union-Find Disjoint Sets | 并查集 - Albert Wang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/font.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega@5.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.12.2"></script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+
+
+  </head>
+  
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav" >
+      <a href="/" class="nav-logo">
+        <img src="/media/logo.JPG"
+         width="50"
+         height="50"
+         alt="Hugo-ht">
+      </a>
+
+      <ul class="nav-links" >
+       
+       
+       
+       <li><a href="/">Home</a></li>
+       
+       <li><a href="/en/posts/">Blog</a></li>
+       
+       <li><a href="/categories/">Categories</a></li>
+       
+       <li><a href="/en/project/">Project</a></li>
+       
+       <li><a href="/en/about/">About</a></li>
+       
+       
+      </ul>
+</nav>
+		<script type="text/javascript"
+        async
+        src="https://cdn.bootcss.com/mathjax/2.7.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\[\[','\]\]']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+});
+
+MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<style>
+code.has-jax {
+    font: inherit;
+    font-size: 100%;
+    background: inherit;
+    border: inherit;
+    color: #515151;
+}
+</style>
+      </header>
+
+<main class = "content" role="main">
+<div style="text-align: center">
+
+<h1>Union-Find Disjoint Sets | 并查集</h1>
+
+<p>Albert Wang 
+ / 2022-12-10 
+/ 700 Words/has been Read  <span id="busuanzi_value_page_pv"></span>&nbsp;&nbsp;Times
+
+</p>
+
+
+
+<hr/>
+
+
+</div>
+
+<span class="article-toolbar">
+  
+  
+  
+  
+  
+  
+  
+  <a href='https://github.com/root-zren%5cposts%5c2022%5c%e5%b9%b6%e6%9f%a5%e9%9b%86.md'style="font-size: 24px; color: black;" target="_blank"><i class="fa fa-edit" aria-hidden="true" title="Suggest an edit of this page"></i>
+  </a>
+  
+  
+  
+</span>
+
+
+<aside class="toc">
+Table of Contents:
+<nav id="TableOfContents">
+  <ol>
+    <li><a href="#算法介绍">算法介绍</a></li>
+    <li><a href="#实战演练">实战演练</a></li>
+  </ol>
+</nav>
+</aside>
+
+
+<div class="body-text list-text">
+<h2 id="算法介绍">算法介绍<a href="#算法介绍" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>并查集主要用于集合之间的操作。对于两个集合而言，它们一般能做的就是将两个集合的元素合并（<strong>并</strong>）。同时，我们往往会希望知道两个元素在不在同一个集合中（<strong>查</strong>）。由此便引出了并查集这种数据结构。</p>
+<p>为了便于理解，我们先将问题进行简化。假如目前摆在我们面前的有这样一个图</p>
+<p><img src="/img/2022/12/graph11.png" alt=""></p>
+<p>在这个图中 每两个节点之间的连通关系和它们之间的距离可以用如下的二维数组来表示，</p>
+<pre tabindex="0"><code>[[1,2,9],[2,3,6],[2,4,5],[1,4,7]]
+</code></pre><p>我们现在希望找到一种数据结构，从我们给定的联通关系中从 0 构建上面的那张图，并且可以高效地实现查找某一个节点在不在这张连通图里面。所以我们可以将它们用一个一维数组的方式来存储，如下图所示</p>
+<p><img src="/img/2022/12/array.jpg" alt=""></p>
+<p>我们将数组的下标用来表示元素节点，用数组下标对应的值来表示它们的父亲节点，这样就可以构建一个father数组。我们在初始化的时候可以将它们的父亲节点都初始化成自己，这时对应的图就是每个节点各自都不连通，然后我们在用并查集的并来对这个数组进行赋值（这时我们不妨先假设father数组已经构建好了）。</p>
+<pre tabindex="0"><code>public int findFather(int n) {
+    if (fa[n] == n) {
+    	return n;
+    }
+    return findFather(fa[n]);
+}
+
+public void unionSet(int i, int j) {
+    int faI = findFather(i);
+    int faJ = findFather(j);
+
+    if (faI != faJ) {
+		fa[faJ] = faI;
+	}
+}
+</code></pre><p>我们首先来观察 findFather 这个函数，这个函数做的事情就是找一个节点的根节点。如果一个节点的父结点就是它自己的话说明我们已经找到这棵树的根了，然后就返回这个节点的 id。否则，我们就找这个节点父结点的父结点，也就是它的“爷爷节点”，逐层向上递归，最终我们一定能找到这个节点所在集合的根节点，并且保证时间复杂度是线性的。</p>
+<p>然后我们再来观察 unionSet 这个函数，这个函数首先会去找两个元素i，j 的根节点，如果它们的根节点是一样的，说明它们在一个集合里，这里我们不进行操作。如果我们面对的是一个图的数据结构，参见下面实战演练，这时我们可以不去考虑它们是否已经在一个集合中，也就是说我们不需要保证我们最终合并的集合是一个树形的结构；否则，说明它们在不同的集合，这时我们要做的操作就是把这两个集合合并起来，我们只需要让其中一个根节点的父结点变成另一个节点就可以了。这样我们就完成了两个集合的合并操作。</p>
+<p>到这里并查集的任务基本已经完成了，我们来思考一下有没有什么可以进一步优化的空间。手下来看 findFather 这个函数，我们显然可以知道它的时间复杂度是线性的。也就是说，如果我们的运气足够差，当我们目前构建的这个树退化成了单向链表，在时间上我们就要付出更大的成本了。所以可以考虑有一种优化的方式，因为我们在调用这个函数的时候只想知道根节点是谁，并不一定要记录每个节点的父结点，所以我们可以在初始化的时候将每个节点的父结点都设置为根节点，代码表示如下</p>
+<pre tabindex="0"><code>public int findFather(int n) {
+    if (fa[n] == n) {
+    	return n;
+    }
+    return fa[n] = findFather(fa[n]);
+}
+</code></pre><p>这段代码需要说明的一点是 fa[n] = findFather(fa[n]) 这个表达式本身是有返回值的，返回值是 fa[n] 最终被赋予的那个值。</p>
+<p>然后我们再来考虑优化 unionSet 函数，这个函数在合并两个集合的时候是随机将一个节点的变成另一个节点的父结点，这种操作有可能会使合并后的树的高度增加。一种优化的办法就是将高度比较低的那棵树的根节点的父结点变成高度比较高的那棵树的根节点，这样树的高度就保证在高度较高的那颗树的高度了。下面我们给出优化的代码</p>
+<pre tabindex="0"><code>public void unionSet(int i, int j) {
+    int faI = findFather(i);
+    int faJ = findFather(j);
+
+    if (faI == faJ) {
+		return;
+	}
+	if (rank[faI] &gt; rank[faJ]) {
+		fa[faJ] = faI;
+	} else {
+		fa[faI] = faJ;
+		if (rank[faI] == fa[faJ]) {
+			rank[faJ]++;
+		}
+	}
+}
+</code></pre><p>这段代码中我们引入了一个 rank 数组用来表示以 i 为根节点的树的高度，它应该和 fa 数组同时被初始化，并且初始化的值均为 1.</p>
+<h2 id="实战演练">实战演练<a href="#实战演练" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>下面我们来看一道 leetcode 的题目来真正感受一下并查集的应用，题目的详细信息可以点击<a href="https://leetcode.cn/contest/weekly-contest-322/problems/minimum-score-of-a-path-between-two-cities/" target="_blank" rel="noreferrer noopener">这里</a>
+
+. 我们这里直接给出题解参考代码来对代码进行解释</p>
+<pre tabindex="0"><code>class Solution {
+    int[] fa;
+    int[] val; // 表示以节点 i 为根节点的集合中距离最小的边
+    public int findFather(int n) {
+        if (fa[n] == n) {
+            return n;
+        }
+        return fa[n] = findFather(fa[n]);
+    }
+    
+    public void unionSet(int i, int j, int distance) {
+        int faI = findFather(i);
+        int faJ = findFather(j);
+        
+        if (faI &gt; faJ) {  // 这里我们确保根是编号最小的节点
+            int tmp = faI;
+            faI = faJ;
+            faJ = tmp;
+        }
+        
+        fa[faJ] = faI;
+        val[faI] = Math.min(Math.min(val[faI], val[faJ]), distance);
+    }
+    public int minScore(int n, int[][] roads) {
+        fa = new int[n];
+        val = new int[n];
+        for (int i = 0; i &lt; n; i++) {
+            fa[i] = i;
+            val[i] = (int)1e5; // 将节点间距离初始化为一个无穷大的数
+        }
+        
+        for (int i = 0; i &lt; roads.length; i++) {
+            merge(roads[i][0] - 1, roads[i][1] - 1, roads[i][2]);
+        }
+        
+        return val[0];
+    }
+}
+</code></pre><p>这道题能用这种方法的一个前提条件是题目中说明了 测试数据保证城市 1 和城市n 之间 至少 有一条路径。也就是说这些节点最终能够构成一个连通图，在这个条件下我们这段代码才能成立。</p>
+<p>上面的题目主要针对的场景比较简单，因为数组的下标刚好可以用来表示节点，同时集合的合并页很容易理解。下面这道题是并查集的一个进阶的题目，“矩阵查询可获得的最大分数”，详细信息可以点击<a href="https://leetcode.cn/contest/weekly-contest-323/problems/maximum-number-of-points-from-grid-queries/" target="_blank" rel="noreferrer noopener">这里</a>
+
+，同样我们只给出参考的题解。</p>
+<pre tabindex="0"><code>class Pair {
+    int x;
+    int y;
+    
+    public Pair(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+}
+
+class Solution {
+    Pair[][] fa;
+    int[][] size;
+    Pair[] sortGrid;
+    Integer[] sortQueries;
+    
+    public Pair findFather(Pair pair) {
+        if (fa[pair.x][pair.y] == pair) {
+            return pair;
+        }
+        return fa[pair.x][pair.y] = findFather(fa[pair.x][pair.y]);
+    }
+    
+    public void unionSet(Pair pairX, Pair pairY, int[][] grid, int num, int m, int n) {
+        if (pairY.x &lt; 0 || pairY.x &gt;= m || pairY.y &lt; 0 || pairY.y &gt;= n) {
+            return;
+        }
+        Pair faX = findFather(pairX);
+        Pair faY = findFather(pairY);
+        if (faX == faY) {
+            return;
+        }
+        if (grid[pairY.x][pairY.y] &gt;= num) {
+            return;
+        }
+        fa[faX.x][faX.y] = faY;
+        size[faY.x][faY.y] += size[faX.x][faX.y];
+    }
+    
+    public int[] maxPoints(int[][] grid, int[] queries) {
+        int k = queries.length;
+        int m = grid.length;
+        int n = grid[0].length;
+        int[] res = new int[k];
+        fa = new Pair[m][n];
+        size = new int[m][n];
+        sortGrid = new Pair[m * n];
+        sortQueries = new Integer[k];
+        
+        for (int i = 0; i &lt; m; i++) {
+            for (int j = 0; j &lt; n; j++) {
+                fa[i][j] = new Pair(i, j);
+                size[i][j] = 1;
+            }
+        }
+        
+        for (int i = 0; i &lt; k; i++) {
+            sortQueries[i] = i;
+        }
+        Arrays.sort(sortQueries, new Comparator&lt;Integer&gt;() {
+            @Override
+            public int compare(Integer a, Integer b) {
+                return queries[(int)a] - queries[(int)b];
+            }
+        });
+        int cnt = 0;
+        for (int i = 0; i &lt; m; i++) {
+            for (int j = 0; j &lt; n; j++) {
+                sortGrid[cnt++] = new Pair(i, j);
+            }
+        }
+        
+        Arrays.sort(sortGrid, new Comparator&lt;Pair&gt;() {
+            @Override
+            public int compare(Pair a, Pair b) {
+                return grid[a.x][a.y] - grid[b.x][b.y];
+            }         
+        });
+        boolean[][] isVisited = new boolean[m][n];
+        
+        int j = 0;
+        for (int i = 0; i &lt; k; i++) {
+            int idx = sortQueries[i];
+            while (j &lt; cnt &amp;&amp; queries[idx] &gt; grid[sortGrid[j].x][sortGrid[j].y]) {
+                unionSet(sortGrid[j], new Pair(sortGrid[j].x + 1, sortGrid[j].y), grid, queries[idx], m, n);
+                unionSet(sortGrid[j], new Pair(sortGrid[j].x - 1, sortGrid[j].y), grid, queries[idx], m, n);
+                unionSet(sortGrid[j], new Pair(sortGrid[j].x, sortGrid[j].y + 1), grid, queries[idx], m, n);
+                unionSet(sortGrid[j], new Pair(sortGrid[j].x, sortGrid[j].y - 1), grid, queries[idx], m, n);
+                j++;
+            }
+            
+            if (queries[idx] &lt;= grid[0][0]) {
+                continue;
+            } 
+            Pair tmp = new Pair(0, 0);
+            Pair fatherOfTmp = findFather(tmp);
+            res[idx] = size[fatherOfTmp.x][fatherOfTmp.y];
+        }
+        return res;
+    }
+}
+</code></pre>
+<p style="color:#777;">Last modified on 2022-12-10</p>
+</div>
+<a href="#top"><i class="fa fa-chevron-up" style="font-size: 30px; color: black;"></i></a>
+
+</main>
+
+<footer class="footer">
+  <script type="text/javascript" src="/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/javascript" src="/js/center-img.js"></script>
+
+<script type="text/javascript" src="//rf.revolvermaps.com/0/0/6.js?i=5sz67w4rqwe&amp;m=0&amp;c=ff0000&amp;cr1=ffffff&amp;f=times_new_roman&amp;l=1" async="async"></script>
+
+     <ul class="footer-links">
+      
+       
+       
+       
+       <li><a href="/en/posts/index.xml" type="application/rss+xml" title="RSS feed">
+       Subscribe </a>
+       </li>
+       
+       
+       <li>
+       
+        <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
+       
+        License
+        <i class="fa fa-cc" aria-hidden="true" title="Attribution-NonCommercial-ShareAlike 4.0 International"></i> 
+        </a>
+       </li>
+       
+     </ul>
+     
+	    <span id="busuanzi_container_site_pv"> 本站访问量：<span id="busuanzi_value_site_pv"></span>次</span>&nbsp;
+	    <span id="busuanzi_container_site_uv"> 您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者</span>
+
+		
+     
+</footer>
+
+
+
+
+
