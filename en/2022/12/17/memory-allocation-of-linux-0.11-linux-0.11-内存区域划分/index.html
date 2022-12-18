@@ -1,0 +1,388 @@
+<a name="top"></a>
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  	
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Memory Allocation of Linux 0.11 | Linux 0.11 内存区域划分 - Albert Wang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/font.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega@5.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.12.2"></script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+
+
+  </head>
+  
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav" >
+      <a href="/" class="nav-logo">
+        <img src="/media/logo.JPG"
+         width="50"
+         height="50"
+         alt="Hugo-ht">
+      </a>
+
+      <ul class="nav-links" >
+       
+       
+       
+       <li><a href="/">Home</a></li>
+       
+       <li><a href="/en/posts/">Blog</a></li>
+       
+       <li><a href="/categories/">Categories</a></li>
+       
+       <li><a href="/en/project/">Project</a></li>
+       
+       <li><a href="/en/about/">About</a></li>
+       
+       
+      </ul>
+</nav>
+		<script type="text/javascript"
+        async
+        src="https://cdn.bootcss.com/mathjax/2.7.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\[\[','\]\]']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+});
+
+MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<style>
+code.has-jax {
+    font: inherit;
+    font-size: 100%;
+    background: inherit;
+    border: inherit;
+    color: #515151;
+}
+</style>
+      </header>
+
+<main class = "content" role="main">
+<div style="text-align: center">
+
+<h1>Memory Allocation of Linux 0.11 | Linux 0.11 内存区域划分</h1>
+
+<p>Albert Wang 
+ / 2022-12-17 
+/ 600 Words/has been Read  <span id="busuanzi_value_page_pv"></span>&nbsp;&nbsp;Times
+
+</p>
+
+
+
+<hr/>
+
+
+</div>
+
+<span class="article-toolbar">
+  
+  
+  
+  
+  
+  
+  
+  <a href='https://github.com/root-zren%5cposts%5c2022%5c%e6%ac%a7%e6%8b%89%e5%9b%be.md'style="font-size: 24px; color: black;" target="_blank"><i class="fa fa-edit" aria-hidden="true" title="Suggest an edit of this page"></i>
+  </a>
+  
+  
+  
+</span>
+
+
+<aside class="toc">
+Table of Contents:
+<nav id="TableOfContents">
+  <ol>
+    <li><a href="#图的表示">图的表示</a>
+      <ol>
+        <li><a href="#邻接矩阵">邻接矩阵</a></li>
+        <li><a href="#邻接表">邻接表</a></li>
+      </ol>
+    </li>
+    <li><a href="#欧拉图">欧拉图</a>
+      <ol>
+        <li><a href="#度">度</a></li>
+        <li><a href="#欧拉图-1">欧拉图</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+</aside>
+
+
+<div class="body-text list-text">
+<h2 id="图的表示">图的表示<a href="#图的表示" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<h3 id="邻接矩阵">邻接矩阵<a href="#邻接矩阵" class="header-anchor" ariaLabel="Anchor"> # </a></h3>
+<p>我们假设点的坐标是从 1 开始的。</p>
+<pre tabindex="0"><code>#define MAX_SIZE 100
+
+int main()
+{
+    int n, m, u, v;
+    int matrix[MAX_SIZE][MAX_SIZE] = {0};
+
+    scanf(&quot;%d%d&quot;, &amp;n, &amp;m);
+    for (int i = 0; i &lt; m; i++) {
+        scanf(&quot;%d%d&quot;, &amp;u, &amp;v);
+        matrix[u - 1][v - 1] = 1;
+        matrix[v - 1][i - 1] = 1; // 无向图的连接方式
+    }
+    return 0;
+}
+</code></pre><p>如果边是有权的，我们在最初赋值的时候会给定一个无穷大的值表示不可访问，如果i == j ，权值为 0。</p>
+<pre tabindex="0"><code>#define MAX_SIZE 100
+#define INF 10000001
+
+int main()
+{
+    int n, m, u, v, w;
+    int matrix[MAX_SIZE][MAX_SIZE];
+    scanf(&quot;%d%d&quot;, &amp;n, &amp;m);
+
+    for (int i = 0; i &lt; n; i++) {
+        for (int j = 0; j &lt; m; j++) {
+            if (i == j) {
+                matrix[i][j] = 0;
+            } else {
+                matrix[i][j] = INF;
+            }
+        }
+    }
+    for (int i = 0; i &lt; m; i++) {
+        scanf(&quot;%d%d%d&quot;, &amp;u, &amp;v, &amp;w);
+        matrix[u - 1][v - 1] = w;
+        matrix[v - 1][i - 1] = w; // 无向图的连接方式
+    }
+    return 0;
+}
+</code></pre><p>深度优先遍历</p>
+<p>时间复杂度和空间复杂度都为$O(n^2)$，处理稀疏图效率低。</p>
+<pre tabindex="0"><code>int isVisisted[MAX_SIZE] = {0};
+
+void dfs(int i, int **matrix, int n)
+{
+    isVisisted[i] = 1;
+    for (int j = 0; j &lt; n; j++) {
+        if (!isVisisted[j] &amp;&amp; matrix[i][j] != 0) {
+            dfs(j);
+        }
+    }
+}
+</code></pre><h3 id="邻接表">邻接表<a href="#邻接表" class="header-anchor" ariaLabel="Anchor"> # </a></h3>
+<p>为了代码编写方便，下面我们假设点是从 0 开始的。</p>
+<pre tabindex="0"><code>typedef struct Edge_ {
+    int nodeId;
+    int edgeValue;
+    struct Edge_ *next; 
+} Edge;
+
+typedef struct Node_ {
+    Edge *next;
+} Node;
+
+void init(int u, int v, int w, Node *node)
+{
+    Edge *edge = (Edge *)malloc(sizeof(Edge));
+    edge-&gt;nodeId = v;
+    edge-&gt;edgeValue = w;
+    edge-&gt;next = node[u].next;
+    node[u].next = edge; // 头插法
+}
+
+int main()
+{
+    int n, m, u, v, w;
+    Node node[MAX_SIZE] = {0};
+
+    scanf(&quot;%d%d&quot;, &amp;n, &amp;m);
+    for (int i = 0; i &lt; m; i++) {
+        scanf(&quot;%d%d%d&quot;, &amp;u, &amp;v, &amp;w);
+        init(u, v, w, node);
+        init(v, u, w, node); // 无向图
+    }
+}
+</code></pre><p>邻接表的时间复杂度是$O(n + m)$，</p>
+<p>邻接表还可以用多个一维数组来实现，我们可以把 Edge 的元素都存在单独的数组里，如下图所示</p>
+<p><img src="/img/2022/12/graph.png" alt="image-20221218182422666"></p>
+<p>针对有向图的代码实现如下</p>
+<pre tabindex="0"><code>int main()
+{
+    int n, m, u, v, w;
+    int node[MAX_SIZE];
+    memset(node, -1, sizeof(node));
+    int nodeId[MAX_SIZE];
+    memset(nodeId, -1, sizeof(nodeId));
+    int edgeValue[MAX_PATH] = {0};
+    int next[MAX_SIZE];
+    memset(next, -1, sizeof(next));
+
+    scanf(&quot;%d%d&quot;, &amp;n, &amp;m);
+    for (int i = 0; i &lt; m; i++) {
+        scanf(&quot;%d%d%d&quot;, &amp;u, &amp;v, &amp;w);
+        nodeId[i] = v;   // 针对有向图
+        next[i] = node[u];
+        node[u] = i;
+    }
+    dfs(node, nodeId, next, n);
+}
+
+</code></pre><p>它的深度优先遍历方式如下</p>
+<pre tabindex="0"><code>void dfs(int *node, int *nodeId, int *next, int n)
+{
+    for (int i = 0; i &lt; n; i++) {
+        int e = node[i];
+        while ( e != -1) {
+            if (!isVisisted[nodeId[e]]) {
+                printf(&quot;%d &quot;, nodeId[e]);
+            }
+            isVisisted[nodeId[e]] = 1;
+            e = next[e];
+        }
+        printf(&quot;\n&quot;);
+    }
+}
+</code></pre><h2 id="欧拉图">欧拉图<a href="#欧拉图" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<h3 id="度">度<a href="#度" class="header-anchor" ariaLabel="Anchor"> # </a></h3>
+<p>在无向图中，度表示有多少条边和这个节点关联。特别地，自环算两度；</p>
+<p>在无向图中，度分为入度和出度，入度表示进入这个节点的边数（有多少歌箭头指向它），出度表示从这个节点出发的边数。</p>
+<h3 id="欧拉图-1">欧拉图<a href="#欧拉图-1" class="header-anchor" ariaLabel="Anchor"> # </a></h3>
+<p>戈尼斯堡七桥问题：现在有两座小岛，大的小岛和旁边的陆地有四座桥相连，小的岛和陆地有两座桥相连，两个小岛之间有一座桥相连。所以相当于说有四座陆地，七座桥，问从任何一块陆地出发，每座桥只走一次，最终能否回到原点。</p>
+<p>类似的问题是一笔画问题（从某一个点出发，不能提起笔，问最终能否回到原点）。</p>
+<p><img src="https://img2.baidu.com/it/u=91589636,469028567&amp;fm=253&amp;fmt=auto&amp;app=138&amp;f=JPG?w=1008&amp;h=367" alt="img"></p>
+<p>我们可以把上面的问题抽象成右上角所示的图模型，假如存在这样的一条回路，我们就称这条回路为欧拉回路，这个图就叫欧拉图。有些图不一定存在这样的回路，但是有可能它存在一条通路，使得每个边恰好只走一次，这样的通路就叫欧拉通路。</p>
+<p>这里给出深度优先的解法，我们去遍历所有的边，并且每条边只遍历一次，在存在欧拉回路的情况下我们可以求出一条遍历的路径出来。最后我们可以通过 stack 的大小来判断是否存在回路</p>
+<pre tabindex="0"><code>int matrix[MAX_SIZE][MAX_SIZE];
+
+void euler(int i, int n, int *stack, int *pc) {
+    for (int j = 0; j &lt; n; j++) {
+        if (matrix[i][j] != 0) {
+            matrix[i][j] = 0;  // 每条路只能走一遍
+            matrix[j][i] = 0;
+            euler(j, n, stack, pc);
+            stack[(*pc)++] = j; // 这里一定是在深度优先完了之后再入栈
+        }
+    } 
+}
+
+int main()
+{
+    int n, m, u, v;
+    int stack[MAX_SIZE] = {0};
+    int pc = 0;
+    scanf(&quot;%d%d&quot;, &amp;n, &amp;m);
+
+    memset(matrix, 0, sizeof(matrix));
+    for (int i = 0; i &lt; m; i++) {
+        scanf(&quot;%d%d&quot;, &amp;u, &amp;v);
+        matrix[u - 1][v - 1] = 1;
+        matrix[v - 1][u - 1] = 1;  // 无向图的连接方式
+    }
+    euler(0, n, stack, &amp;pc);
+    stack[pc++] = 0;
+    for (int i = pc - 1; i &gt;= 0; i--) {
+        printf(&quot;%d &quot;, stack[i] + 1);
+    }
+    printf(&quot;\n&quot;);
+    return 0;
+}
+</code></pre><p>下面是一些数学上的结论：</p>
+<p>如果无向图存在欧拉通路，那么这个图一定恰好存在两个奇度数节点；如果有向图恰好有一个节点的出度比入读多1，另一个节点的出度比入度少1，其他节点出度和入读数相等，则必然存在欧拉通路。</p>
+<p>如果无向图所有顶点度数都是偶数，那一定会存在欧拉回路；如果有向图所有顶点的入度等于出度，则一定存在欧拉回路。</p>
+<p>下面我们给出求一个无向图度的代码</p>
+<pre tabindex="0"><code>int getDeg(int i, int n) {			//求度数
+	int cnt = 0;
+	for (int j = 1; j &lt; n; j++) {
+		if (matrix[i][j] || matrix[j][i]) {
+			cnt++;
+		}
+	}
+	return cnt;
+}
+</code></pre><p>根据上面的代码我们就可以求出每一个节点的度数，所以我们就有一种新的深度优先的思路来解这道题。假如一个图并不是连通的，我们可以先去深度优先遍历所有的节点（加上isVisisted数组）。然后我们再去比较是否有节点没有被遍历到（不连通）或者有节点的度数不是偶数（不能构成欧拉回路）。</p>
+
+<p style="color:#777;">Last modified on 2022-12-17</p>
+</div>
+<a href="#top"><i class="fa fa-chevron-up" style="font-size: 30px; color: black;"></i></a>
+
+</main>
+
+<footer class="footer">
+  <script type="text/javascript" src="/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/javascript" src="/js/center-img.js"></script>
+
+<script type="text/javascript" src="//rf.revolvermaps.com/0/0/6.js?i=5sz67w4rqwe&amp;m=0&amp;c=ff0000&amp;cr1=ffffff&amp;f=times_new_roman&amp;l=1" async="async"></script>
+
+     <ul class="footer-links">
+      
+       
+       
+       
+       <li><a href="/en/posts/index.xml" type="application/rss+xml" title="RSS feed">
+       Subscribe </a>
+       </li>
+       
+       
+       <li>
+       
+        <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
+       
+        License
+        <i class="fa fa-cc" aria-hidden="true" title="Attribution-NonCommercial-ShareAlike 4.0 International"></i> 
+        </a>
+       </li>
+       
+     </ul>
+     
+	    <span id="busuanzi_container_site_pv"> 本站访问量：<span id="busuanzi_value_site_pv"></span>次</span>&nbsp;
+	    <span id="busuanzi_container_site_uv"> 您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者</span>
+
+		
+     
+</footer>
+
+
+
+
+

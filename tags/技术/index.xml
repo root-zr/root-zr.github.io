@@ -6,7 +6,18 @@
     <description>Recent content in 技术 on Albert Wang</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 06 Oct 2022 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/tags/%E6%8A%80%E6%9C%AF/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 17 Dec 2022 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/tags/%E6%8A%80%E6%9C%AF/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Euler Graph | 欧拉图</title>
+      <link>https://root-zr.github.io/en/2022/12/17/euler-graph-%E6%AC%A7%E6%8B%89%E5%9B%BE/</link>
+      <pubDate>Sat, 17 Dec 2022 13:39:37 +0800</pubDate>
+      
+      <guid>https://root-zr.github.io/en/2022/12/17/euler-graph-%E6%AC%A7%E6%8B%89%E5%9B%BE/</guid>
+      <description>图的表示 邻接矩阵 图这种数据结构通常以二维数组的方式作为输入，其中第二维表示两个节点和节点之间的关系，比如下面的这个输入就表示节点 1 和节点 2 之间是有边的，并且边的权重为 10. 在有些情况下权重是可以忽略的，我们更关心节点间是否连通。
+1 2 10 为了符合人类的思考方式，往往节点坐标都是从 1 开始的，这里我们也先假设点的坐标是从 1 开始，然后给出邻接矩阵的实现代码。
+#define MAX_SIZE 100 int main() { int n, m, u, v; int matrix[MAX_SIZE][MAX_SIZE] = {0}; scanf(&amp;quot;%d%d&amp;quot;, &amp;amp;n, &amp;amp;m); for (int i = 0; i &amp;lt; m; i++) { scanf(&amp;quot;%d%d&amp;quot;, &amp;amp;u, &amp;amp;v); matrix[u - 1][v - 1] = 1; matrix[v - 1][i - 1] = 1; // 无向图的连接方式 } return 0; } 如果边是有权的，我们在最初赋值的时候会给定一个无穷大的值表示不可访问，如果i == j ，权值为 0。</description>
+    </item>
+    
     <item>
       <title>Memory Allocation of Linux 0.11 | Linux 0.11 内存区域划分</title>
       <link>https://root-zr.github.io/en/2022/10/06/memory-allocation-of-linux-0.11-linux-0.11-%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E5%88%92%E5%88%86/</link>

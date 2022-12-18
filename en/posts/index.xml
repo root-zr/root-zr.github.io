@@ -6,7 +6,18 @@
     <description>Recent content in English Posts on Albert Wang</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 10 Dec 2022 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/en/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 17 Dec 2022 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/en/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Euler Graph | 欧拉图</title>
+      <link>https://root-zr.github.io/en/2022/12/17/euler-graph-%E6%AC%A7%E6%8B%89%E5%9B%BE/</link>
+      <pubDate>Sat, 17 Dec 2022 13:39:37 +0800</pubDate>
+      
+      <guid>https://root-zr.github.io/en/2022/12/17/euler-graph-%E6%AC%A7%E6%8B%89%E5%9B%BE/</guid>
+      <description>图的表示 邻接矩阵 图这种数据结构通常以二维数组的方式作为输入，其中第二维表示两个节点和节点之间的关系，比如下面的这个输入就表示节点 1 和节点 2 之间是有边的，并且边的权重为 10. 在有些情况下权重是可以忽略的，我们更关心节点间是否连通。
+1 2 10 为了符合人类的思考方式，往往节点坐标都是从 1 开始的，这里我们也先假设点的坐标是从 1 开始，然后给出邻接矩阵的实现代码。
+#define MAX_SIZE 100 int main() { int n, m, u, v; int matrix[MAX_SIZE][MAX_SIZE] = {0}; scanf(&amp;quot;%d%d&amp;quot;, &amp;amp;n, &amp;amp;m); for (int i = 0; i &amp;lt; m; i++) { scanf(&amp;quot;%d%d&amp;quot;, &amp;amp;u, &amp;amp;v); matrix[u - 1][v - 1] = 1; matrix[v - 1][i - 1] = 1; // 无向图的连接方式 } return 0; } 如果边是有权的，我们在最初赋值的时候会给定一个无穷大的值表示不可访问，如果i == j ，权值为 0。</description>
+    </item>
+    
     <item>
       <title>Union-Find Disjoint Sets | 并查集</title>
       <link>https://root-zr.github.io/en/2022/12/10/union-find-disjoint-sets-%E5%B9%B6%E6%9F%A5%E9%9B%86/</link>
@@ -455,10 +466,10 @@ ubuntu远程连接_ANDY-CSDN博客_ubuntu远程连接blog.csdn.net/qq_34510308/a
     
     <item>
       <title>Markdown Testing</title>
-      <link>https://root-zr.github.io/en/2021/01/07/second-post/</link>
-      <pubDate>Thu, 07 Jan 2021 13:37:57 -0500</pubDate>
+      <link>https://root-zr.github.io/en/2020/01/07/second-post/</link>
+      <pubDate>Tue, 07 Jan 2020 13:37:57 -0500</pubDate>
       
-      <guid>https://root-zr.github.io/en/2021/01/07/second-post/</guid>
+      <guid>https://root-zr.github.io/en/2020/01/07/second-post/</guid>
       <description>See the source code of this page if you are interested.
  H1 H2 H3 H4 H5 H6 List  Water Water Water  Water Water Water   Water  Water Water Water  Water Water      Table    Water Water Water     Water Water Water   Water Water1 Water   Water Water Water    Quotes  What I cannot create, I do not understand2.</description>
     </item>
