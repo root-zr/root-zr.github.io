@@ -6,7 +6,22 @@
     <description>Recent content in 技术文档 on Albert Wang</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 17 Dec 2022 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E6%A1%A3/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 31 Dec 2022 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E6%A1%A3/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Hamiltonian Graph | 哈密顿图</title>
+      <link>https://root-zr.github.io/en/2022/12/31/hamiltonian-graph-%E5%93%88%E5%AF%86%E9%A1%BF%E5%9B%BE/</link>
+      <pubDate>Sat, 31 Dec 2022 13:39:37 +0800</pubDate>
+      
+      <guid>https://root-zr.github.io/en/2022/12/31/hamiltonian-graph-%E5%93%88%E5%AF%86%E9%A1%BF%E5%9B%BE/</guid>
+      <description>这篇博客是对上一篇博客欧拉图的补充，主要介绍中国邮递员问题和哈密顿图。
+中国邮递员问题 中国邮递员问题是说现在有一个邮递员，他每一天要从邮局出发给自己负责的街道去送信，送完之后再回到邮局，问怎样走路程最短？
+这个问题和欧拉图非常相似，特别地，如果这个邮递员负责的街道刚好可以构成一个欧拉图，那么最短的路程就是欧拉回路，因为相当于每条街道刚好走了一次。否则就会存在一条街道被走多次的情况，下面我们就来分析这种情况下的处理办法。
+我们已经知道如果一个图存在欧拉回路，每个节点的度数一定是偶数。所以要想把一个图变成欧拉图，就需要把它的奇度数节点都变成偶度数节点，就需要在原图中增加一些边。为了保证路程最小，我们需要对加的边进行一些调整，下面有一些被证明的结论
+ 最优方案中，图中每条边的重数一定是小于等于2的（一条街道最多走两次）； 图中每个基本回路上平行边的总权值不大于该回路的权值的一半。  哈密顿图 邮递员问题解决的是送货上门的情况，对于蜂巢快递柜这种情况就不是很适用。我们不妨假设邮局和快递柜都是节点，它们之间的路为边，对于这个问题，我们则是希望遍历所有的节点，最后再回到原点，这和之前的遍历所有的边就不一样了。假如存在这样的一个回路，使得我们可以刚好遍历每个节点一次，最终回到原点，这个回路就被称之为哈密顿回路，存在哈密顿回路的图被称为哈密顿图。
+这个问题看起来和欧拉图比较类似，只是将边换成了节点，但是目前却没有一个能求解这个问题的充要条件，这看起来是一个令人沮丧的消息，但是我们可以有一些充分条件来判断某个图是不是哈密顿图。
+ 如果G = &amp;lt;V, E&amp;gt; 是一个有 n 个节点的简单图，对于任意两个不想邻的节点u, v，则一定有deg(u) + deg(v) &amp;gt;= n - 1。  上面的结论可以很有效地帮助我们去判断某个图是不是哈密顿图。</description>
+    </item>
+    
     <item>
       <title>Euler Graph | 欧拉图</title>
       <link>https://root-zr.github.io/en/2022/12/17/euler-graph-%E6%AC%A7%E6%8B%89%E5%9B%BE/</link>

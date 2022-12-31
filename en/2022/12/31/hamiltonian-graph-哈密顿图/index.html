@@ -1,3 +1,4 @@
+<a name="top"></a>
 <!DOCTYPE html>
 <html lang="en-us">
   <head>
@@ -5,7 +6,7 @@
 	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>English page - Albert Wang</title>
+    <title>Hamiltonian Graph | 哈密顿图 - Albert Wang</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="/css/style.css" />
     <link rel="stylesheet" href="/css/font.css" />
@@ -95,64 +96,73 @@ code.has-jax {
 </style>
       </header>
 
+<main class = "content" role="main">
+<div style="text-align: center">
+
+<h1>Hamiltonian Graph | 哈密顿图</h1>
+
+<p>Albert Wang 
+ / 2022-12-31 
+/ 100 Words/has been Read  <span id="busuanzi_value_page_pv"></span>&nbsp;&nbsp;Times
+
+</p>
 
 
 
-<main class = "content">
+<hr/>
 
-<div class="list-page">
-<h3 id="english-homepage-test">English homepage test</h3>
-
-
-
-
-<ul>
-  
-  <h2 style="text-align: left;">2022</h2>
-  
-  
-  <p>
-    <span class="date">
-    2022-12-31
-    </span>
-    <a href="/en/posts/">
-    English Posts
-    </a>
-  </p>
-  
-  
-  
-  <h2 style="text-align: left;">2021</h2>
-  
-  
-  <p>
-    <span class="date">
-    2021-05-07
-    </span>
-    <a href="/en/about/">
-    Curriculum Vitae
-    </a>
-  </p>
-  
-  
-  
-  <h2 style="text-align: left;">0001</h2>
-  
-  
-  <p>
-    <span class="date">
-    0001-01-01
-    </span>
-    <a href="/en/project/">
-    Project
-    </a>
-  </p>
-  
-  
-  
-</ul>
 
 </div>
+
+<span class="article-toolbar">
+  
+  
+  
+  
+  
+  
+  
+  <a href='https://github.com/root-zren%5cposts%5c2022%5c%e5%93%88%e5%af%86%e9%a1%bf%e5%9b%be.md'style="font-size: 24px; color: black;" target="_blank"><i class="fa fa-edit" aria-hidden="true" title="Suggest an edit of this page"></i>
+  </a>
+  
+  
+  
+</span>
+
+
+<aside class="toc">
+Table of Contents:
+<nav id="TableOfContents">
+  <ol>
+    <li><a href="#中国邮递员问题">中国邮递员问题</a></li>
+    <li><a href="#哈密顿图">哈密顿图</a></li>
+  </ol>
+</nav>
+</aside>
+
+
+<div class="body-text list-text">
+<p>这篇博客是对上一篇博客欧拉图的补充，主要介绍中国邮递员问题和哈密顿图。</p>
+<h2 id="中国邮递员问题">中国邮递员问题<a href="#中国邮递员问题" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>中国邮递员问题是说现在有一个邮递员，他每一天要从邮局出发给自己负责的街道去送信，送完之后再回到邮局，问怎样走路程最短？</p>
+<p>这个问题和欧拉图非常相似，特别地，如果这个邮递员负责的街道刚好可以构成一个欧拉图，那么最短的路程就是欧拉回路，因为相当于每条街道刚好走了一次。否则就会存在一条街道被走多次的情况，下面我们就来分析这种情况下的处理办法。</p>
+<p>我们已经知道如果一个图存在欧拉回路，每个节点的度数一定是偶数。所以要想把一个图变成欧拉图，就需要把它的奇度数节点都变成偶度数节点，就需要在原图中增加一些边。为了保证路程最小，我们需要对加的边进行一些调整，下面有一些被证明的结论</p>
+<ul>
+<li>最优方案中，图中每条边的重数一定是小于等于2的（一条街道最多走两次）；</li>
+<li>图中每个基本回路上平行边的总权值不大于该回路的权值的一半。</li>
+</ul>
+<h2 id="哈密顿图">哈密顿图<a href="#哈密顿图" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>邮递员问题解决的是送货上门的情况，对于蜂巢快递柜这种情况就不是很适用。我们不妨假设邮局和快递柜都是节点，它们之间的路为边，对于这个问题，我们则是希望遍历所有的节点，最后再回到原点，这和之前的遍历所有的边就不一样了。假如存在这样的一个回路，使得我们可以刚好遍历每个节点一次，最终回到原点，这个回路就被称之为哈密顿回路，存在哈密顿回路的图被称为哈密顿图。</p>
+<p>这个问题看起来和欧拉图比较类似，只是将边换成了节点，但是目前却没有一个能求解这个问题的充要条件，这看起来是一个令人沮丧的消息，但是我们可以有一些充分条件来判断某个图是不是哈密顿图。</p>
+<ul>
+<li>如果G = &lt;V, E&gt; 是一个有 n 个节点的简单图，对于任意两个不想邻的节点u, v，则一定有deg(u) + deg(v) &gt;= n - 1。</li>
+</ul>
+<p>上面的结论可以很有效地帮助我们去判断某个图是不是哈密顿图。</p>
+
+<p style="color:#777;">Last modified on 2022-12-31</p>
+</div>
+<a href="#top"><i class="fa fa-chevron-up" style="font-size: 30px; color: black;"></i></a>
+
 </main>
 
 <footer class="footer">
@@ -192,9 +202,5 @@ code.has-jax {
 
 
 
- 
 
-<div style="text-align: center; color: gray; margin-top: -20px; font-size: 19px;
-margin-bottom: 10px">
 
-</div>
