@@ -6,7 +6,24 @@
     <description>Recent content in English Posts on Albert Wang</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 31 Dec 2022 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/en/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 07 Jan 2023 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/en/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The Shortest Path of Graphs | 图的最短路问题</title>
+      <link>https://root-zr.github.io/en/2023/01/07/the-shortest-path-of-graphs-%E5%9B%BE%E7%9A%84%E6%9C%80%E7%9F%AD%E8%B7%AF%E9%97%AE%E9%A2%98/</link>
+      <pubDate>Sat, 07 Jan 2023 13:39:37 +0800</pubDate>
+      
+      <guid>https://root-zr.github.io/en/2023/01/07/the-shortest-path-of-graphs-%E5%9B%BE%E7%9A%84%E6%9C%80%E7%9F%AD%E8%B7%AF%E9%97%AE%E9%A2%98/</guid>
+      <description>问题背景 假设我们有下面这张图，图中边的权重表示两点之间的距离。我们希望找到一条最短的路径从这张图的 A 点出发，最终走到 E 点，该怎样考虑这个问题呢？
+这个问题很具有现实的意义，假设两点表示两个城市的距离，我们往往希望能够走最短距离的那条路到达目的地。而且这个问题也有一个隐含的条件，那就路的距离不可能为负数，所以我们可以考虑使用 Dijkstra 算法来进行求解。
+Dijkstra 算法 Dijkstra 算法考虑对每一个点进行标号，每个点对应着两种状态（固定标号和临时标号，表示已经确定最短路径和尚未确定），一开始只有出发点的状态是已经确定最短路径的，然后会在迭代的时候去更新标号点，同时也会对每个点的最短路径进行更新。
+图表模拟 下面我们先用图表的方式来进行模拟 Dijkstra 的求解过程。首先我们用一个数组来存储每个点的状态，最开始只有 A 点的状态是确定的，A 点到 A 点的距离初始化为 0，然后初始化 A 点到其余各点的距离，如果 A 点到某一个点没有路径，则初始化为无穷大。从 A 点开始迭代，更新 A 点到到各点的最短距离，如下图所示
+这时我们能确定 A 点到 C 点的最短距离是 3，然后就将 C 点的状态设置为确定，再从 C 点开始迭代，继续更新到其余未确定点之间的最小距离，如下图
+这时我们确定了，A 点到 B 点的最短距离是 5，然后将 B 点设置为确定，再更新其他未确定的点。直到最终目的地的点被标注为已确定，如下图所示
+这样我们就得到了 A 点到 E 点的最短路径 18. 下面我们用代码来实现上面的算法。
+代码实现 我们采用邻接矩阵来实现 dijkstra 算法
+#include &amp;lt;stdlib.h&amp;gt; #include &amp;lt;stddef.h&amp;gt; #include &amp;lt;stdio.h&amp;gt; #include &amp;lt;string.h&amp;gt; #define INF 10000001 #define N 101 int graph[N][N]; void dijkstra(int *distance, int *flag, int n) { int a, b; for (int i = 0; i &amp;lt; n - 1; i++) { a = -1; b = INF; for (int j = 1; j &amp;lt; n; j++) { // 找出发点到 j 点的最小距离 if (flag[j] == 0 &amp;amp;&amp;amp; distance[j] &amp;lt; b) { a = j; b = distance[j]; } } if (a == -1) { // 没有路到终点 break; } if (a == n - 1) { // 已经找到了到终点的最短路 break; } flag[a] = 1; // 改为固定标号 for (int j = 1; j &amp;lt; n; j++) { if (flag[j] == 0 &amp;amp;&amp;amp; (b + graph[a][j] &amp;lt; distance[j])) { distance[j] = b + graph[a][j]; } } } if (distance[n - 1] &amp;gt;= INF) { printf(&amp;quot;Impossible!</description>
+    </item>
+    
     <item>
       <title>Hamiltonian Graph | 哈密顿图</title>
       <link>https://root-zr.github.io/en/2022/12/31/hamiltonian-graph-%E5%93%88%E5%AF%86%E9%A1%BF%E5%9B%BE/</link>

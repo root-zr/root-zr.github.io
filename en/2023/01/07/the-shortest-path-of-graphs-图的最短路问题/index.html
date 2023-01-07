@@ -1,0 +1,430 @@
+<a name="top"></a>
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  	
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>The Shortest Path of Graphs | 图的最短路问题 - Albert Wang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/font.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega@5.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.12.2"></script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+
+
+  </head>
+  
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav" >
+      <a href="/" class="nav-logo">
+        <img src="/media/logo.JPG"
+         width="50"
+         height="50"
+         alt="Hugo-ht">
+      </a>
+
+      <ul class="nav-links" >
+       
+       
+       
+       <li><a href="/">Home</a></li>
+       
+       <li><a href="/en/posts/">Blog</a></li>
+       
+       <li><a href="/categories/">Categories</a></li>
+       
+       <li><a href="/en/project/">Project</a></li>
+       
+       <li><a href="/en/about/">About</a></li>
+       
+       
+      </ul>
+</nav>
+		<script type="text/javascript"
+        async
+        src="https://cdn.bootcss.com/mathjax/2.7.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\[\[','\]\]']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+});
+
+MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<style>
+code.has-jax {
+    font: inherit;
+    font-size: 100%;
+    background: inherit;
+    border: inherit;
+    color: #515151;
+}
+</style>
+      </header>
+
+<main class = "content" role="main">
+<div style="text-align: center">
+
+<h1>The Shortest Path of Graphs | 图的最短路问题</h1>
+
+<p>Albert Wang 
+ / 2023-01-07 
+/ 800 Words/has been Read  <span id="busuanzi_value_page_pv"></span>&nbsp;&nbsp;Times
+
+</p>
+
+
+
+<hr/>
+
+
+</div>
+
+<span class="article-toolbar">
+  
+  
+  
+  
+  
+  
+  
+  <a href='https://github.com/root-zren%5cposts%5c2023%5c%e5%9b%be%e7%9a%84%e6%9c%80%e7%9f%ad%e8%b7%af%e9%97%ae%e9%a2%98.md'style="font-size: 24px; color: black;" target="_blank"><i class="fa fa-edit" aria-hidden="true" title="Suggest an edit of this page"></i>
+  </a>
+  
+  
+  
+</span>
+
+
+<aside class="toc">
+Table of Contents:
+<nav id="TableOfContents">
+  <ol>
+    <li><a href="#问题背景">问题背景</a></li>
+    <li><a href="#dijkstra-算法">Dijkstra 算法</a>
+      <ol>
+        <li><a href="#图表模拟">图表模拟</a></li>
+        <li><a href="#代码实现">代码实现</a></li>
+      </ol>
+    </li>
+    <li><a href="#bellman-ford-算法">Bellman-Ford 算法</a></li>
+    <li><a href="#floyd-算法">Floyd 算法</a></li>
+  </ol>
+</nav>
+</aside>
+
+
+<div class="body-text list-text">
+<h2 id="问题背景">问题背景<a href="#问题背景" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>假设我们有下面这张图，图中边的权重表示两点之间的距离。我们希望找到一条最短的路径从这张图的 A 点出发，最终走到 E 点，该怎样考虑这个问题呢？</p>
+<p><img src="/img/2023/01/image-20230107153434693.png" alt="image-20230107153434693"></p>
+<p>这个问题很具有现实的意义，假设两点表示两个城市的距离，我们往往希望能够走最短距离的那条路到达目的地。而且这个问题也有一个隐含的条件，那就路的距离不可能为负数，所以我们可以考虑使用 Dijkstra 算法来进行求解。</p>
+<h2 id="dijkstra-算法">Dijkstra 算法<a href="#dijkstra-算法" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>Dijkstra 算法考虑对每一个点进行标号，每个点对应着两种状态（固定标号和临时标号，表示已经确定最短路径和尚未确定），一开始只有出发点的状态是已经确定最短路径的，然后会在迭代的时候去更新标号点，同时也会对每个点的最短路径进行更新。</p>
+<h3 id="图表模拟">图表模拟<a href="#图表模拟" class="header-anchor" ariaLabel="Anchor"> # </a></h3>
+<p>下面我们先用图表的方式来进行模拟 Dijkstra 的求解过程。首先我们用一个数组来存储每个点的状态，最开始只有 A 点的状态是确定的，A 点到 A 点的距离初始化为 0，然后初始化 A 点到其余各点的距离，如果 A 点到某一个点没有路径，则初始化为无穷大。从 A 点开始迭代，更新 A 点到到各点的最短距离，如下图所示</p>
+<p><img src="/img/2023/01/image-20230107155215789.png" alt="image-20230107155215789"></p>
+<p>这时我们能确定 A 点到 C 点的最短距离是 3，然后就将 C 点的状态设置为确定，再从 C 点开始迭代，继续更新到其余未确定点之间的最小距离，如下图</p>
+<p><img src="/img/2023/01/image-20230107155554263.png" alt="image-20230107155554263"></p>
+<p>这时我们确定了，A 点到 B 点的最短距离是 5，然后将 B 点设置为确定，再更新其他未确定的点。直到最终目的地的点被标注为已确定，如下图所示</p>
+<p><img src="/img/2023/01/image-20230107155915271.png" alt="image-20230107155915271"></p>
+<p>这样我们就得到了 A 点到 E 点的最短路径 18. 下面我们用代码来实现上面的算法。</p>
+<h3 id="代码实现">代码实现<a href="#代码实现" class="header-anchor" ariaLabel="Anchor"> # </a></h3>
+<p>我们采用邻接矩阵来实现 dijkstra 算法</p>
+<pre tabindex="0"><code>#include &lt;stdlib.h&gt;
+#include &lt;stddef.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+#define INF 10000001
+#define N 101
+
+int graph[N][N];
+
+void dijkstra(int *distance, int *flag, int n)
+{
+    int a, b;
+    for (int i = 0; i &lt; n - 1; i++) {
+        a = -1;
+        b = INF;
+        for (int j = 1; j &lt; n; j++) { // 找出发点到 j 点的最小距离
+            if (flag[j] == 0 &amp;&amp; distance[j] &lt; b) {
+                a = j;
+                b = distance[j];
+            }
+        }
+        if (a == -1) {  // 没有路到终点
+            break;
+        }
+        if (a == n - 1) { // 已经找到了到终点的最短路
+            break;
+        }
+
+        flag[a] = 1; // 改为固定标号
+        for (int j = 1; j &lt; n; j++) {
+            if (flag[j] == 0 &amp;&amp; (b + graph[a][j] &lt; distance[j])) {
+                distance[j] = b + graph[a][j];
+            }
+        }
+    }
+
+    if (distance[n - 1] &gt;= INF) {
+        printf(&quot;Impossible!\n&quot;);
+    } else {
+        printf(&quot;%d\n&quot;, distance[n - 1]);
+    }
+}
+
+int main()
+{
+    int a, b, c, n, m;
+    int distance[N] = {0}; // 起点到该点的最短距离
+    int flag[N] = {0}; // 固定标号与临时标号
+
+    scanf(&quot;%d%d&quot;, &amp;n, &amp;m); // n 个点， m 条边
+
+    // 初始化各个数据结构
+    for (int i = 0; i &lt; N; i++) {
+        for (int j = 0; j &lt; N; j++) {
+            if (i == j) {
+                graph[i][j] = 0;
+            } else {
+                graph[i][j] = INF;
+            }
+        }
+    }
+
+    for (int i = 0; i &lt; m; i++) {
+        scanf(&quot;%d%d%d&quot;, &amp;a, &amp;b, &amp;c);
+        a--;
+        b--;  // 假设输入的图节点是从下标 1 开始
+        graph[a][b] = c;
+        // graph[b][a] = c; // 如果是无向图
+    }
+
+    for (int i = 1; i &lt; n; i++) {
+        distance[i] = graph[0][i];
+    }
+
+    flag[0] = 1; // 初始只有起点是固定标号
+
+    dijkstra(distance, flag, n); 
+}
+</code></pre><p>最开始的图可以按照下面的方式输入，然后就能得到最短路径 18.</p>
+<pre tabindex="0"><code>5 6
+1 2 10
+1 3 3
+1 4 20
+2 4 5
+3 5 15
+4 5 11
+</code></pre><p><img src="/img/2023/01/image-20230107163306062.png" alt="image-20230107163306062"></p>
+<h2 id="bellman-ford-算法">Bellman-Ford 算法<a href="#bellman-ford-算法" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>大家可能注意到了在上面的代码中我们是按照节点进行遍历的，Bellman-Ford 算法则是按照边来进行遍历的。之所以能这么做是因为下面的条件，</p>
+<ul>
+<li>如果最短路存在，则最短路经过的边数不超过 n - 1 条；</li>
+<li>当负权存在时，最短路都不一定存在（有负环时一定不存在）。</li>
+</ul>
+<p>然后我们的核心代码可以这样进行修改，将原来的邻接矩阵换成边的数组，然后我们就可以根据上面的条件控制遍历次数在 n - 1 次。distance[i] 依然表示从出发点到 i 点的最短距离。</p>
+<pre tabindex="0"><code>if (distance[edge[i].v] &gt; distance[edge[i].u] + edge[i].w) {
+    distance[edge[i].v] = distance[edge[i].u] + edge[i].w;
+}
+</code></pre><p>上面这段代码表示如果直接从出发点到 v 点的距离大于先从出发点到 u 点，再从 u 点到 v 点的距离，就对 distance 数组进行更新</p>
+<pre tabindex="0"><code>#include &lt;stdio.h&gt;
+#include &lt;stdbool.h&gt;
+
+#define INF 10000001
+#define N 101
+
+typedef struct Edge_ {
+    int u;
+    int v;
+    int w;
+} Edge;
+
+void bellmanFord(int *distance, Edge *edge, int n, int m)
+{
+    bool flag;
+    for (int k = 0; k &lt; n - 1; k++) {
+        flag = false;
+        for (int i = 0; i &lt; m; i++) {
+            if (distance[edge[i].v] &gt; distance[edge[i].u] + edge[i].w) {
+                distance[edge[i].v] = distance[edge[i].u] + edge[i].w;
+            }
+        }
+        if (!flag) {
+            break;
+        }
+    }
+
+    // 检测负权回路
+    flag = false;
+    for (int i = 0; i &lt; m; i++) {
+        if (distance[edge[i].v] &gt; distance[edge[i].u] + edge[i].w) {
+            flag = true;
+            break;
+        }
+    }
+    if (flag) {
+        printf(&quot;该图有负权回路\n&quot;);
+    } else {
+        printf(&quot;%d\n&quot;, distance[n - 1]);
+    }
+}
+
+int main()
+{
+    int a, b, c, n, m;
+    int distance[N] = {0}; // 起点到该点的最短距离
+    Edge edge[N] = {0};
+
+    scanf(&quot;%d%d&quot;, &amp;n, &amp;m); // n 个点， m 条边
+
+    for (int i = 0; i &lt; m; i++) {
+        scanf(&quot;%d%d%d&quot;, &amp;a, &amp;b, &amp;c);
+        a--; b--;
+        edge[i].u = a;
+        edge[i].v = b;
+        edge[i].w = c;
+    }
+
+    for (int i = 1; i &lt; n; i++) {
+        distance[i] = INF;
+    }
+    bellmanFord(distance, edge, n, m);
+}
+</code></pre><p>用 Bellman-Ford  算法我们同样可以得到最短路径 18.</p>
+<p><img src="/img/2023/01/image-20230107170556175.png" alt="image-20230107170556175"></p>
+<h2 id="floyd-算法">Floyd 算法<a href="#floyd-算法" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>如果我们要求任意两点之间的距离，用 Dijkstra 算法可能需要调用 n 次，这时用 Floyd 算法就可以很好地解决这个问题。Floyd 算法利用了动态规划的思想，它的状态转移方程可以用下面的方式表达。
+$$
+d[i][j] = min(d[i][j], d[i][k] + d[k][j]), 其中 0 &lt;= i, j, k &lt; n
+$$
+其核心思想也就是说如果直接从 i 点到 j 点的距离小于先从 i 点到 k 点，再从 k 点到 j 点，那我们就要选择距离最小的点。</p>
+<p>Floyd  算法的代码实现如下，它的代码实现相对与前面两个算法来说更为简单一些，也更容易记忆，建议优先掌握 Floyd 算法。</p>
+<pre tabindex="0"><code>#include &lt;stdio.h&gt;
+#include &lt;stdbool.h&gt;
+
+#define INF 10000001
+#define N 101
+
+int graph[N][N];
+
+void floyd(int n)
+{
+    for (int k = 0; k &lt; n; k++) {
+        for (int i = 0; i &lt; n; i++) {
+            for (int j = 0; j &lt; n; j++) {
+                if (graph[i][j] &gt; graph[i][k] + graph[k][j]) {
+                    graph[i][j] = graph[i][k] + graph[k][j];
+                }
+            }
+        }
+    }
+   
+    printf(&quot;%d\n&quot;, graph[0][n - 1]);
+}
+
+int main()
+{
+    int a, b, c, n, m;
+    
+    scanf(&quot;%d%d&quot;, &amp;n, &amp;m); // n 个点， m 条边
+    for (int i = 0; i &lt; n; i++) {
+        for (int j = 0; j &lt; n; j++) {
+            if (i == j) {
+                graph[i][j] = 0;
+            } else {
+                graph[i][j] = INF;
+            }
+        }
+    }
+    for (int i = 0; i &lt; m; i++) {
+        scanf(&quot;%d%d%d&quot;, &amp;a, &amp;b, &amp;c);
+        a--; b--;
+        graph[a][b] = c;
+    }
+    floyd(n);
+}
+</code></pre><p>Floyd  算法的测试结果如下：</p>
+<p><img src="/img/2023/01/image-20230107173230871.png" alt="image-20230107173230871"></p>
+
+<p style="color:#777;">Last modified on 2023-01-07</p>
+</div>
+<a href="#top"><i class="fa fa-chevron-up" style="font-size: 30px; color: black;"></i></a>
+
+</main>
+
+<footer class="footer">
+  <script type="text/javascript" src="/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/javascript" src="/js/center-img.js"></script>
+
+<script type="text/javascript" src="//rf.revolvermaps.com/0/0/6.js?i=5sz67w4rqwe&amp;m=0&amp;c=ff0000&amp;cr1=ffffff&amp;f=times_new_roman&amp;l=1" async="async"></script>
+
+     <ul class="footer-links">
+      
+       
+       
+       
+       <li><a href="/en/posts/index.xml" type="application/rss+xml" title="RSS feed">
+       Subscribe </a>
+       </li>
+       
+       
+       <li>
+       
+        <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
+       
+        License
+        <i class="fa fa-cc" aria-hidden="true" title="Attribution-NonCommercial-ShareAlike 4.0 International"></i> 
+        </a>
+       </li>
+       
+     </ul>
+     
+	    <span id="busuanzi_container_site_pv"> 本站访问量：<span id="busuanzi_value_site_pv"></span>次</span>&nbsp;
+	    <span id="busuanzi_container_site_uv"> 您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者</span>
+
+		
+     
+</footer>
+
+
+
+
+
