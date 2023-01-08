@@ -207,7 +207,7 @@ void dfs(int i, int **matrix, int n)
     isVisisted[i] = 1;
     for (int j = 0; j &lt; n; j++) {
         if (!isVisisted[j] &amp;&amp; matrix[i][j] != 0) {
-            dfs(j);
+            dfs(j, matrix, n);
         }
     }
 }
@@ -299,7 +299,10 @@ int main()
 <p>欧拉给出的解决问题的办法是让我们去判断这个无向图所有顶点度数是不是都为偶数，这种做法很容易去实现，下面我们给出求一个无向图度的代码，其中参数 i 表示是第 i 个节点，n 表示总共有 n 个节点。</p>
 <pre tabindex="0"><code>int getDeg(int i, int n) {			//求度数
 	int cnt = 0;
-	for (int j = 1; j &lt; n; j++) {
+	for (int j = 0; j &lt; n; j++) {
+		if (i == j) {
+			continue;
+		}
 		if (matrix[i][j] || matrix[j][i]) {
 			cnt++;
 		}
