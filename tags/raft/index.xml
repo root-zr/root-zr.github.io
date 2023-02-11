@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>raft on Albert Wang</title>
+    <link>https://root-zr.github.io/tags/raft/</link>
+    <description>Recent content in raft on Albert Wang</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 11 Feb 2023 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/tags/raft/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Append Entries of Raft | Raft算法添加条目</title>
+      <link>https://root-zr.github.io/en/2023/02/11/append-entries-of-raft-raft%E7%AE%97%E6%B3%95%E6%B7%BB%E5%8A%A0%E6%9D%A1%E7%9B%AE/</link>
+      <pubDate>Sat, 11 Feb 2023 13:39:37 +0800</pubDate>
+      
+      <guid>https://root-zr.github.io/en/2023/02/11/append-entries-of-raft-raft%E7%AE%97%E6%B3%95%E6%B7%BB%E5%8A%A0%E6%9D%A1%E7%9B%AE/</guid>
+      <description>这篇博客主要记录 raft 算法添加日志条目的过程，这里用到的一些代码和思路主要来源于 MIT 6.824 课程 , 课程中提供的材料raft 论文 和 Github 上一些开源的代码实现。
+raft 算法主要是以一种 lib 库的方式嵌入在应用程序中来保证分布式系统的一致性。在课程的实验中将 raft 将项目的结构划分成了下图所示这种方式。
+我们假设现在是一个由三台服务器组成的分布式集群（为了保证投票时“大多数”的条件永远成立，这里集群的数目必须是奇数），每台服务器的上层都维护了一个 &amp;lt; key, value &amp;gt; 的数据库，下层是 raft 算法的实现，它们通过 raft.go 里的 Start 函数做为接口进行交互。
+在我们彻底弄懂上面那张图表达的意思之前让我们先来了解一下 raft 本身维护了哪些状态，下面的结构体里展示了 raft 自身的全部状态，针对这篇博客的内容，我们大概只需要了解我中文注释的这一部分就可以。这里有些状态是针对 leader 的，有些是 follower 的，有些则是它们共有的属性。分布式系统往往有成百上千台机器，而每台服务器上跑的代码都是一样的。所以当我们在编写代码的时候，必须对什么样的角色可以执行这段代码时刻保持清醒的认知。否则有些流程可能只有 leader 才会执行，如果我们没有事先检验调用者的身份，就会导致 follower 也会执行这部分代码，在一个分布式系统中这种操作导致出错的可能性是非常高的。
+type Raft struct { mu sync.Mutex // 用来保证状态一致性的锁 peers []*labrpc.ClientEnd // 保存了集群中每一台服务器的信息，在我们的例子中是3台 persister *Persister // Object to hold this peer&#39;s persisted state me int // “我”这台服务器在 peers 中的位置 dead int32 // set by Kill() state RaftState // Follower, Candidate, Leader 3种状态 appendEntryCh chan *Entry heartBeat time.</description>
+    </item>
+    
+  </channel>
+</rss>

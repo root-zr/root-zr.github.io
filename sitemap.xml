@@ -2,25 +2,31 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://root-zr.github.io/en/2023/02/11/append-entries-of-raft-raft%E7%AE%97%E6%B3%95%E6%B7%BB%E5%8A%A0%E6%9D%A1%E7%9B%AE/</loc>
+    <lastmod>2023-02-11T13:39:37+08:00</lastmod>
+  </url><url>
     <loc>https://root-zr.github.io/categories/</loc>
-    <lastmod>2023-01-07T13:39:37+08:00</lastmod>
+    <lastmod>2023-02-11T13:39:37+08:00</lastmod>
   </url><url>
     <loc>https://root-zr.github.io/en/posts/</loc>
-    <lastmod>2023-01-07T13:39:37+08:00</lastmod>
+    <lastmod>2023-02-11T13:39:37+08:00</lastmod>
+  </url><url>
+    <loc>https://root-zr.github.io/tags/raft/</loc>
+    <lastmod>2023-02-11T13:39:37+08:00</lastmod>
   </url><url>
     <loc>https://root-zr.github.io/tags/</loc>
-    <lastmod>2023-01-07T13:39:37+08:00</lastmod>
+    <lastmod>2023-02-11T13:39:37+08:00</lastmod>
+  </url><url>
+    <loc>https://root-zr.github.io/tags/%E4%B8%AD%E6%96%87/</loc>
+    <lastmod>2023-02-11T13:39:37+08:00</lastmod>
+  </url><url>
+    <loc>https://root-zr.github.io/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E6%A1%A3/</loc>
+    <lastmod>2023-02-11T13:39:37+08:00</lastmod>
   </url><url>
     <loc>https://root-zr.github.io/en/2023/01/07/the-shortest-path-of-graphs-%E5%9B%BE%E7%9A%84%E6%9C%80%E7%9F%AD%E8%B7%AF%E9%97%AE%E9%A2%98/</loc>
     <lastmod>2023-01-07T13:39:37+08:00</lastmod>
   </url><url>
-    <loc>https://root-zr.github.io/tags/%E4%B8%AD%E6%96%87/</loc>
-    <lastmod>2023-01-07T13:39:37+08:00</lastmod>
-  </url><url>
     <loc>https://root-zr.github.io/tags/%E6%8A%80%E6%9C%AF/</loc>
-    <lastmod>2023-01-07T13:39:37+08:00</lastmod>
-  </url><url>
-    <loc>https://root-zr.github.io/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E6%A1%A3/</loc>
     <lastmod>2023-01-07T13:39:37+08:00</lastmod>
   </url><url>
     <loc>https://root-zr.github.io/en/2022/12/31/hamiltonian-graph-%E5%93%88%E5%AF%86%E9%A1%BF%E5%9B%BE/</loc>
