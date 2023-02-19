@@ -1,0 +1,257 @@
+<a name="top"></a>
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  	
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Trie Tree | 字典树 - Albert Wang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/font.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega@5.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.12.2"></script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+
+
+  </head>
+  
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav" >
+      <a href="/" class="nav-logo">
+        <img src="/media/logo.JPG"
+         width="50"
+         height="50"
+         alt="Hugo-ht">
+      </a>
+
+      <ul class="nav-links" >
+       
+       
+       
+       <li><a href="/">Home</a></li>
+       
+       <li><a href="/en/posts/">Blog</a></li>
+       
+       <li><a href="/categories/">Categories</a></li>
+       
+       <li><a href="/en/project/">Project</a></li>
+       
+       <li><a href="/en/about/">About</a></li>
+       
+       
+      </ul>
+</nav>
+		<script type="text/javascript"
+        async
+        src="https://cdn.bootcss.com/mathjax/2.7.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\[\[','\]\]']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+});
+
+MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<style>
+code.has-jax {
+    font: inherit;
+    font-size: 100%;
+    background: inherit;
+    border: inherit;
+    color: #515151;
+}
+</style>
+      </header>
+
+<main class = "content" role="main">
+<div style="text-align: center">
+
+<h1>Trie Tree | 字典树</h1>
+
+<p>Albert Wang 
+ / 2023-02-19 
+/ 200 Words/has been Read  <span id="busuanzi_value_page_pv"></span>&nbsp;&nbsp;Times
+
+</p>
+
+
+
+<hr/>
+
+
+</div>
+
+<span class="article-toolbar">
+  
+  
+  
+  
+  
+  
+  
+  <a href='https://github.com/root-zren%5cposts%5c2023%5c%e5%ad%97%e5%85%b8%e6%a0%91.md'style="font-size: 24px; color: black;" target="_blank"><i class="fa fa-edit" aria-hidden="true" title="Suggest an edit of this page"></i>
+  </a>
+  
+  
+  
+</span>
+
+
+<aside class="toc">
+Table of Contents:
+<nav id="TableOfContents">
+  <ol>
+    <li><a href="#背景">背景</a></li>
+    <li><a href="#字典树">字典树</a></li>
+    <li><a href="#代码实现">代码实现</a></li>
+  </ol>
+</nav>
+</aside>
+
+
+<div class="body-text list-text">
+<h2 id="背景">背景<a href="#背景" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>假如我们现在有一个单词组成的数组[&ldquo;apple&rdquo;,  &ldquo;banana&rdquo;, &ldquo;orange&rdquo;, &hellip;]，我们希望准确地知道某一个单词是否在这个数组里，有什么高效的统计方式呢？</p>
+<h2 id="字典树">字典树<a href="#字典树" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>字典树的设计就是用来解决上面的问题，下图就是一个字典树的示意图，它具有以下的特点：</p>
+<ul>
+<li>它的每条边代表了一个特定的字符；</li>
+<li>从根节点到每个节点的路径就是某个字符串的前缀；</li>
+<li>一个父结点的子结点数目最多有 26 个，因为只有 26 个单词.</li>
+</ul>
+<p>对于下面这张图来说，我们希望知道 &ldquo;cat&rdquo; 在不在字典里，首先我们从根节点出发，先找第一个单词 &lsquo;c&rsquo; 在不在根节点的子结点里；如果在，就找第二个单词 &lsquo;a&rsquo; 在不在 &lsquo;c&rsquo; 的子结点里，这样不断地查找下去。</p>
+<p><img src="https://img1.baidu.com/it/u=2356586271,1421706842&amp;fm=253&amp;fmt=auto&amp;app=138&amp;f=PNG?w=500&amp;h=418" alt="img"></p>
+<p>我们不难发现，对于这棵树来说，它的深度取决于当前字典里最长单词的字母个数，而单词的长度一般不会超过 50，所以这棵树的查找是非常高效的。</p>
+<p>字典树除了能很好地判断一个单词是否在这个字典里，它同样可以应用于<strong>自动补全和拼写检查</strong>。</p>
+<h2 id="代码实现">代码实现<a href="#代码实现" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>要实现这棵树也非常简单，首先我们需要把这棵树的节点构造出来，这里用一个长度为 26 的数组用来表示某一个字母是否有对应的子结点，还有一个 int 的变量用来表示在这颗树里有多少个单词以当前这个节点结尾。</p>
+<pre tabindex="0"><code>class Node {
+    Node[] next;
+    int end;
+
+    public Node() {
+        next = new Node[26];
+    }
+}
+</code></pre><p>然后我们需要实现 Trie 的代码，我们只需要通过迭代的方式去插入和查询即可。</p>
+<pre tabindex="0"><code>public class Trie {
+    Node root;
+    public Trie() {
+        root = new Node();
+    }
+
+    public void insert(String word) {
+        char[] arr = word.toCharArray();
+        Node cur = root;
+        for (int i = 0; i &lt; arr.length; i++) {
+            int idx = arr[i] - 'a';
+            if (cur.next[idx] == null) {
+                cur.next[idx] = new Node();
+            }
+            cur = cur.next[idx];
+        }
+        cur.end++;
+    }
+
+    public boolean search(String word) {
+        char[] arr = word.toCharArray();
+        Node cur = root;
+        for (int i = 0; i &lt; arr.length; i++) {
+            int idx = arr[i] - 'a';
+            if (cur.next[idx] == null) {
+                return false;
+            }
+            cur = cur.next[idx];
+        }
+        return cur.end &gt; 0 ? true : false; 
+    }
+
+    public void erase(String word) {
+        char[] arr = word.toCharArray();
+        Node cur = root;
+        for (int i = 0; i &lt; arr.length; i++) {
+            int idx = arr[i] - 'a';
+            cur = cur.next[idx];
+        }
+        cur.end--;
+    }
+}
+</code></pre>
+<p style="color:#777;">Last modified on 2023-02-19</p>
+</div>
+<a href="#top"><i class="fa fa-chevron-up" style="font-size: 30px; color: black;"></i></a>
+
+</main>
+
+<footer class="footer">
+  <script type="text/javascript" src="/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/javascript" src="/js/center-img.js"></script>
+
+<script type="text/javascript" src="//rf.revolvermaps.com/0/0/6.js?i=5sz67w4rqwe&amp;m=0&amp;c=ff0000&amp;cr1=ffffff&amp;f=times_new_roman&amp;l=1" async="async"></script>
+
+     <ul class="footer-links">
+      
+       
+       
+       
+       <li><a href="/en/posts/index.xml" type="application/rss+xml" title="RSS feed">
+       Subscribe </a>
+       </li>
+       
+       
+       <li>
+       
+        <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
+       
+        License
+        <i class="fa fa-cc" aria-hidden="true" title="Attribution-NonCommercial-ShareAlike 4.0 International"></i> 
+        </a>
+       </li>
+       
+     </ul>
+     
+	    <span id="busuanzi_container_site_pv"> 本站访问量：<span id="busuanzi_value_site_pv"></span>次</span>&nbsp;
+	    <span id="busuanzi_container_site_uv"> 您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者</span>
+
+		
+     
+</footer>
+
+
+
+
+
