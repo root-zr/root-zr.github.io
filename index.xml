@@ -8,6 +8,22 @@
     <language>en-us</language>
     <lastBuildDate>Fri, 07 May 2021 01:53:34 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>Segment Tree | 线段树</title>
+      <link>https://root-zr.github.io/en/2023/03/03/segment-tree-%E7%BA%BF%E6%AE%B5%E6%A0%91/</link>
+      <pubDate>Fri, 03 Mar 2023 13:39:37 +0800</pubDate>
+      
+      <guid>https://root-zr.github.io/en/2023/03/03/segment-tree-%E7%BA%BF%E6%AE%B5%E6%A0%91/</guid>
+      <description>背景 这篇博客主要介绍线段树的相关知识。假如我们需要对区间进行操作，比如需要多次查询某一个区间的和，或者多次查询某一个区间的最大值，或者多次在某些区间上加一个值。很明显，我们操作一次的时间复杂度是O(n)，操作 m 次的时间复杂度是 O(mn)。
+对于$O(n^2)$ 这样的时间复杂度来说，我们的数据量一般不能超过$10^5$，但是如果我们有一种手段把它的时间复杂度变成nlogn级别，那效率就会提升很多。
+线段树 线段树就是一种很好的解决方案。它的图形化表达如下图所示；
+假如我们想要查询某一个区间的和，首先我们知道总的区间是[1, 10]，然后我们把他进行折半，分成[1, 5] 和 [6, 10] 两个区间。然后对这两个子区间再折半，不断地递归下去，知道这个区间已经只有一个元素，也就是对应着叶子节点。
+这时对于叶子节点我们很容易知道它的和就是这个元素本身，因为它只有一个元素。对于任意一个非叶子节点来说，它的区间和就是先对它的子结点求和，再把每一个子结点的和相加。
+代码实现 不难看出，线段树其实是一棵完全二叉树，所以我们直接用一个一维数组就可以保存树节点信息，类似于堆的存储方式。同样的，对于下标从 0 开始的节点，第 i 棵树必然满足下面的性质
+ 左子节点下标 2 * i + 1; 右子节点下标 2 * i + 2  我们先来定义每一个节点的的类，用 left, right, sum 分别表示左右子结点和当前区间的和。
+class Node { int left; int right; int sum; public Node (int left, int right, int sum) { this.left = left; this.right = right; this.sum = sum; } } 下面就是线段树的实现，它的成员变量就是一个一维数组，用来保存这棵树的节点信息。为了保证空间足够，这里我们按照 num * 4 的规格来创建数组空间。</description>
+    </item>
+    
+    <item>
       <title>Trie Tree | 字典树</title>
       <link>https://root-zr.github.io/en/2023/02/19/trie-tree-%E5%AD%97%E5%85%B8%E6%A0%91/</link>
       <pubDate>Sun, 19 Feb 2023 13:39:37 +0800</pubDate>

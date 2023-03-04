@@ -1,0 +1,312 @@
+<a name="top"></a>
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  	
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Segment Tree | 线段树 - Albert Wang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/font.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega@5.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.12.2"></script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+
+
+  </head>
+  
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav" >
+      <a href="/" class="nav-logo">
+        <img src="/media/logo.JPG"
+         width="50"
+         height="50"
+         alt="Hugo-ht">
+      </a>
+
+      <ul class="nav-links" >
+       
+       
+       
+       <li><a href="/">Home</a></li>
+       
+       <li><a href="/en/posts/">Blog</a></li>
+       
+       <li><a href="/categories/">Categories</a></li>
+       
+       <li><a href="/en/project/">Project</a></li>
+       
+       <li><a href="/en/about/">About</a></li>
+       
+       
+      </ul>
+</nav>
+		<script type="text/javascript"
+        async
+        src="https://cdn.bootcss.com/mathjax/2.7.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\[\[','\]\]']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+});
+
+MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<style>
+code.has-jax {
+    font: inherit;
+    font-size: 100%;
+    background: inherit;
+    border: inherit;
+    color: #515151;
+}
+</style>
+      </header>
+
+<main class = "content" role="main">
+<div style="text-align: center">
+
+<h1>Segment Tree | 线段树</h1>
+
+<p>Albert Wang 
+ / 2023-03-03 
+/ 500 Words/has been Read  <span id="busuanzi_value_page_pv"></span>&nbsp;&nbsp;Times
+
+</p>
+
+
+
+<hr/>
+
+
+</div>
+
+<span class="article-toolbar">
+  
+  
+  
+  
+  
+  
+  
+  <a href='https://github.com/root-zren%5cposts%5c2023%5c%e7%ba%bf%e6%ae%b5%e6%a0%91.md'style="font-size: 24px; color: black;" target="_blank"><i class="fa fa-edit" aria-hidden="true" title="Suggest an edit of this page"></i>
+  </a>
+  
+  
+  
+</span>
+
+
+<aside class="toc">
+Table of Contents:
+<nav id="TableOfContents">
+  <ol>
+    <li><a href="#背景">背景</a></li>
+    <li><a href="#线段树">线段树</a></li>
+    <li><a href="#代码实现">代码实现</a></li>
+    <li><a href="#实战演练">实战演练</a></li>
+  </ol>
+</nav>
+</aside>
+
+
+<div class="body-text list-text">
+<h2 id="背景">背景<a href="#背景" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>这篇博客主要介绍线段树的相关知识。假如我们需要对区间进行操作，比如需要多次查询某一个区间的和，或者多次查询某一个区间的最大值，或者多次在某些区间上加一个值。很明显，我们操作一次的时间复杂度是O(n)，操作 m 次的时间复杂度是 O(mn)。</p>
+<p>对于$O(n^2)$ 这样的时间复杂度来说，我们的数据量一般不能超过$10^5$，但是如果我们有一种手段把它的时间复杂度变成nlogn级别，那效率就会提升很多。</p>
+<h2 id="线段树">线段树<a href="#线段树" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>线段树就是一种很好的解决方案。它的图形化表达如下图所示；</p>
+<p><img src="/img/2023/03/1222284-20170819151315193-174840362.png" alt="img"></p>
+<p>假如我们想要查询某一个区间的和，首先我们知道总的区间是[1, 10]，然后我们把他进行折半，分成[1, 5] 和 [6, 10] 两个区间。然后对这两个子区间再折半，不断地递归下去，知道这个区间已经只有一个元素，也就是对应着叶子节点。</p>
+<p>这时对于叶子节点我们很容易知道它的和就是这个元素本身，因为它只有一个元素。对于任意一个非叶子节点来说，它的区间和就是先对它的子结点求和，再把每一个子结点的和相加。</p>
+<h2 id="代码实现">代码实现<a href="#代码实现" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>不难看出，线段树其实是一棵完全二叉树，所以我们直接用一个一维数组就可以保存树节点信息，类似于堆的存储方式。同样的，对于下标从 0 开始的节点，第 i 棵树必然满足下面的性质</p>
+<ul>
+<li>左子节点下标 2 * i + 1;</li>
+<li>右子节点下标 2 * i + 2</li>
+</ul>
+<p>我们先来定义每一个节点的的类，用 left, right, sum 分别表示左右子结点和当前区间的和。</p>
+<pre tabindex="0"><code>class Node {
+    int left;
+    int right;
+    int sum;
+
+    public Node (int left, int right, int sum) {
+        this.left = left;
+        this.right = right;
+        this.sum = sum;
+    }
+}
+</code></pre><p>下面就是线段树的实现，它的成员变量就是一个一维数组，用来保存这棵树的节点信息。为了保证空间足够，这里我们按照 num * 4 的规格来创建数组空间。</p>
+<p>在得到树的节点之后我们需要对这棵树进行初始化，build 函数就是用来做树的初始化操作的，参数idx 表示当前递归的下标位置，最开始的下标从 0 开始， [l, r] 表示当前节点对应的区间，val 数组是最开始传入的信息。</p>
+<p>在 build 函数里我们首先会判断当前节点是不是叶子节点，如果是叶子节点，那它的和就是参数原来的值；如果不是，则先找出这个区间的中点，然后分别向左子树和右子树递归建树。完成之后再将当前节点的 sum 值进行更新。</p>
+<pre tabindex="0"><code>public class SegmentTree {
+    Node[] nodes;
+
+    public SegmentTree(int num, int[] val) {
+        nodes = new Node[num * 4];
+        for (int i = 0; i &lt; nodes.length; i++) {
+            nodes[i] = new Node(0, 0, 0);
+        }
+        build(0, 0, num - 1, val);
+    }
+
+    public void build(int idx, int l, int r, int[] val) {
+        nodes[idx].left = l;
+        nodes[idx].right = r;
+        if (l == r) {
+            nodes[idx].sum = val[l];
+            return;
+        }
+        int mid = l + (r - l) / 2;
+        if (l &lt;= mid) {
+            build(idx * 2 + 1, l, mid, val);
+        }
+        if (mid &lt; r){
+            build(idx * 2 + 2, mid + 1, r, val);
+        }
+        nodes[idx].sum = nodes[idx * 2 + 1].sum + nodes[idx * 2 + 2].sum;
+    }
+}
+</code></pre><p>建完树之后如果我们希望查询某一个区间的和，那就要从根节点开始递归向下在线段树中查询。当递归到某一个节点的时候可能就会存在两种情况，</p>
+<ul>
+<li>当前节点所表示的区间是查询区间的子集，直接返回 sum；</li>
+<li>查询区间分别在当前节点表示区间的左右子树里，这时就需要分别计算左右子树的 sum，然后再把它们加起来。</li>
+</ul>
+<p>下面代码就是这两种情况的实现</p>
+<pre tabindex="0"><code>    public int query(int idx, int l, int r) {
+        if ((l &lt;= nodes[idx].left) &amp;&amp; (nodes[idx].right &lt;= r)) { // 当前节点表示的区间在询问的区间里面
+            return nodes[idx].sum;
+        }
+
+        int sum = 0;
+        int mid = nodes[idx].left + (nodes[idx].right - nodes[idx].left) / 2;
+        if (l &lt;= mid) { // 查询区间的左端点要在当前节点的左子树中去找
+            sum += query(idx * 2 + 1, l, r);
+        }
+        if (r &gt; mid) {
+            sum += query(idx * 2 + 2, l, r);
+        }
+        return sum;
+    }
+</code></pre><p>我们考虑假如现在想要修改某一个节点所表示的值，该怎么做呢？很自然地我们应该想到先查到这个节点在树的哪个位置，然后把它的值改掉就行了嘛。确实是这样，但是我们同样得注意到我们的修改可能会改变这个节点所有父结点的 sum 值，所以我们每次修改都需要进行 pushUp，把它的父结点的 sum 值做一次更新。</p>
+<p>下面就是修改操作的代码实现，其中 modify 函数和查询在写法上很相似，只是我们在每次对子结点进行修改之后都会对当前节点做 pushUp。</p>
+<pre tabindex="0"><code>    public void pushUp(int idx) {
+        nodes[idx].sum = nodes[idx * 2 + 1].sum + nodes[idx * 2 + 2].sum;
+    }
+
+    public void modify(int idx, int x, int val) { // x 表示要修改的元素下标， val 表示要修改的值
+        if ((nodes[idx].left == x) &amp;&amp; (nodes[idx].right == x)) {
+            nodes[idx].sum = val;
+            return;
+        }
+
+        int mid = nodes[idx].left + (nodes[idx].right - nodes[idx].left) / 2;
+        if (x &lt;= mid) {
+            modify(idx * 2 + 1, x, val);
+        } else {
+            modify(idx * 2 + 2, x, val);
+        }
+        pushUp(idx);
+    }
+</code></pre><h2 id="实战演练">实战演练<a href="#实战演练" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>下面我们用力扣第 307 题<a href="https://leetcode.cn/problems/range-sum-query-mutable/" target="_blank" rel="noreferrer noopener">区域和检索 - 数组可修改</a>
+
+来说明线段树该怎么用，这道题题目和我们的例子几乎一模一样，这里不多做解释。</p>
+<p>题目需要我们实现下面的模板，我们只需要把线段树套进去就可以顺利解决这道题目。</p>
+<p><img src="/img/2023/03/image-20230304160328605.png" alt="image-20230304160328605"></p>
+<p>如下面代码所示：</p>
+<pre tabindex="0"><code>class NumArray {
+    SegmentTree st;
+
+    public NumArray(int[] nums) {
+        st = new SegmentTree(nums.length, nums);
+    }
+    
+    public void update(int index, int val) {
+        st.modify(0, index, val);
+    }
+    
+    public int sumRange(int left, int right) {
+        return st.query(0, left, right);
+    }
+}
+</code></pre>
+<p style="color:#777;">Last modified on 2023-03-03</p>
+</div>
+<a href="#top"><i class="fa fa-chevron-up" style="font-size: 30px; color: black;"></i></a>
+
+</main>
+
+<footer class="footer">
+  <script type="text/javascript" src="/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/javascript" src="/js/center-img.js"></script>
+
+<script type="text/javascript" src="//rf.revolvermaps.com/0/0/6.js?i=5sz67w4rqwe&amp;m=0&amp;c=ff0000&amp;cr1=ffffff&amp;f=times_new_roman&amp;l=1" async="async"></script>
+
+     <ul class="footer-links">
+      
+       
+       
+       
+       <li><a href="/en/posts/index.xml" type="application/rss+xml" title="RSS feed">
+       Subscribe </a>
+       </li>
+       
+       
+       <li>
+       
+        <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
+       
+        License
+        <i class="fa fa-cc" aria-hidden="true" title="Attribution-NonCommercial-ShareAlike 4.0 International"></i> 
+        </a>
+       </li>
+       
+     </ul>
+     
+	    <span id="busuanzi_container_site_pv"> 本站访问量：<span id="busuanzi_value_site_pv"></span>次</span>&nbsp;
+	    <span id="busuanzi_container_site_uv"> 您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者</span>
+
+		
+     
+</footer>
+
+
+
+
+
