@@ -1,0 +1,250 @@
+<a name="top"></a>
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  	
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Distributed transaction | 分布式事务 - Albert Wang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/font.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega@5.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.12.2"></script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+
+
+  </head>
+  
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav" >
+      <a href="/" class="nav-logo">
+        <img src="/media/logo.JPG"
+         width="50"
+         height="50"
+         alt="Hugo-ht">
+      </a>
+
+      <ul class="nav-links" >
+       
+       
+       
+       <li><a href="/">Home</a></li>
+       
+       <li><a href="/en/posts/">Blog</a></li>
+       
+       <li><a href="/categories/">Categories</a></li>
+       
+       <li><a href="/en/project/">Project</a></li>
+       
+       <li><a href="/en/about/">About</a></li>
+       
+       
+      </ul>
+</nav>
+		<script type="text/javascript"
+        async
+        src="https://cdn.bootcss.com/mathjax/2.7.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\[\[','\]\]']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+});
+
+MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<style>
+code.has-jax {
+    font: inherit;
+    font-size: 100%;
+    background: inherit;
+    border: inherit;
+    color: #515151;
+}
+</style>
+      </header>
+
+<main class = "content" role="main">
+<div style="text-align: center">
+
+<h1>Distributed transaction | 分布式事务</h1>
+
+<p>Albert Wang 
+ / 2023-03-05 
+/ 200 Words/has been Read  <span id="busuanzi_value_page_pv"></span>&nbsp;&nbsp;Times
+
+</p>
+
+
+
+<hr/>
+
+
+</div>
+
+<span class="article-toolbar">
+  
+  
+  
+  
+  
+  
+  
+  <a href='https://github.com/root-zren%5cposts%5c2023%5c%e5%88%86%e5%b8%83%e5%bc%8f%e4%ba%8b%e5%8a%a1.md'style="font-size: 24px; color: black;" target="_blank"><i class="fa fa-edit" aria-hidden="true" title="Suggest an edit of this page"></i>
+  </a>
+  
+  
+  
+</span>
+
+
+<aside class="toc">
+Table of Contents:
+<nav id="TableOfContents">
+  <ol>
+    <li><a href="#背景">背景</a></li>
+    <li><a href="#两阶段提交">两阶段提交</a></li>
+  </ol>
+</nav>
+</aside>
+
+
+<div class="body-text list-text">
+<h2 id="背景">背景<a href="#背景" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>在数据库概念中事务代表着一系列的操作，这些操作需要版满足ACID特性，分别是下面这些操作的首字母</p>
+<ul>
+<li>
+<p>Atomic：这些操作要么全部被commit，要么都不做；</p>
+</li>
+<li>
+<p>Consistent：  一个事务在执行之前和执行之后，数据库都必须处于一致性状态</p>
+</li>
+<li>
+<p>Isolatesd: 两个事务之间的操作是隔离的，当事务在执行的时候彼此看不到各自的修改，只能看到事务执行结束之后的结果；</p>
+</li>
+<li>
+<p>Durability：事务处理的结果必须被持久化，长期存在</p>
+</li>
+</ul>
+<p>如果数据库只保存在一台服务器上，设计满足ACID的属性在一般的数据库书籍中都会讲到。但是在大型系统中，数据库的一张表往往保存在多个服务器上，比如银行的存款信息可能一半在A服务器，一半在B服务器，在这种情况之下设计满足ACID的分布式事务就会麻烦很多。</p>
+<p>比如我们现在有两个事务 T1 和 T2， 其中 T1 是表示从 x 到 y 的一个转账操作，x 和 y 的值最初都是 10，并且分别保存在服务器 A 和 B 上，T2 表示一次查询操作，它们分别可以用下面这种方式执行</p>
+<pre tabindex="0"><code>T1 ： 
+    BEGIN_X
+        add(x, 1)
+        add(y, -1)
+    END_X
+T2:
+    BEGIN_X
+        t1 = get(x)
+        t2 = get(y)
+        print t1, t2
+    END_X
+</code></pre><p>下面我们用两阶段提交的方式来设计分布式事务。</p>
+<h2 id="两阶段提交">两阶段提交<a href="#两阶段提交" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>在两阶段提交方式中有一个专门的服务器用来做事务协调器，A，B 这些服务器叫参与者（paticipants）。首先协调器会发prepare消息给参与者，判断它们能否完成后续的put操作，协调器会回复 YES/NO，分别表示下图中的①和②。当协调器发现两个服务都回复了 YES，协调器会发 commit 消息，参与者 commit 之后会回复 ACK 确认消息，只要有一个回复NO，就会发abort消息，回滚这个事务，如下图的③和④。通过这两个阶段就保证了分布式事务的一致性。</p>
+<p><img src="/img/2023/03/image-20230305141954255.png" alt="image-20230305141954255"></p>
+<p>下面我们来看一下两阶段具体是怎么解决分布式系统中可能会导致不一致的各种情况的：</p>
+<p>首先参与者可能会发生崩溃，我们不妨假设发生崩溃的就是服务器 B，B在发生中断之后就会重启，重启后一般会恢复正常。B 可能会在下面这几种情况下发生崩溃，</p>
+<ul>
+<li>
+<p>B 在回复 prepare 前中断：因为 B 不会回复协调器，协调器判断超时后会终止；</p>
+</li>
+<li>
+<p>B在回复后中断：B 在回复 prepare 消息之前就要先获取 y 这个字段的锁，如果是数据库可能会获取一整条记录的行锁，同时会把事务在内存中管理数据的中间状态之持久化到磁盘上，防止崩溃中止。在回复YES之前已经执行了 PUT 的操作，并且持久化到磁盘。如果回复完之后崩溃，重启后B会根据日志来恢复；</p>
+</li>
+<li>
+<p>B在收到 commit 之后崩溃，因为已经持久化过了，所以不需要做什么操作。协调器收不到ACK消息可能会多次发commit，这时等到B重启后就会回复。</p>
+</li>
+</ul>
+<p>协调器也有可能会崩溃，假如发完 commit 之后协调器崩溃，协调器必须把事务的 commit 状态持久化，这样在重启之后才能再次发 commit。</p>
+<p>假如发送的消息丢包了，如果协调器等了很久都没有收到回复就会回滚事务，但是参与者在等待 commit 消息的时候收不到消息不能释放锁，只能一直等，这个行为叫阻塞。</p>
+<p>从上面的介绍中我们不难看出两阶段提交其实存在着下面的缺点，</p>
+<ol>
+<li>
+<p>两阶段提交涉及大量的通信，速度慢</p>
+</li>
+<li>
+<p>不能做到高可用，一旦出现故障，只能通过日志恢复</p>
+</li>
+</ol>
+<p>对于第二点，我们可以尝试采用 raft 集群来做协调器和参与者来提升，如下图</p>
+<p><img src="/img/2023/03/image-20230305144134804.png" alt="image-20230305144134804"></p>
+<p>假如我们采用 raft 集群，对于每一台协调器服务器来说，它们做的事情都是一样的，并且在上图中这样一个三台服务器的集群中我们可以允许有一台服务器处于故障状态，这样就保证了分布式事务的高可用性。</p>
+
+<p style="color:#777;">Last modified on 2023-03-05</p>
+</div>
+<a href="#top"><i class="fa fa-chevron-up" style="font-size: 30px; color: black;"></i></a>
+
+</main>
+
+<footer class="footer">
+  <script type="text/javascript" src="/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/javascript" src="/js/center-img.js"></script>
+
+<script type="text/javascript" src="//rf.revolvermaps.com/0/0/6.js?i=5sz67w4rqwe&amp;m=0&amp;c=ff0000&amp;cr1=ffffff&amp;f=times_new_roman&amp;l=1" async="async"></script>
+
+     <ul class="footer-links">
+      
+       
+       
+       
+       <li><a href="/en/posts/index.xml" type="application/rss+xml" title="RSS feed">
+       Subscribe </a>
+       </li>
+       
+       
+       <li>
+       
+        <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
+       
+        License
+        <i class="fa fa-cc" aria-hidden="true" title="Attribution-NonCommercial-ShareAlike 4.0 International"></i> 
+        </a>
+       </li>
+       
+     </ul>
+     
+	    <span id="busuanzi_container_site_pv"> 本站访问量：<span id="busuanzi_value_site_pv"></span>次</span>&nbsp;
+	    <span id="busuanzi_container_site_uv"> 您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者</span>
+
+		
+     
+</footer>
+
+
+
+
+

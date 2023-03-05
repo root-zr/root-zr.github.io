@@ -6,7 +6,24 @@
     <description>Recent content in English Posts on Albert Wang</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 03 Mar 2023 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/en/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 05 Mar 2023 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/en/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Distributed transaction | 分布式事务</title>
+      <link>https://root-zr.github.io/en/2023/03/05/distributed-transaction-%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/</link>
+      <pubDate>Sun, 05 Mar 2023 13:39:37 +0800</pubDate>
+      
+      <guid>https://root-zr.github.io/en/2023/03/05/distributed-transaction-%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/</guid>
+      <description>背景 在数据库概念中事务代表着一系列的操作，这些操作需要版满足ACID特性，分别是下面这些操作的首字母
+  Atomic：这些操作要么全部被commit，要么都不做；
+  Consistent： 一个事务在执行之前和执行之后，数据库都必须处于一致性状态
+  Isolatesd: 两个事务之间的操作是隔离的，当事务在执行的时候彼此看不到各自的修改，只能看到事务执行结束之后的结果；
+  Durability：事务处理的结果必须被持久化，长期存在
+  如果数据库只保存在一台服务器上，设计满足ACID的属性在一般的数据库书籍中都会讲到。但是在大型系统中，数据库的一张表往往保存在多个服务器上，比如银行的存款信息可能一半在A服务器，一半在B服务器，在这种情况之下设计满足ACID的分布式事务就会麻烦很多。
+比如我们现在有两个事务 T1 和 T2， 其中 T1 是表示从 x 到 y 的一个转账操作，x 和 y 的值最初都是 10，并且分别保存在服务器 A 和 B 上，T2 表示一次查询操作，它们分别可以用下面这种方式执行
+T1 ： BEGIN_X add(x, 1) add(y, -1) END_X T2: BEGIN_X t1 = get(x) t2 = get(y) print t1, t2 END_X 下面我们用两阶段提交的方式来设计分布式事务。
+两阶段提交 在两阶段提交方式中有一个专门的服务器用来做事务协调器，A，B 这些服务器叫参与者（paticipants）。首先协调器会发prepare消息给参与者，判断它们能否完成后续的put操作，协调器会回复 YES/NO，分别表示下图中的①和②。当协调器发现两个服务都回复了 YES，协调器会发 commit 消息，参与者 commit 之后会回复 ACK 确认消息，只要有一个回复NO，就会发abort消息，回滚这个事务，如下图的③和④。通过这两个阶段就保证了分布式事务的一致性。</description>
+    </item>
+    
     <item>
       <title>Segment Tree | 线段树</title>
       <link>https://root-zr.github.io/en/2023/03/03/segment-tree-%E7%BA%BF%E6%AE%B5%E6%A0%91/</link>
