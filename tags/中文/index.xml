@@ -6,7 +6,30 @@
     <description>Recent content in 中文 on Albert Wang</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 05 Mar 2023 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/tags/%E4%B8%AD%E6%96%87/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 22 Apr 2023 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/tags/%E4%B8%AD%E6%96%87/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The Shortest Path of Graphs | 图的最短路问题2</title>
+      <link>https://root-zr.github.io/en/2023/04/22/the-shortest-path-of-graphs-%E5%9B%BE%E7%9A%84%E6%9C%80%E7%9F%AD%E8%B7%AF%E9%97%AE%E9%A2%982/</link>
+      <pubDate>Sat, 22 Apr 2023 13:39:37 +0800</pubDate>
+      
+      <guid>https://root-zr.github.io/en/2023/04/22/the-shortest-path-of-graphs-%E5%9B%BE%E7%9A%84%E6%9C%80%E7%9F%AD%E8%B7%AF%E9%97%AE%E9%A2%982/</guid>
+      <description>在几个月前我总结了图最短路问题常用的几个算法以及实现 。但是随后我就发现了一个很大的问题，之前算法的实现都是采用的邻接矩阵，这种实现方式最大的问题就是太占用内存空间。假如一个稀疏图有 n 个顶点，m 条边（其中 m &amp;laquo; n)，在这种情况下用邻接矩阵来表示图需要的内存空间是$O(n^2)$，在一些算法题中 n 的数量往往会达到 $10^5$，而给定的内存范围是 $10^9$，这就导致临界矩阵往往不能用来做这些图的题目。如果采用邻接表来表示一个图只需要 $O(n + m)$ 的内存空间，所以下面我们用邻接表来实现Dijkstra 算法。
+首先我们来构造图，代码如下。其中 n 表示有 n 个节点，并且节点的值为 0 ~ n - 1，edges 表示边的集合，edge[0]和edge[1]表示从 edge[0] 到 edge[1] 有边，edge[2] 表示这条边的权重。
+ public int init(int n, int[][] edges) { ArrayList&amp;lt;Node&amp;gt;[] graph = new ArrayList[n]; for (int i = 0; i &amp;lt; n; i++) { graph[i] = new ArrayList&amp;lt;&amp;gt;(); } for (int[] edge : edges) { graph[edge[0]].add(new Node(edge[1], edge[2])); graph[edge[1]].</description>
+    </item>
+    
+    <item>
+      <title>Override equals and hashCode method in HashMap | Java使用HashMap需要重写equals和hashCode方法的场景</title>
+      <link>https://root-zr.github.io/en/2023/04/21/override-equals-and-hashcode-method-in-hashmap-java%E4%BD%BF%E7%94%A8hashmap%E9%9C%80%E8%A6%81%E9%87%8D%E5%86%99equals%E5%92%8Chashcode%E6%96%B9%E6%B3%95%E7%9A%84%E5%9C%BA%E6%99%AF/</link>
+      <pubDate>Fri, 21 Apr 2023 13:39:37 +0800</pubDate>
+      
+      <guid>https://root-zr.github.io/en/2023/04/21/override-equals-and-hashcode-method-in-hashmap-java%E4%BD%BF%E7%94%A8hashmap%E9%9C%80%E8%A6%81%E9%87%8D%E5%86%99equals%E5%92%8Chashcode%E6%96%B9%E6%B3%95%E7%9A%84%E5%9C%BA%E6%99%AF/</guid>
+      <description>当我们使用对象类型作为 HashMap 的 key的时候，我们往往希望两个对象里的某一个或者某几个成员变量相等，则这两个对象是相等的，而不是说采用 Java 默认的地址空间一致并且值也相等才表示两个对象相等。
+假设我们有一个对象 Node表示一个点，它有两个成员变量 a 和 b
+class Node { int a; // 表示从a到b int b; public Node(int a, int b) { this.a = a; this.b = b; } } 现在我们创建一个 HashMap，并且在 map 里存入点（1，1）然后我们获取点（1，1）对应的权重。
+public class Test { public static void main(String[] args) { HashMap&amp;lt;Node, Integer&amp;gt; map = new HashMap&amp;lt;&amp;gt;(); Node node = new Node(1, 1); map.put(node, 2); System.out.println(map.get(new Node(1, 1))); } } 我们运行代码可以发现 map 返回的值是 null 而不是 2，这是因为我们在获取的时候又用 new 关键字创建了一个对象，然后在堆区开辟了一块新的内存空间，这导致这个“新的对象”之前并没有存在hash表里。</description>
+    </item>
+    
     <item>
       <title>Distributed transaction | 分布式事务</title>
       <link>https://root-zr.github.io/en/2023/03/05/distributed-transaction-%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/</link>

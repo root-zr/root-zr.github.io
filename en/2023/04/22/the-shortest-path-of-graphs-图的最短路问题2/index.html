@@ -1,0 +1,272 @@
+<a name="top"></a>
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  	
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>The Shortest Path of Graphs | 图的最短路问题2 - Albert Wang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/font.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega@5.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.12.2"></script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+
+
+  </head>
+  
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav" >
+      <a href="/" class="nav-logo">
+        <img src="/media/logo.JPG"
+         width="50"
+         height="50"
+         alt="Hugo-ht">
+      </a>
+
+      <ul class="nav-links" >
+       
+       
+       
+       <li><a href="/">Home</a></li>
+       
+       <li><a href="/en/posts/">Blog</a></li>
+       
+       <li><a href="/categories/">Categories</a></li>
+       
+       <li><a href="/en/project/">Project</a></li>
+       
+       <li><a href="/en/about/">About</a></li>
+       
+       
+      </ul>
+</nav>
+		<script type="text/javascript"
+        async
+        src="https://cdn.bootcss.com/mathjax/2.7.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\[\[','\]\]']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+});
+
+MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<style>
+code.has-jax {
+    font: inherit;
+    font-size: 100%;
+    background: inherit;
+    border: inherit;
+    color: #515151;
+}
+</style>
+      </header>
+
+<main class = "content" role="main">
+<div style="text-align: center">
+
+<h1>The Shortest Path of Graphs | 图的最短路问题2</h1>
+
+<p>Albert Wang 
+ / 2023-04-22 
+/ 400 Words/has been Read  <span id="busuanzi_value_page_pv"></span>&nbsp;&nbsp;Times
+
+</p>
+
+
+
+<hr/>
+
+
+</div>
+
+<span class="article-toolbar">
+  
+  
+  
+  
+  
+  
+  
+  <a href='https://github.com/root-zren%5cposts%5c2023%5c%e5%9b%be%e7%9a%84%e6%9c%80%e7%9f%ad%e8%b7%af%e9%97%ae%e9%a2%982.md'style="font-size: 24px; color: black;" target="_blank"><i class="fa fa-edit" aria-hidden="true" title="Suggest an edit of this page"></i>
+  </a>
+  
+  
+  
+</span>
+
+
+<aside class="toc">
+Table of Contents:
+<nav id="TableOfContents"></nav>
+</aside>
+
+
+<div class="body-text list-text">
+<p>在几个月前我总结了<a href="https://zrwang.com.cn/en/2023/01/07/the-shortest-path-of-graphs-%E5%9B%BE%E7%9A%84%E6%9C%80%E7%9F%AD%E8%B7%AF%E9%97%AE%E9%A2%98/" target="_blank" rel="noreferrer noopener">图最短路问题常用的几个算法以及实现</a>
+
+。但是随后我就发现了一个很大的问题，之前算法的实现都是采用的邻接矩阵，这种实现方式最大的问题就是太占用内存空间。假如一个稀疏图有 n 个顶点，m 条边（其中 m &laquo; n)，在这种情况下用邻接矩阵来表示图需要的内存空间是$O(n^2)$，在一些算法题中 n 的数量往往会达到 $10^5$，而给定的内存范围是 $10^9$，这就导致临界矩阵往往不能用来做这些图的题目。如果采用邻接表来表示一个图只需要 $O(n + m)$ 的内存空间，所以下面我们用邻接表来实现Dijkstra 算法。</p>
+<p>首先我们来构造图，代码如下。其中 n 表示有 n 个节点，并且节点的值为 0 ~ n - 1，edges 表示边的集合，edge[0]和edge[1]表示从 edge[0] 到 edge[1] 有边，edge[2] 表示这条边的权重。</p>
+<pre tabindex="0"><code>    public int init(int n, int[][] edges) {
+        ArrayList&lt;Node&gt;[] graph = new ArrayList[n];
+        for (int i = 0; i &lt; n; i++) {
+            graph[i] = new ArrayList&lt;&gt;();
+        }
+        for (int[] edge : edges) {
+            graph[edge[0]].add(new Node(edge[1], edge[2]));
+            graph[edge[1]].add(new Node(edge[0], edge[2])); // 无向图
+        }
+
+        return dijkstra(graph, 0, n - 1, n); 
+    }
+</code></pre><p>为了同时表示边和权重，这里用一个 Node 对象，其中 id 表示到节点 id 的边，distance 表示权重。</p>
+<pre tabindex="0"><code>class Node {
+    int id;
+    int distance;
+
+    public Node(int id, int distance) {
+        this.id = id;
+        this.distance = distance;
+    }
+}
+</code></pre><p>然后使用邻接表来实现 dijkstra 算法，</p>
+<pre tabindex="0"><code>    public int dijkstra(ArrayList&lt;Node&gt;[] graph, int start, int end, int n) {
+        int[] distance = new int[n];
+        for (int i = 0; i &lt; n; i++) {
+            distance[i] = Integer.MAX_VALUE;
+        }
+
+        distance[start] = 0;
+        PriorityQueue&lt;Node&gt; pq = new PriorityQueue&lt;&gt;((a, b) -&gt; (a.distance - b.distance));
+        pq.add(new Node(start, 0));
+        while (!pq.isEmpty()) {
+            Node cur = pq.poll();
+            if (distance[cur.id] != cur.distance) { // 已经是固定标号点要退出
+                continue;
+            }
+            ArrayList&lt;Node&gt; list = graph[cur.id];
+            for (int i = 0; i &lt; list.size(); i++) {
+                Node y = list.get(i);
+
+                if (distance[cur.id] + y.distance &lt; distance[y.id]) {
+                    distance[y.id] = distance[cur.id] + y.distance;
+                    pq.add(new Node(y.id, distance[cur.id] + y.distance));
+                }
+            }
+        }
+        return distance[end] == Integer.MAX_VALUE ? -1 : distance[end];
+    }
+</code></pre><p>下面我们来看一下这段代码的实现细节。首先这里采用堆来保证依次选择距离的最小值。因为每次迭代都是选择临时标号点，所以在上面的代码中用了下面的判断来剔除固定标号点。</p>
+<pre><code>if (distance[cur.id] != cur.distance) { // 已经是固定标号点要退出
+	continue;
+}
+</code></pre>
+<p>然后我们开始遍历与该节点相邻的每一条边，如果发现 distance[cur.id] + y.distance &lt; distance[y.id] 就更新 从 start到 distance[y.id]的距离。</p>
+<pre><code>ArrayList&lt;Node&gt; list = graph[cur.id];
+for (int i = 0; i &lt; list.size(); i++) {
+    Node y = list.get(i);
+
+    if (distance[cur.id] + y.distance &lt; distance[y.id]) {
+        distance[y.id] = distance[cur.id] + y.distance;
+        pq.add(new Node(y.id, distance[cur.id] + y.distance));
+    }
+}
+</code></pre>
+<p>下面我们来考虑一下怎么用 dijkstra 算法来计算一个图中的最短环。我们先来思考假如图中有环会怎么样，如下图所示</p>
+<p><img src="https://assets.leetcode.com/uploads/2023/01/04/cropped.png" alt="img"></p>
+<p>假如一个图有环，那它必然存在两个节点A，B，使得从节点A到节点B是有边的，同时删除A和B之间的这条边，A和B依然是连通的。比如上图中的 6 和 3 这两个节点，从 6 到 3 存在一条边，并且删除这条边，依然存在这一条路径使得节点 6 和 3 连通。</p>
+<p>所以我们在 dijkstra 算法里可以加入一条判断，剔除从 A 到 B 的边，然后求从 A 到 B 的最短路径。代码如下</p>
+<pre tabindex="0"><code>ArrayList&lt;Node&gt; list = graph[cur.id];
+for (int i = 0; i &lt; list.size(); i++) {
+    Node y = list.get(i);
+	
+	if ((cur.id == start &amp;&amp; y.id == end) ||
+	    (cur.id == end &amp;&amp; y.id == start)) { // 剔除从 A 到 B 的边
+	    continue;
+	}
+    if (distance[cur.id] + y.distance &lt; distance[y.id]) {
+        distance[y.id] = distance[cur.id] + y.distance;
+        pq.add(new Node(y.id, distance[cur.id] + y.distance));
+    }
+}
+</code></pre><p>如果最终返回的最短路径是有效的，表示从 A 到 B 存在一条环。</p>
+
+<p style="color:#777;">Last modified on 2023-04-22</p>
+</div>
+<a href="#top"><i class="fa fa-chevron-up" style="font-size: 30px; color: black;"></i></a>
+
+</main>
+
+<footer class="footer">
+  <script type="text/javascript" src="/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/javascript" src="/js/center-img.js"></script>
+
+<script type="text/javascript" src="//rf.revolvermaps.com/0/0/6.js?i=5sz67w4rqwe&amp;m=0&amp;c=ff0000&amp;cr1=ffffff&amp;f=times_new_roman&amp;l=1" async="async"></script>
+
+     <ul class="footer-links">
+      
+       
+       
+       
+       <li><a href="/en/posts/index.xml" type="application/rss+xml" title="RSS feed">
+       Subscribe </a>
+       </li>
+       
+       
+       <li>
+       
+        <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
+       
+        License
+        <i class="fa fa-cc" aria-hidden="true" title="Attribution-NonCommercial-ShareAlike 4.0 International"></i> 
+        </a>
+       </li>
+       
+     </ul>
+     
+	    <span id="busuanzi_container_site_pv"> 本站访问量：<span id="busuanzi_value_site_pv"></span>次</span>&nbsp;
+	    <span id="busuanzi_container_site_uv"> 您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者</span>
+
+		
+     
+</footer>
+
+
+
+
+
