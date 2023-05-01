@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>图 on Albert Wang</title>
+    <link>https://root-zr.github.io/tags/%E5%9B%BE/</link>
+    <description>Recent content in 图 on Albert Wang</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 01 May 2023 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/tags/%E5%9B%BE/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>DFS and BFS with Graph | 无向图深度优先与广度优先</title>
+      <link>https://root-zr.github.io/en/2023/05/01/dfs-and-bfs-with-graph-%E6%97%A0%E5%90%91%E5%9B%BE%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E4%B8%8E%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88/</link>
+      <pubDate>Mon, 01 May 2023 13:39:37 +0800</pubDate>
+      
+      <guid>https://root-zr.github.io/en/2023/05/01/dfs-and-bfs-with-graph-%E6%97%A0%E5%90%91%E5%9B%BE%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E4%B8%8E%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88/</guid>
+      <description>背景 我们来看这样一道经典的题目，一个矩阵中有 0 和 1 两种元素，现在要从左上角开始遍历，每次可以选择八个方向，并且只能访问值为 0 的节点，问它最短需要走多少步才能到达，查看原题可以点击这里 。
+这就是一个非常典型的遍历无向图的例子了，下面我们分别介绍 DFS 和 BFS 需要注意些什么。
+DFS 我们先假设在上图中机器人先选择向下走了一步，然后它就到了（1，0）这个点，在这个点上它可以选择向任意四个方向前进，但是又不能走出去，所以它可选的方向就只有三个，分别是向下，向右和向上。假如它选择了向上，那它就又回到了（0，0）这个点，当它回到原点之后它有可以选择来到（1，0），这样重复之后程序就永远不可能会退出了。
+针对这种情况我们来思考一下解决办法，之所以出现这种情况，是因为它走了重复的路。而它一旦走了重复的路，那这条路必然就不可能是最短的路，所以我们要禁止这种情况的发生。代码里通常有两种做法来避免这种情况的发生，一种是很直观的禁止它走“回头路”，代码实现如下
+class Solution { int ans; int[][] paths = new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}}; boolean[][] isVisited; public boolean valid(int[][] grid, int x, int y) { if (x &amp;lt; 0 || x &amp;gt;= grid.length || y &amp;lt; 0 || y &amp;gt;= grid[0].length) { return false; } if (isVisited[x][y] || grid[x][y] == 1) { return false; } return true; } public void backtrack(int[][] grid, int x, int y, int cnt) { if (!</description>
+    </item>
+    
+  </channel>
+</rss>

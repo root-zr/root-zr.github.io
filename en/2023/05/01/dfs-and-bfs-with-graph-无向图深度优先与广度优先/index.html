@@ -1,0 +1,304 @@
+<a name="top"></a>
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  	
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DFS and BFS with Graph | 无向图深度优先与广度优先 - Albert Wang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/font.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega@5.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.12.2"></script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+
+
+  </head>
+  
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav" >
+      <a href="/" class="nav-logo">
+        <img src="/media/logo.JPG"
+         width="50"
+         height="50"
+         alt="Hugo-ht">
+      </a>
+
+      <ul class="nav-links" >
+       
+       
+       
+       <li><a href="/">Home</a></li>
+       
+       <li><a href="/en/posts/">Blog</a></li>
+       
+       <li><a href="/categories/">Categories</a></li>
+       
+       <li><a href="/en/project/">Project</a></li>
+       
+       <li><a href="/en/about/">About</a></li>
+       
+       
+      </ul>
+</nav>
+		<script type="text/javascript"
+        async
+        src="https://cdn.bootcss.com/mathjax/2.7.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\[\[','\]\]']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+});
+
+MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<style>
+code.has-jax {
+    font: inherit;
+    font-size: 100%;
+    background: inherit;
+    border: inherit;
+    color: #515151;
+}
+</style>
+      </header>
+
+<main class = "content" role="main">
+<div style="text-align: center">
+
+<h1>DFS and BFS with Graph | 无向图深度优先与广度优先</h1>
+
+<p>Albert Wang 
+ / 2023-05-01 
+/ 400 Words/has been Read  <span id="busuanzi_value_page_pv"></span>&nbsp;&nbsp;Times
+
+</p>
+
+
+
+<hr/>
+
+
+</div>
+
+<span class="article-toolbar">
+  
+  
+  
+  
+  
+  
+  
+  <a href='https://github.com/root-zren%5cposts%5c2023%5c%e6%97%a0%e5%90%91%e5%9b%be%e6%b7%b1%e5%ba%a6%e4%bc%98%e5%85%88%e4%b8%8e%e5%b9%bf%e5%ba%a6%e4%bc%98%e5%85%88.md'style="font-size: 24px; color: black;" target="_blank"><i class="fa fa-edit" aria-hidden="true" title="Suggest an edit of this page"></i>
+  </a>
+  
+  
+  
+</span>
+
+
+<aside class="toc">
+Table of Contents:
+<nav id="TableOfContents">
+  <ol>
+    <li><a href="#背景">背景</a></li>
+    <li><a href="#dfs">DFS</a></li>
+    <li><a href="#bfs">BFS</a></li>
+  </ol>
+</nav>
+</aside>
+
+
+<div class="body-text list-text">
+<h2 id="背景">背景<a href="#背景" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>我们来看这样一道经典的题目，一个矩阵中有 0 和 1 两种元素，现在要从左上角开始遍历，每次可以选择八个方向，并且只能访问值为 0 的节点，问它最短需要走多少步才能到达，查看原题可以点击<a href="https://leetcode.cn/problems/shortest-path-in-binary-matrix/" target="_blank" rel="noreferrer noopener">这里</a>
+
+。</p>
+<p><img src="https://assets.leetcode.com/uploads/2021/02/18/example1_1.png" alt="img"></p>
+<p>这就是一个非常典型的遍历无向图的例子了，下面我们分别介绍 DFS 和 BFS 需要注意些什么。</p>
+<h2 id="dfs">DFS<a href="#dfs" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>我们先假设在上图中机器人先选择向下走了一步，然后它就到了（1，0）这个点，在这个点上它可以选择向任意四个方向前进，但是又不能走出去，所以它可选的方向就只有三个，分别是向下，向右和向上。假如它选择了向上，那它就又回到了（0，0）这个点，当它回到原点之后它有可以选择来到（1，0），这样重复之后程序就永远不可能会退出了。</p>
+<p>针对这种情况我们来思考一下解决办法，之所以出现这种情况，是因为它走了重复的路。而它一旦走了重复的路，那这条路必然就不可能是最短的路，所以我们要禁止这种情况的发生。代码里通常有两种做法来避免这种情况的发生，一种是很直观的禁止它走“回头路”，代码实现如下</p>
+<pre tabindex="0"><code>class Solution {
+    int ans;
+    int[][] paths = new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
+    boolean[][] isVisited;
+
+    public boolean valid(int[][] grid, int x, int y) {
+        if (x &lt; 0 || x &gt;= grid.length || y &lt; 0 || y &gt;= grid[0].length) {
+            return false;
+        }
+
+        if (isVisited[x][y] || grid[x][y] == 1) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public void backtrack(int[][] grid, int x, int y, int cnt) {
+        if (!valid(grid, x, y)) {
+            return;
+        }
+
+        cnt++;
+        if (x == grid.length - 1 &amp;&amp; y == grid[0].length - 1) {
+            ans = Math.min(ans, cnt);
+            return;
+        }
+
+        for (int[] path : paths) {
+            int newX = x + path[0];
+            int newY = y + path[1];
+            isVisited[x][y] = true;
+            backtrack(grid, newX, newY, cnt);
+            isVisited[x][y] = false;
+        }
+    }
+
+    public int shortestPathBinaryMatrix(int[][] grid) {
+        ans = Integer.MAX_VALUE;
+        isVisited = new boolean[grid.length][grid[0].length];
+        
+        backtrack(grid, 0, 0, 0);
+
+        if (ans == Integer.MAX_VALUE) {
+            return -1;
+        }
+        return ans;
+    }
+}
+</code></pre><p>上面代码中的 isVisited 数组就是用来防止代码走回头路的，如果某个点已经被访问过了，那就直接返回。这种做法要面临的一个问题是我们需要额外的 m * n 空间来存储某个点是否被访问过，空间复杂度比较高，可以用下面这种方式优化一下</p>
+<h2 id="bfs">BFS<a href="#bfs" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>上面的 DFS 实现是要不断地压栈递归遍历的，这种情况导致的问题是一旦数据量稍微大一点就可能导致栈溢出。所以我们可以用 BFS 来做这道题。通常有一些经验的做法，假如题目要求的是最短路径，那一般可以用 BFS，如果是要遍历所有可能的路径，那可以用 DFS。DFS 的代码实现如下：</p>
+<pre tabindex="0"><code>class Solution {
+    int ans;
+    int[][] paths = new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
+
+    public int shortestPathBinaryMatrix(int[][] grid) {
+        if (grid[0][0] == 1) {
+            return -1;
+        }
+
+        Queue&lt;Pair&gt; que = new LinkedList&lt;&gt;();
+        que.add(new Pair(0, 0, 0));
+
+        while (!que.isEmpty()) {
+            Pair pair = que.poll();
+            int x = pair.x;
+            int y = pair.y;
+            int newCnt = pair.cnt + 1;
+
+            if (x == grid.length - 1 &amp;&amp; y == grid[0].length - 1) {
+                return newCnt;
+            }
+
+            for (int[] path : paths) {
+                int newX = x + path[0];
+                int newY = y + path[1];
+                
+                if (newX &lt; 0 || newX &gt;= grid.length || newY &lt; 0 ||
+                    newY &gt;= grid[0].length || grid[newX][newY] == 1) {
+                    continue;
+                }
+  
+                que.add(new Pair(newX, newY, newCnt));
+                grid[newX][newY] = 1;
+            }
+        }
+
+        return -1;
+    }
+}
+
+class Pair {
+    int x;
+    int y;
+    int cnt;
+
+    public Pair(int x, int y, int cnt) {
+        this.x = x;
+        this.y = y;
+        this.cnt = cnt;
+    }
+}
+</code></pre><p>观察代码我们可以发现 DFS 和树的广度优先遍历非常像，因为树本身就是一个无环的连通图，所以实现上都很相似。</p>
+
+<p style="color:#777;">Last modified on 2023-05-01</p>
+</div>
+<a href="#top"><i class="fa fa-chevron-up" style="font-size: 30px; color: black;"></i></a>
+
+</main>
+
+<footer class="footer">
+  <script type="text/javascript" src="/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/javascript" src="/js/center-img.js"></script>
+
+<script type="text/javascript" src="//rf.revolvermaps.com/0/0/6.js?i=5sz67w4rqwe&amp;m=0&amp;c=ff0000&amp;cr1=ffffff&amp;f=times_new_roman&amp;l=1" async="async"></script>
+
+     <ul class="footer-links">
+      
+       
+       
+       
+       <li><a href="/en/posts/index.xml" type="application/rss+xml" title="RSS feed">
+       Subscribe </a>
+       </li>
+       
+       
+       <li>
+       
+        <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
+       
+        License
+        <i class="fa fa-cc" aria-hidden="true" title="Attribution-NonCommercial-ShareAlike 4.0 International"></i> 
+        </a>
+       </li>
+       
+     </ul>
+     
+	    <span id="busuanzi_container_site_pv"> 本站访问量：<span id="busuanzi_value_site_pv"></span>次</span>&nbsp;
+	    <span id="busuanzi_container_site_uv"> 您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者</span>
+
+		
+     
+</footer>
+
+
+
+
+
