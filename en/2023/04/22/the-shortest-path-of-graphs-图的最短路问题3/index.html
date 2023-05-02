@@ -1,0 +1,281 @@
+<a name="top"></a>
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  	
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>The Shortest Path of Graphs | 图的最短路问题3 - Albert Wang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/font.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega@5.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.12.2"></script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+
+
+  </head>
+  
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav" >
+      <a href="/" class="nav-logo">
+        <img src="/media/logo.JPG"
+         width="50"
+         height="50"
+         alt="Hugo-ht">
+      </a>
+
+      <ul class="nav-links" >
+       
+       
+       
+       <li><a href="/">Home</a></li>
+       
+       <li><a href="/en/posts/">Blog</a></li>
+       
+       <li><a href="/categories/">Categories</a></li>
+       
+       <li><a href="/en/project/">Project</a></li>
+       
+       <li><a href="/en/about/">About</a></li>
+       
+       
+      </ul>
+</nav>
+		<script type="text/javascript"
+        async
+        src="https://cdn.bootcss.com/mathjax/2.7.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\[\[','\]\]']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+});
+
+MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<style>
+code.has-jax {
+    font: inherit;
+    font-size: 100%;
+    background: inherit;
+    border: inherit;
+    color: #515151;
+}
+</style>
+      </header>
+
+<main class = "content" role="main">
+<div style="text-align: center">
+
+<h1>The Shortest Path of Graphs | 图的最短路问题3</h1>
+
+<p>Albert Wang 
+ / 2023-04-22 
+/ 500 Words/has been Read  <span id="busuanzi_value_page_pv"></span>&nbsp;&nbsp;Times
+
+</p>
+
+
+
+<hr/>
+
+
+</div>
+
+<span class="article-toolbar">
+  
+  
+  
+  
+  
+  
+  
+  <a href='https://github.com/root-zren%5cposts%5c2023%5c%e5%9b%be%e7%9a%84%e6%9c%80%e7%9f%ad%e8%b7%af%e9%97%ae%e9%a2%983.md'style="font-size: 24px; color: black;" target="_blank"><i class="fa fa-edit" aria-hidden="true" title="Suggest an edit of this page"></i>
+  </a>
+  
+  
+  
+</span>
+
+
+<aside class="toc">
+Table of Contents:
+<nav id="TableOfContents"></nav>
+</aside>
+
+
+<div class="body-text list-text">
+<p>对于下面这个 3 * 3 的矩阵来说，如果我们想要从从左上角走到右下角，每次只能走一步，问怎么走距离最短。</p>
+<p><img src="https://assets.leetcode.com/uploads/2022/12/07/yetgrid3drawio.png" alt="img"></p>
+<p>这个题目我们一般就直接采用 BFS 计算出结果，这样做无疑是最方便的。但是我们同样可以先构建图，然后再使用 dijkstra 算法来计算最小路径。上面的矩阵可以被表示为下面这样的一张图，</p>
+<p><img src="/img/2023/05/image-20230502210303117.png" alt="image-20230502210303117"></p>
+<p>但是我们用邻接表表示这张图就稍微有点困难了，因为一般来说我们表示图的某一个节点一般是用一个数字 i （ 0 &lt;= i &lt; n） 来表示的，但是这回的顶点确是用（i， j）这一个点对来表示的。所以我们邻接表的数据结构用数组 + 链表就不太方便了，这时可以用 Map 来表示。</p>
+<p>在 Java 语言的实现中一般是要用 HashMap，这时就要考虑可能出现哈希碰撞的情况，比较有效的一个办法是重写 hashCode 函数，如下图中的 Pair 对象。关于为什么要重写 hashCode 函数可以参考我<a href="https://zrwang.com.cn/en/2023/04/21/override-equals-and-hashcode-method-in-hashmap-java%E4%BD%BF%E7%94%A8hashmap%E9%9C%80%E8%A6%81%E9%87%8D%E5%86%99equals%E5%92%8Chashcode%E6%96%B9%E6%B3%95%E7%9A%84%E5%9C%BA%E6%99%AF/" target="_blank" rel="noreferrer noopener">这篇博客</a>
+
+。</p>
+<pre><code>class Pair {
+    int x;
+    int y;
+    int distance;
+
+    public Pair(int x, int y, int distance) {
+        this.x = x;
+        this.y = y;
+        this.distance = distance;
+    }
+
+    public int hashCode() {
+        return (x &lt;&lt; 16) | y;
+    }  
+    public boolean equals(Object a) {
+        Pair obj = (Pair)a;
+        if (obj == null) {
+            return false;
+        }
+
+        return this.x == obj.x &amp;&amp; this.y == obj.y;
+    }
+}
+</code></pre>
+<p>然后就是建图的过程了，这个和一维的比较类似，这里不多阐述。</p>
+<pre tabindex="0"><code>    public void addEdge(HashMap&lt;Pair, List&lt;Pair&gt;&gt; graph, Pair a, Pair b, int m, int n) {
+        if (a.x &lt; 0 || a.x &gt;= m || a.y &lt; 0 || a.y &gt;= n) {
+            return;
+        }
+        List&lt;Pair&gt; list = graph.getOrDefault(a, null);
+        if (list == null) {
+            list = new ArrayList&lt;&gt;();
+        }
+
+        list.add(b);
+        graph.put(a, list);
+    }
+
+    public int init(int[] start, int[] target) {
+        int m = target[0] + 1;
+        int n = target[1] + 1;
+
+        HashMap&lt;Pair, List&lt;Pair&gt;&gt; graph = new HashMap&lt;&gt;();
+
+        for (int i = 0; i &lt; m; i++) {
+            for (int j = 0; j &lt; n; j++) {
+                Pair b = new Pair(i, j, 1);
+                addEdge(graph, new Pair(i - 1, j, 1), b, m, n);
+                addEdge(graph, new Pair(i + 1, j, 1), b, m, n);
+                addEdge(graph, new Pair(i, j + 1, 1), b, m, n);
+                addEdge(graph, new Pair(i, j - 1, 1), b, m, n);
+            }
+        }
+        return dijkstra(graph, new Pair(start[0], start[1], 1), new Pair(target[0], target[1], 1), m, n);
+    }
+</code></pre><p>需要注意的是在 Pair 对象的创建中我们都要初始化一个从 a 点到 b 点的距离。比如下面的代码表示添加一条从  a 到 b 的边，这条边的权重是 1，由 b 这个对象的 distance 字段来表示。这里 a 的 distance 字段可以填任意值，因为我们重写了 Pair 的 equals 函数，比较两个对象是否相同的时候只会比较它们是否表示了同一个点。</p>
+<pre tabindex="0"><code>Pair a = new Pair(i - 1, j, 1);
+Pair b = new Pair(i, j, 1);
+addEdge(graph, a, b, m, n);
+</code></pre><p>下面是 dijkstra 的实现，仅供参考。</p>
+<pre tabindex="0"><code>    public int dijkstra(HashMap&lt;Pair, List&lt;Pair&gt;&gt; graph, Pair start, Pair end, int m, int n) {
+        int[][] distance = new int[m][n];
+        for (int i = 0; i &lt; m; i++) {
+            for (int j = 0; j &lt; n; j++) {
+                distance[i][j] = Integer.MAX_VALUE;
+            }
+        }
+
+        distance[start.x][start.y] = 0;
+        PriorityQueue&lt;Pair&gt; pq = new PriorityQueue&lt;&gt;((a, b) -&gt; (a.distance - b.distance));
+        pq.add(new Pair(start.x, start.y, 0));
+        while (!pq.isEmpty()) {
+            Pair cur = pq.poll();
+            if (distance[cur.x][cur.y] != cur.distance) { // 已经是固定标号点要退出
+                continue;
+            }
+            List&lt;Pair&gt; list = graph.get(cur);
+            for (int i = 0; i &lt; list.size(); i++) {
+                Pair pair = list.get(i);
+
+                if (distance[cur.x][cur.y] + pair.distance &lt; distance[pair.x][pair.y]) {
+                    distance[pair.x][pair.y] = distance[cur.x][cur.y] + pair.distance;
+                    pq.add(new Pair(pair.x, pair.y, distance[cur.x][cur.y] + pair.distance));
+                }
+            }
+        }
+        return distance[end.x][end.y] == Integer.MAX_VALUE ? -1 : distance[end.x][end.y];
+    }
+</code></pre>
+<p style="color:#777;">Last modified on 2023-04-22</p>
+</div>
+<a href="#top"><i class="fa fa-chevron-up" style="font-size: 30px; color: black;"></i></a>
+
+</main>
+
+<footer class="footer">
+  <script type="text/javascript" src="/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/javascript" src="/js/center-img.js"></script>
+
+<script type="text/javascript" src="//rf.revolvermaps.com/0/0/6.js?i=5sz67w4rqwe&amp;m=0&amp;c=ff0000&amp;cr1=ffffff&amp;f=times_new_roman&amp;l=1" async="async"></script>
+
+     <ul class="footer-links">
+      
+       
+       
+       
+       <li><a href="/en/posts/index.xml" type="application/rss+xml" title="RSS feed">
+       Subscribe </a>
+       </li>
+       
+       
+       <li>
+       
+        <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
+       
+        License
+        <i class="fa fa-cc" aria-hidden="true" title="Attribution-NonCommercial-ShareAlike 4.0 International"></i> 
+        </a>
+       </li>
+       
+     </ul>
+     
+	    <span id="busuanzi_container_site_pv"> 本站访问量：<span id="busuanzi_value_site_pv"></span>次</span>&nbsp;
+	    <span id="busuanzi_container_site_uv"> 您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者</span>
+
+		
+     
+</footer>
+
+
+
+
+

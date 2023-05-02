@@ -6,7 +6,21 @@
     <description>Recent content in 中文 on Albert Wang</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 01 May 2023 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/tags/%E4%B8%AD%E6%96%87/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 02 May 2023 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/tags/%E4%B8%AD%E6%96%87/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The Shortest Path of Graphs | 图的最短路问题3</title>
+      <link>https://root-zr.github.io/en/2023/05/02/the-shortest-path-of-graphs-%E5%9B%BE%E7%9A%84%E6%9C%80%E7%9F%AD%E8%B7%AF%E9%97%AE%E9%A2%983/</link>
+      <pubDate>Tue, 02 May 2023 13:39:37 +0800</pubDate>
+      
+      <guid>https://root-zr.github.io/en/2023/05/02/the-shortest-path-of-graphs-%E5%9B%BE%E7%9A%84%E6%9C%80%E7%9F%AD%E8%B7%AF%E9%97%AE%E9%A2%983/</guid>
+      <description>对于下面这个 3 * 3 的矩阵来说，如果我们想要从从左上角走到右下角，每次只能走一步，问怎么走距离最短。
+假如现在有一个问题，对于下面这个 3 * 3 的矩阵来说，如果我们想要从从左上角走到右下角，每次只能走一步，问怎么走距离最短？
+这个题目我们一般就直接采用 BFS 计算出结果，这样做无疑是最方便的。但是我们同样可以先构建图，然后再使用 dijkstra 算法来计算最小路径。上面的矩阵可以被表示为下面这样的一张图，
+但是我们用邻接表表示这张图就稍微有点困难了，因为一般来说我们表示图的某一个节点一般是用一个数字 i （ 0 &amp;lt;= i &amp;lt; n） 来表示的，但是这回的顶点确是用（i， j）这一个点对来表示的。所以我们邻接表的数据结构用数组 + 链表就不太方便了，这时可以用 Map 来表示。
+在 Java 语言的实现中一般是要用 HashMap，这时就要考虑可能出现哈希碰撞的情况，比较有效的一个办法是重写 hashCode 函数，如下图中的 Pair 对象。关于为什么要重写 hashCode 函数可以参考我这篇博客 。
+class Pair { int x; int y; int distance; public Pair(int x, int y, int distance) { this.x = x; this.y = y; this.distance = distance; } public int hashCode() { return (x &amp;lt;&amp;lt; 16) | y; } public boolean equals(Object a) { Pair obj = (Pair)a; if (obj == null) { return false; } return this.</description>
+    </item>
+    
     <item>
       <title>DFS and BFS with Graph | 无向图深度优先与广度优先</title>
       <link>https://root-zr.github.io/en/2023/05/01/dfs-and-bfs-with-graph-%E6%97%A0%E5%90%91%E5%9B%BE%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E4%B8%8E%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88/</link>
