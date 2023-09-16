@@ -1,0 +1,215 @@
+<a name="top"></a>
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  	
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Messaging Service 2 | 消息服务2  - Albert Wang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/font.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega@5.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.12.2"></script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+
+
+  </head>
+  
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav" >
+      <a href="/" class="nav-logo">
+        <img src="/media/logo.JPG"
+         width="50"
+         height="50"
+         alt="Hugo-ht">
+      </a>
+
+      <ul class="nav-links" >
+       
+       
+       
+       <li><a href="/">Home</a></li>
+       
+       <li><a href="/en/posts/">Blog</a></li>
+       
+       <li><a href="/categories/">Categories</a></li>
+       
+       <li><a href="/en/project/">Project</a></li>
+       
+       <li><a href="/en/about/">About</a></li>
+       
+       
+      </ul>
+</nav>
+		<script type="text/javascript"
+        async
+        src="https://cdn.bootcss.com/mathjax/2.7.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\[\[','\]\]']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+});
+
+MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<style>
+code.has-jax {
+    font: inherit;
+    font-size: 100%;
+    background: inherit;
+    border: inherit;
+    color: #515151;
+}
+</style>
+      </header>
+
+<main class = "content" role="main">
+<div style="text-align: center">
+
+<h1>Messaging Service 2 | 消息服务2 </h1>
+
+<p>Albert Wang 
+ / 2023-09-16 
+/ 100 Words/has been Read  <span id="busuanzi_value_page_pv"></span>&nbsp;&nbsp;Times
+
+</p>
+
+
+
+<hr/>
+
+
+</div>
+
+<span class="article-toolbar">
+  
+  
+  
+  
+  
+  
+  
+  <a href='https://github.com/root-zren%5cposts%5c2023%5c%e6%b6%88%e6%81%af%e6%9c%8d%e5%8a%a12.md'style="font-size: 24px; color: black;" target="_blank"><i class="fa fa-edit" aria-hidden="true" title="Suggest an edit of this page"></i>
+  </a>
+  
+  
+  
+</span>
+
+
+<aside class="toc">
+Table of Contents:
+<nav id="TableOfContents"></nav>
+</aside>
+
+
+<div class="body-text list-text">
+<p>从上一篇博客中我们知道两台服务器之间的通信可以采用消息队列的方式。使用这种方式的好处在于生产者和消费者之间完全实现了异步通信，生产者只需要生产消息到消息队列，然后任意一个消费者都可能在往后的某个时间消费这个消息，但是消息只可以被一个消费者消费。这也就间接出现了一个生产者只会对应一个消费者的场景，实现了一种点对点的通信模式。</p>
+<p><img src="https://img0.baidu.com/it/u=3901678382,96788900&amp;fm=253&amp;fmt=auto&amp;app=138&amp;f=JPEG?w=1243&amp;h=500" alt="img"></p>
+<center>图1</center>
+<p>上面的模式是一种很不错的设计方案，假如有一天负载突然增大，我们也可以通过不断增加生产者服务器和消费者服务器来应对。但是这种模式也存在一个问题，加入我们现在有一笔订单，生产者把订单加入消息队列，这时我们希望和订单相对应的多个消费者都做出相应的处理，只用点对点的模式就会比较麻烦，它也会限制我们后续业务的扩展。这时可以采用发布订阅的模式来处理，生产者依然发送消息到消息队列，消息队列会把消息发送给所有订阅了这个消息队列的消费者。我们在上一篇博客的例子中就采用 epoll 的方式来实现了订阅消息队列的这种方式。当所有的消费者都消费完了这条消息，这条消息才会从消息队列中被删除。</p>
+<p><img src="/img/2023/09/899685-20161113124307874-766705449.jpg" alt="img"></p>
+<center>图2</center>
+<p>下面我们来介绍一个消息服务很成熟的例子<a href="https://rocketmq.apache.org/" target="_blank" rel="noreferrer noopener">rocketmq</a>
+
+，在 Apache RocketMQ 里有一个主题（Topic）的定义，官方文档中称它是消息传输和存储的顶层容器，用于标识同一类业务逻辑的消息。</p>
+<p><img src="https://rocketmq.apache.org/zh/assets/images/archifortopic-ef512066703a22865613ea9216c4c300.png" alt="主题"></p>
+<center>图3</center>
+<p>同样还有一个消费者分组（ConsumerGroup）的概念也需要被提及，消费者组被定义为多个消费行为一致的消费者。下面我们举个例子来说明一下这个分组意义，假设下图中的两个组分别代表商品和顾客，当消息队列中有一笔订单过来的时候商品和顾客这两个组中的服务器应当各自只有一台会消费这个数据，但是这个商品和顾客这两个组都是订阅了这个消息的。也就是说通过这种机制来很好地结合了点对点通信和发布订阅模式的通信。</p>
+<p><img src="https://rocketmq.apache.org/zh/assets/images/archiforconsumergroup-9d98f4f7fc0302aa2363454a552477d9.png" alt="消费组"></p>
+<center>图4</center>
+<p>下面就是 RocketMQ 的架构实例，我们至少需要两台消息服务器，一台是 NameServer，它用来管理所有的 BrokerServer，当生产者起来的时候它会首先通过 NameServer 获取到 BrokerServer 的信息，然后就会和 BrokerServer 之间发送信息，同样地，消费者也会采用这样的方式。从下图中我们很容易发现不管是 NameServer 还是 BrokerServer，他们都是可以被用作集群的，原因也很简单，假如 NameServer 宕机了，那整个消息服务就瘫痪了，所以会采用多个服务器备份的方式来搭建集群。</p>
+<p><img src="https://img2.baidu.com/it/u=3088768103,916861807&amp;fm=253&amp;fmt=auto&amp;app=120&amp;f=JPEG?w=650&amp;h=327" alt="img"></p>
+<center>图5</center>
+<p>值得一提的是在上面的图中没有画出来消费者订阅 BrokerServer 的信息不光可以从主服务器上订阅，也可以从被服务器上订阅，这样可以加大消费者处理的性能，当然满足这种订阅机制的前提是主备服务器之间的数据是保证具备了强一致性的。</p>
+<p>我们从图  3 和图 4 中是可以看到一个 BrokerServer 里是有多个消息队列的，这样可以增加消息被并行消费的能力，因为假如只有一个队列的话就会存在互斥的信息，有些消费者组就需要等待。如果包拯一个消费者组有一个属于自己的消息队列，每个消费者都从自己订阅的队列里拿消息，这样会持续增加消息队列的性能。</p>
+<p>最后我们总结一下消息服务器的作用：</p>
+<ol>
+<li>可以用来进行模块间解耦：模块之间只需要发消息，不需要去调用对方的API；</li>
+<li>可以具备队列所具有的FIFO的特点；</li>
+<li>可以做到“削峰填谷”，起到一个缓冲的作用。</li>
+</ol>
+<p>参考资料：</p>
+<ul>
+<li>中国大学慕课JavaEE之Spring框架：https://www.icourse163.org/learn/XMU-1462056168</li>
+<li>rocketmq官网：https://rocketmq.apache.org/</li>
+</ul>
+
+<p style="color:#777;">Last modified on 2023-09-16</p>
+</div>
+<a href="#top"><i class="fa fa-chevron-up" style="font-size: 30px; color: black;"></i></a>
+
+</main>
+
+<footer class="footer">
+  <script type="text/javascript" src="/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/javascript" src="/js/center-img.js"></script>
+
+<script type="text/javascript" src="//rf.revolvermaps.com/0/0/6.js?i=5sz67w4rqwe&amp;m=0&amp;c=ff0000&amp;cr1=ffffff&amp;f=times_new_roman&amp;l=1" async="async"></script>
+
+     <ul class="footer-links">
+      
+       
+       
+       
+       <li><a href="/en/posts/index.xml" type="application/rss+xml" title="RSS feed">
+       Subscribe </a>
+       </li>
+       
+       
+       <li>
+       
+        <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
+       
+        License
+        <i class="fa fa-cc" aria-hidden="true" title="Attribution-NonCommercial-ShareAlike 4.0 International"></i> 
+        </a>
+       </li>
+       
+     </ul>
+     
+	    <span id="busuanzi_container_site_pv"> 本站访问量：<span id="busuanzi_value_site_pv"></span>次</span>&nbsp;
+	    <span id="busuanzi_container_site_uv"> 您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者</span>
+
+		
+     
+</footer>
+
+
+
+
+
