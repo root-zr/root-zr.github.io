@@ -172,28 +172,32 @@ int epoll_fd; // epoll描述符
 }
 </code></pre><p>接收消息的线程相比较于发送消息的线程稍微复杂了一点，因为这里用到了 epoll 的系统调用。当消息队列中有事件被监听到之后会通知消费者去处理消息。在这个例子中增加 epoll 的原因是在没有事件发生时，线程会自动进入睡眠状态，不会浪费资源。一旦有事件发生，线程将被唤醒来处理这些事件。这使得 epoll 成为处理大量并发连接的有效工具，因为它能够高效地管理和处理事件而不会占用大量线程资源。</p>
 <pre tabindex="0"><code>void *receive_thread(void *arg) {
-    struct epoll_event events[1];
+    struct epoll_event events[MAX_EVENT_SIZE];
 
     while (1) {
         // 使用epoll等待消息队列的可读事件
-        int num_events = epoll_wait(epoll_fd, events, 1, -1);
+        int num_events = epoll_wait(epoll_fd, events, MAX_EVENT_SIZE, -1);
         if (num_events == -1) {
             perror(&quot;epoll_wait&quot;);
             exit(1);
         }
-  
-        struct message msg;
-        if (msgrcv(msg_id, &amp;msg, sizeof(msg), 1, 0) == -1) {
-            perror(&quot;msgrcv&quot;);
-            exit(1);
-        }
 
-        printf(&quot;Received from Queue: %s\n&quot;, msg.msg_text);
+        for (int i = 0; i &lt; num_events; i++) {
+            if (events[i].data.fd == msg_id &amp;&amp; events[i].events &amp; (EPOLLIN  |  EPOLLOUT)) {
+                struct message msg;
+                if (msgrcv(msg_id, &amp;msg, sizeof(msg), 1, 0) == -1) {
+                    perror(&quot;msgrcv&quot;);
+                    exit(1);
+                }
+
+                printf(&quot;Received from Queue: %s\n&quot;, msg.msg_text);
+            }
+        }
     }
 
     return NULL;
 }
-</code></pre><p>最后是这个例子的 main 函数，它首先创建了一个消息队列，然后创建了 epoll 实例，并且添加消息队列的可读端到 epoll 事件监听，最后创建了生产者和消费者两个线程。</p>
+</code></pre><p>最后是这个例子的 main 函数，它首先创建了一个消息队列，然后创建了 epoll 实例，并且添加消息队列的可读和可写端到 epoll 事件监听，最后创建了生产者和消费者两个线程。</p>
 <pre tabindex="0"><code>int main() {
     // 创建消息队列
     key_t key = ftok(&quot;/tmp&quot;, 'A');
@@ -215,9 +219,9 @@ int epoll_fd; // epoll描述符
         exit(1);
     }
 
-    // 添加消息队列的可读端到epoll事件监听
+    // 添加消息队列的可读和可写端到epoll事件监听
     struct epoll_event event;
-    event.events = EPOLLIN;
+    event.events = EPOLLIN | EPOLLOUT;
     event.data.fd = msg_id;
     if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, msg_id, &amp;event) == -1) {
         perror(&quot;epoll_ctl&quot;);
@@ -241,7 +245,9 @@ int epoll_fd; // epoll描述符
 
     return 0;
 }
-</code></pre><p>上面这个例子其实就完成了下图所示的这一件事，生产者发送消息到消息队列，然后消费者从消息队列中接收消息。这是进程间通信的一个例子，假入我们把两个进程抽象成不同服务器上的两个进程，是不是也可以通过一个消息队列的方式来实现两个服务器之间的通信呢？答案当然也是肯定的，我们可以把消息队列也放在单独的一台服务器上，这就出现了三台服务器之间在不停地进行信息交互。</p>
+</code></pre><p>代码执行的效果如下图所示：</p>
+<p><img src="/img/2023/09/image-20230917215259536.png" alt="image-20230917215259536"></p>
+<p>上面这个例子其实就完成了下图所示的这一件事，生产者发送消息到消息队列，然后消费者从消息队列中接收消息。这是进程间通信的一个例子，假入我们把两个进程抽象成不同服务器上的两个进程，是不是也可以通过一个消息队列的方式来实现两个服务器之间的通信呢？答案当然也是肯定的，我们可以把消息队列也放在单独的一台服务器上，这就出现了三台服务器之间在不停地进行信息交互。</p>
 <p><img src="/img/2023/09/5682e7f89feab2d9c43b1ca55d8adca3.png" alt="img"></p>
 <p>以上就是消息服务的开始，主要谈了使用消息队列进行进程间通信。</p>
 
