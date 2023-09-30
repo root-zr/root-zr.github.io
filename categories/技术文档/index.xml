@@ -6,7 +6,23 @@
     <description>Recent content in 技术文档 on Albert Wang</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 16 Sep 2023 13:39:39 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E6%A1%A3/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 29 Sep 2023 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E6%A1%A3/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Inno DB | InnoDB</title>
+      <link>https://root-zr.github.io/en/2023/09/29/inno-db-innodb/</link>
+      <pubDate>Fri, 29 Sep 2023 13:39:37 +0800</pubDate>
+      
+      <guid>https://root-zr.github.io/en/2023/09/29/inno-db-innodb/</guid>
+      <description>InnoDB存储 InnoDB 存储引擎是 MySQL 中最常用的存储引擎之一，其存储结构是一个复杂的组合，充分利用了磁盘、内存和日志来提供高性能、事务支持和数据一致性。它的存储结构包括以下几个重要的组成部分：
+表空间（Tablespaces）： InnoDB 存储引擎的数据存储是基于表空间的，每个表都有自己的表空间，包括系统表空间和用户表空间。系统表空间包含了数据字典等系统信息，而用户表空间包含了用户创建的表和索引数据。表空间实际上由一个或多个数据文件组成，这些数据文件是磁盘上的物理文件，用于存储表的数据和索引。InnoDB 存储引擎的数据文件通常以 .ibd 扩展名结尾。
+表空间由三个段的内容组成Leaf node segment，Non-Leaf node segment 和 Rollback segment
+ Leaf node segment：主要存的是表里的记录 Non-Leaf node segment：主要存主键索引和从索引 Rollback segment：存储事务回滚的数据  我们主要介绍段的概念。正如上面列举的那样，段里面主要存储了数据，那它就需要支持我们去动态扩增，而扩增的单位就是 Extend，默认的大小是 1M。一个 Extend 里有 64 个 Page，所以 1 个 Page 的大小为 16K（一次从磁盘读进来的数据就是一页 16 K）。Page 里则是存储着真实的记录，但是由于记录大小本身不固定，所以 1 个 Page 里有多少条记录也是不确定的。
+页是由下图所示的这几部分组成的，数据主要存储在 User Records 里， User Records 里存储的数据可能是按照主键由小到大排列，也可能是无序的插入，这个和具体的操作相关。如果发生了删除和重新插入这些操作，内部的存储就会更加无序。
+我们可以通过 Page Directory 快速找到具体某一行的记录，Page Directory 有序排列了主键，可以通过二分法快速查找。
+B+ 树索引结构 InnoDB 存储引擎使用 B+ 树索引结构来管理数据，包括聚集索引和辅助索引。聚集索引是表的主键索引，决定了数据在磁盘上的物理存储顺序，而辅助索引用于加速查询。
+B+树中叶子节点是以 Page 为单位进行存储的。并且两个页之间的主键是有序的。既然是树结构存储，那就必然需要处理增删改查这些场景，尤其是对于插入数据时需要对页进行拆分的情况，如果插入操作导致数据页的分裂，InnoDB 还需要更新父节点的索引，以反映分裂操作的结果。 为了确保数据的持久性，InnoDB 会将插入操作写入重做日志（redo log）。这是为了在发生崩溃或故障时能够恢复插入操作。写入重做日志是一个必要的步骤，以保证事务的原子性和持久性。为了使分页的代价降到最低，一般来说主键都是自增的，不允许随意去定义。</description>
+    </item>
+    
     <item>
       <title>Messaging Service 2 | 消息服务2 </title>
       <link>https://root-zr.github.io/en/2023/09/16/messaging-service-2-%E6%B6%88%E6%81%AF%E6%9C%8D%E5%8A%A12/</link>
