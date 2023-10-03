@@ -1,0 +1,290 @@
+<a name="top"></a>
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  	
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Deploy Cluster System with Docker Swarm and Docker Machine | 使用 Docker Swarm 和 Docker Machine 部署集群 - Albert Wang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/font.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega@5.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.12.2"></script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+
+
+  </head>
+  
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav" >
+      <a href="/" class="nav-logo">
+        <img src="/media/logo.JPG"
+         width="50"
+         height="50"
+         alt="Hugo-ht">
+      </a>
+
+      <ul class="nav-links" >
+       
+       
+       
+       <li><a href="/">Home</a></li>
+       
+       <li><a href="/en/posts/">Blog</a></li>
+       
+       <li><a href="/categories/">Categories</a></li>
+       
+       <li><a href="/en/project/">Project</a></li>
+       
+       <li><a href="/en/about/">About</a></li>
+       
+       
+      </ul>
+</nav>
+		<script type="text/javascript"
+        async
+        src="https://cdn.bootcss.com/mathjax/2.7.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\[\[','\]\]']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+});
+
+MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<style>
+code.has-jax {
+    font: inherit;
+    font-size: 100%;
+    background: inherit;
+    border: inherit;
+    color: #515151;
+}
+</style>
+      </header>
+
+<main class = "content" role="main">
+<div style="text-align: center">
+
+<h1>Deploy Cluster System with Docker Swarm and Docker Machine | 使用 Docker Swarm 和 Docker Machine 部署集群</h1>
+
+<p>Albert Wang 
+ / 2023-10-03 
+/ 400 Words/has been Read  <span id="busuanzi_value_page_pv"></span>&nbsp;&nbsp;Times
+
+</p>
+
+
+
+<hr/>
+
+
+</div>
+
+<span class="article-toolbar">
+  
+  
+  
+  
+  
+  
+  
+  <a href='https://github.com/root-zren%5cposts%5c2023%5c%e4%bd%bf%e7%94%a8Docker%20Swarm%e5%92%8c%20Docker%20Machine%e5%88%9b%e5%bb%ba%e9%9b%86%e7%be%a4.md'style="font-size: 24px; color: black;" target="_blank"><i class="fa fa-edit" aria-hidden="true" title="Suggest an edit of this page"></i>
+  </a>
+  
+  
+  
+</span>
+
+
+<aside class="toc">
+Table of Contents:
+<nav id="TableOfContents">
+  <ol>
+    <li><a href="#准备工作">准备工作</a></li>
+    <li><a href="#创建多个虚拟机">创建多个虚拟机</a></li>
+    <li><a href="#创建-swarm-集群">创建 Swarm 集群：</a></li>
+    <li><a href="#部署服务到-swarm-集群">部署服务到 Swarm 集群</a></li>
+  </ol>
+</nav>
+</aside>
+
+
+<div class="body-text list-text">
+<p>这篇博客主要介绍怎么用一台电脑和 Docker 来搭建出一个可以随意扩容服务的集群。因为我的宿主机是 win10 系统，所以我先装了一台 ubuntu18.04 版本的虚拟机。</p>
+<h2 id="准备工作">准备工作<a href="#准备工作" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>在开始我们下面的操作之前需要先准备一下环境，</p>
+<ul>
+<li>首先我们需要用到的工具是 Docker Machine，Docker Machine 是一个用于简化 Docker 主机（Docker Host）创建、管理和配置的命令行工具。它的主要目标是让用户能够在本地开发环境中或云中轻松创建和管理多个 Docker 主机，而无需深入了解底层虚拟化技术或云提供商的特定配置。你需要确保事先已经安装了这个软件，如果没有的话可以运行下面的命令安装，</li>
+</ul>
+<pre tabindex="0"><code>base=https://github.com/docker/machine/releases/download/v0.16.2 &amp;&amp;
+curl -L $base/docker-machine-$(uname -s)-$(uname -m) &gt;/tmp/docker-machine &amp;&amp;
+sudo install /tmp/docker-machine /usr/local/bin/docker-machine
+</code></pre><p><img src="/img/2023/10/image-20231004013754348.png" alt="image-20231004013754348"></p>
+<ul>
+<li>
+<p>另外需要安装 VirtualBox，官网是 https://www.virtualbox.org/ 。这里我们选择的是 linux ubuntu 18.04。</p>
+</li>
+<li>
+<p>最后需要确保开启了嵌套虚拟化，如果没有开启的话执行创建节点会报下面的错误</p>
+</li>
+</ul>
+<p><img src="/img/2023/10/image-20231004014525583.png" alt="image-20231004014525583"></p>
+<p>virtualBox 开启是在设置的系统设置里，勾选启动PAE/NX和启用嵌套 VT-x/AMD-V.</p>
+<p><img src="/img/2023/10/image-20231004023507036.png" alt="image-20231004023507036"></p>
+<p>启用嵌套 VT-x/AMD-V 如果没有办法勾选的话可以在 CMD 里使用下面的命令开启。先 cd 到 virtualBox 的安装目录，我的是 D:\sys\virtualBox\virtualBox。然后 VBoxManage.exe list vms 查看有哪些虚拟机，最后用 VBoxManage.exe modifyvm &ldquo;name&rdquo; &ndash;nested-hw-virt on 打开指定虚拟机的选项。</p>
+<pre tabindex="0"><code>D:\sys\virtualBox\virtualBox&gt;VBoxManage.exe list vms
+&quot;Ubuntu18.04&quot; {7f39fcd6-f8f2-4e49-b68b-77e1d11fcde2}
+
+VBoxManage.exe modifyvm &quot;Ubuntu18.04&quot; --nested-hw-virt on
+</code></pre><h2 id="创建多个虚拟机">创建多个虚拟机<a href="#创建多个虚拟机" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>下面使用 Docker Machine 创建多个虚拟机，每个虚拟机将运行 Docker 引擎。以下是一个示例命令，创建三个虚拟机：</p>
+<pre tabindex="0"><code>docker-machine create --driver virtualbox --virtualbox-hostonly-cidr &quot;192.168.56.1/24&quot; node1
+docker-machine create --driver virtualbox --virtualbox-hostonly-cidr &quot;192.168.56.1/24&quot; node2
+docker-machine create --driver virtualbox --virtualbox-hostonly-cidr &quot;192.168.56.1/24&quot; node3
+</code></pre><p>上面的命令中我们指定了网段是 &ldquo;192.168.56.1/24&rdquo;，这是因为在 Linux、Mac OS 和带有 VirtualBox &gt;= 6.1.28 的 Oracle Solaris 上，默认情况下，主机网络只允许 192.68.56.0/21 范围内的 IP 地址。然而 docker-machine 指定创建（VBoxManage hostonlyif ipconfig vboxnet0 —ip192.168.99.1 —netmask 255.255.255.0）192.168.99.1/24 的网段，这就会导致创建失败，报错信息如下图</p>
+<p><img src="/img/2023/10/image-20231004025034935.png" alt="image-20231004025034935"></p>
+<p>当我们执行上面三条命令都成功之后可以用 docker-machine ls 看到 docker-machine 管理的三台虚拟机</p>
+<p><img src="/img/2023/10/image-20231004035951487.png" alt="image-20231004035951487"></p>
+<h2 id="创建-swarm-集群">创建 Swarm 集群：<a href="#创建-swarm-集群" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>现在我们已经有了三台服务器，在开始我们后面的操作之前我们先介绍一下 Swarm 中节点的角色信息。Docker Swarm 中有两种主要类型的节点角色：manager 节点和 worker 节点。这些节点在 Swarm 集群中扮演不同的角色和职责：</p>
+<ol>
+<li><strong>Manager 节点</strong>：
+<ul>
+<li><strong>Leader Manager</strong>: 在 Swarm 集群中只有一个 leader manager，负责集群管理、任务调度、控制平面操作等。Leader manager 由 Raft 一致性算法选举产生，确保高可用性。</li>
+<li><strong>Manager</strong>: Swarm 集群可以有多个 manager 节点，但只有一个 leader。Manager 负责与 Docker CLI 交互、集群管理、服务创建、配置变更、授权等操作。Manager 节点具有与 worker 节点相同的功能，并且可以运行服务容器。</li>
+</ul>
+</li>
+<li><strong>Worker 节点</strong>：
+<ul>
+<li><strong>Worker</strong>: Worker 节点是运行服务容器的节点。它们接受来自 manager 节点的任务分配，并负责在节点上运行服务。Worker 节点不参与 Swarm 集群的管理或决策。</li>
+</ul>
+</li>
+</ol>
+<p>这些节点角色组合在一起，形成了 Docker Swarm 集群。Manager 节点用于集群管理、任务调度和控制平面操作，而 worker 节点用于运行应用程序服务容器。在高可用性集群中，可以有多个 manager 节点以确保容错性和可用性，但只有一个是 leader。</p>
+<p><img src="/img/2023/10/u=2766845402,4163216535&amp;fm=253&amp;fmt=auto&amp;app=138&amp;f.PNG" alt="img"></p>
+<p>下面在其中一个虚拟机上初始化 Docker Swarm 集群，这里我们选择的是 node1，并且选择它作为 Swarm Manager：</p>
+<pre tabindex="0"><code>docker-machine ssh node1
+docker swarm init --advertise-addr &lt;MANAGER_IP&gt;
+</code></pre><p>&lt;MANAGER_IP&gt; 是 node1 虚拟机的 IP 地址。执行上述命令后我们将获得一个命令用于加入其他节点到 Swarm 集群，如下图所示。</p>
+<p><img src="/img/2023/10/image-20231004040140850.png" alt="image-20231004040140850"></p>
+<p>然后我们加入其他虚拟机到 Swarm 集群，在其他虚拟机上执行 Swarm Manager 给出的加入命令。在  node2 和 node3 上执行类似以下命令：</p>
+<pre tabindex="0"><code>docker-machine ssh node2
+docker swarm join --token &lt;TOKEN&gt; &lt;MANAGER_IP&gt;:2377
+</code></pre><p>&lt; TOKEN &gt; 是 Swarm Manager 给出的令牌，&lt;MANAGER_IP&gt; 是 Swarm Manager 的 IP 地址。执行结果如下图所示</p>
+<p><img src="/img/2023/10/image-20231004040332519.png" alt="image-20231004040332519"></p>
+<p>然后我们用 docker node ls 可以看到集群中节点的状态信息，可以看到目前有三台机器，其中 ndoe1 是 manager 和 leader，node2 和 ndoe3 是 worker。</p>
+<p><img src="/img/2023/10/image-20231004040901563.png" alt="image-20231004040901563"></p>
+<h2 id="部署服务到-swarm-集群">部署服务到 Swarm 集群<a href="#部署服务到-swarm-集群" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>我们已经搭建好了集群，下一步就是给这个集群中添加业务。这里我们用我练习 docker 官网教程时的一个镜像作为例子来说明，这是一个类似备忘录的  Node.js  web 项目，源代码可以用下面的命令获取。</p>
+<pre tabindex="0"><code>git clone https://github.com/docker/getting-started-app.git
+</code></pre><p><img src="/img/2023/10/image-20231004052707954.png" alt="image-20231004052707954"></p>
+<p>首先下面的命令拉取镜像，在三台服务器上都执行这个命令。</p>
+<pre tabindex="0"><code>docker pull albertwang1/getting-started:latest
+</code></pre><p><img src="/img/2023/10/image-20231004053514362.png" alt="image-20231004053514362"></p>
+<p>完成之后执行下面的命令创建服务</p>
+<pre tabindex="0"><code>docker service create --name getting-started \
+--replicas 2 \
+--publish published=3000,target=3000 \
+albertwang1/getting-started:latest
+</code></pre><p>上述命令将创建一个名为 getting-started 的服务，创建我们宿主机的 3000 端口和容器 3000 端口的映射，使用我们刚刚拉取的镜像，并创建 2 个副本。然后使用下面的命令查看服务的状态</p>
+<pre tabindex="0"><code>docker service ls
+docker service ps
+</code></pre><p><img src="/img/2023/10/image-20231004060758396.png" alt="image-20231004060758396"></p>
+<p>我们可以看到这个服务被分配在了node1 和 node2上面，然后我们到 ndoe2 和 ndoe3 上去看可以发现已经有一个 albertwang1/getting-started:latest 的容器跑起来了，</p>
+<p><img src="/img/2023/10/image-20231004061030451.png" alt="image-20231004061030451"></p>
+<p><img src="/img/2023/10/image-20231004061046253.png" alt="image-20231004061046253"></p>
+<p>这个时候我们访问 manager 节点的 ip:3000 就可以使用这个服务了，如下图所示</p>
+<p><img src="/img/2023/10/image-20231004061305270.png" alt="image-20231004061305270"></p>
+<p>如果我们访问 worker 节点的网址仍然可以使用这个服务</p>
+<p><img src="/img/2023/10/image-20231004061412511.png" alt="image-20231004061412511"></p>
+<p>到这里我们已经成功部署了集群的服务。但是很显然，我们现在的集群是存在着很大的问题的。因为我们只有一个 manager 节点。假如 manager 挂掉了，那整个集群也就瘫痪了。所以我们可以设置多个节点的角色为 manager，然后这些 manager 通过选举选出一个任期内的 leader。因为一致性方面采用的是 Raft 算法，所以推荐的 manager 数量是奇数个。如果你对 Raft 算法的细节感兴趣的话可以去MIT 6.824 的公开课里查找更多的细节。</p>
+<p>我们下面再做一个实验，那就是停止 node3 的服务，然后把 ndoe3 的角色改为 manager。</p>
+<p>我们先在 node3 上执行 docker swarm leave 让 node3 脱离集群，然后在 node1 上执行 docker swarm join-token manager 可以获得升为管理节点的令牌。</p>
+<p><img src="/img/2023/10/image-20231004064441688.png" alt="image-20231004064441688"></p>
+<p>接着在 node3 上执行这个令牌命令就可以设置 node3 的状态为 manager</p>
+<p><img src="/img/2023/10/image-20231004064613399.png" alt="image-20231004064613399"></p>
+<p>参考：</p>
+<ul>
+<li>https://nowtime.cc/virtual-box/1584.html</li>
+<li>Docker技术入门与实战（第3版）杨保华，戴王剑，曹亚仑 著</li>
+</ul>
+
+<p style="color:#777;">Last modified on 2023-10-03</p>
+</div>
+<a href="#top"><i class="fa fa-chevron-up" style="font-size: 30px; color: black;"></i></a>
+
+</main>
+
+<footer class="footer">
+  <script type="text/javascript" src="/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/javascript" src="/js/center-img.js"></script>
+
+<script type="text/javascript" src="//rf.revolvermaps.com/0/0/6.js?i=5sz67w4rqwe&amp;m=0&amp;c=ff0000&amp;cr1=ffffff&amp;f=times_new_roman&amp;l=1" async="async"></script>
+
+     <ul class="footer-links">
+      
+       
+       
+       
+       <li><a href="/en/posts/index.xml" type="application/rss+xml" title="RSS feed">
+       Subscribe </a>
+       </li>
+       
+       
+       <li>
+       
+        <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
+       
+        License
+        <i class="fa fa-cc" aria-hidden="true" title="Attribution-NonCommercial-ShareAlike 4.0 International"></i> 
+        </a>
+       </li>
+       
+     </ul>
+     
+	    <span id="busuanzi_container_site_pv"> 本站访问量：<span id="busuanzi_value_site_pv"></span>次</span>&nbsp;
+	    <span id="busuanzi_container_site_uv"> 您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者</span>
+
+		
+     
+</footer>
+
+
+
+
+

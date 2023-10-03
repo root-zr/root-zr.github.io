@@ -3,21 +3,30 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://root-zr.github.io/categories/</loc>
-    <lastmod>2023-09-29T13:39:37+08:00</lastmod>
+    <lastmod>2023-10-03T13:39:37+08:00</lastmod>
+  </url><url>
+    <loc>https://root-zr.github.io/en/2023/10/03/deploy-cluster-system-with-docker-swarm-and-docker-machine-%E4%BD%BF%E7%94%A8-docker-swarm-%E5%92%8C-docker-machine-%E9%83%A8%E7%BD%B2%E9%9B%86%E7%BE%A4/</loc>
+    <lastmod>2023-10-03T13:39:37+08:00</lastmod>
+  </url><url>
+    <loc>https://root-zr.github.io/tags/docker/</loc>
+    <lastmod>2023-10-03T13:39:37+08:00</lastmod>
   </url><url>
     <loc>https://root-zr.github.io/en/posts/</loc>
-    <lastmod>2023-09-29T13:39:37+08:00</lastmod>
+    <lastmod>2023-10-03T13:39:37+08:00</lastmod>
+  </url><url>
+    <loc>https://root-zr.github.io/tags/swarm/</loc>
+    <lastmod>2023-10-03T13:39:37+08:00</lastmod>
+  </url><url>
+    <loc>https://root-zr.github.io/tags/</loc>
+    <lastmod>2023-10-03T13:39:37+08:00</lastmod>
+  </url><url>
+    <loc>https://root-zr.github.io/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E6%A1%A3/</loc>
+    <lastmod>2023-10-03T13:39:37+08:00</lastmod>
   </url><url>
     <loc>https://root-zr.github.io/en/2023/09/29/inno-db-innodb/</loc>
     <lastmod>2023-09-29T13:39:37+08:00</lastmod>
   </url><url>
     <loc>https://root-zr.github.io/tags/innodb/</loc>
-    <lastmod>2023-09-29T13:39:37+08:00</lastmod>
-  </url><url>
-    <loc>https://root-zr.github.io/tags/</loc>
-    <lastmod>2023-09-29T13:39:37+08:00</lastmod>
-  </url><url>
-    <loc>https://root-zr.github.io/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E6%A1%A3/</loc>
     <lastmod>2023-09-29T13:39:37+08:00</lastmod>
   </url><url>
     <loc>https://root-zr.github.io/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/</loc>

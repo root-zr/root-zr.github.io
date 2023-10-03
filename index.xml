@@ -8,6 +8,20 @@
     <language>en-us</language>
     <lastBuildDate>Fri, 07 May 2021 01:53:34 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>Deploy Cluster System with Docker Swarm and Docker Machine | 使用 Docker Swarm 和 Docker Machine 部署集群</title>
+      <link>https://root-zr.github.io/en/2023/10/03/deploy-cluster-system-with-docker-swarm-and-docker-machine-%E4%BD%BF%E7%94%A8-docker-swarm-%E5%92%8C-docker-machine-%E9%83%A8%E7%BD%B2%E9%9B%86%E7%BE%A4/</link>
+      <pubDate>Tue, 03 Oct 2023 13:39:37 +0800</pubDate>
+      
+      <guid>https://root-zr.github.io/en/2023/10/03/deploy-cluster-system-with-docker-swarm-and-docker-machine-%E4%BD%BF%E7%94%A8-docker-swarm-%E5%92%8C-docker-machine-%E9%83%A8%E7%BD%B2%E9%9B%86%E7%BE%A4/</guid>
+      <description>这篇博客主要介绍怎么用一台电脑和 Docker 来搭建出一个可以随意扩容服务的集群。因为我的宿主机是 win10 系统，所以我先装了一台 ubuntu18.04 版本的虚拟机。
+准备工作 在开始我们下面的操作之前需要先准备一下环境，
+ 首先我们需要用到的工具是 Docker Machine，Docker Machine 是一个用于简化 Docker 主机（Docker Host）创建、管理和配置的命令行工具。它的主要目标是让用户能够在本地开发环境中或云中轻松创建和管理多个 Docker 主机，而无需深入了解底层虚拟化技术或云提供商的特定配置。你需要确保事先已经安装了这个软件，如果没有的话可以运行下面的命令安装，  base=https://github.com/docker/machine/releases/download/v0.16.2 &amp;amp;&amp;amp; curl -L $base/docker-machine-$(uname -s)-$(uname -m) &amp;gt;/tmp/docker-machine &amp;amp;&amp;amp; sudo install /tmp/docker-machine /usr/local/bin/docker-machine   另外需要安装 VirtualBox，官网是 https://www.virtualbox.org/ 。这里我们选择的是 linux ubuntu 18.04。
+  最后需要确保开启了嵌套虚拟化，如果没有开启的话执行创建节点会报下面的错误
+  virtualBox 开启是在设置的系统设置里，勾选启动PAE/NX和启用嵌套 VT-x/AMD-V.
+启用嵌套 VT-x/AMD-V 如果没有办法勾选的话可以在 CMD 里使用下面的命令开启。先 cd 到 virtualBox 的安装目录，我的是 D:\sys\virtualBox\virtualBox。然后 VBoxManage.exe list vms 查看有哪些虚拟机，最后用 VBoxManage.exe modifyvm &amp;ldquo;name&amp;rdquo; &amp;ndash;nested-hw-virt on 打开指定虚拟机的选项。</description>
+    </item>
+    
+    <item>
       <title>Inno DB | InnoDB</title>
       <link>https://root-zr.github.io/en/2023/09/29/inno-db-innodb/</link>
       <pubDate>Fri, 29 Sep 2023 13:39:37 +0800</pubDate>
