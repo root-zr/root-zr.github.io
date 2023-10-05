@@ -64,8 +64,7 @@ B+树中叶子节点是以 Page 为单位进行存储的。并且两个页之间
       <pubDate>Sat, 16 Sep 2023 13:39:37 +0800</pubDate>
       
       <guid>https://root-zr.github.io/en/2023/09/16/messaging-service-1-%E6%B6%88%E6%81%AF%E6%9C%8D%E5%8A%A11/</guid>
-      <description>一般来说两台服务器之间的通信都可以简单抽象成两个进程之间的通信，而进程之间的通信有管道，消息队列，共享内存等各种的通信方式。其中消息队列是一种非常方便于我们理解的方式，比如下面这个例子，我们可以首先创建一个消息队列，然后载创建两个线程 send_tid, receive_tid，它们两个线程分别承担了生产者和消费者的角色，前者发送消息到消息队列，后者从消息队列中获取消息。
-我们的故事先从两个进程之间的通信说起。进程之间的通信有管道，消息队列，共享内存等各种通信方式，其中消息队列是一种非常方便于我们理解的方式。比如下面这个例子，我们可以首先创建一个消息队列，然后载创建两个线程 send_tid, receive_tid，它们两个线程分别承担了生产者和消费者的角色，前者发送消息到消息队列，后者从消息队列中获取消息。
+      <description>一般来说两台服务器之间的通信都可以简单抽象成两个进程之间的通信，而进程之间的通信有管道，消息队列，共享内存等各种的通信方式。我们的故事先从两个进程之间的通信说起。进程之间的通信有管道，消息队列，共享内存等各种通信方式，其中消息队列是一种非常方便于我们理解的方式。比如下面这个例子，我们可以首先创建一个消息队列，然后载创建两个线程 send_tid, receive_tid，它们两个线程分别承担了生产者和消费者的角色，前者发送消息到消息队列，后者从消息队列中获取消息。
 在开始之前我们先定义下面的一些表示，包括消息的封装（分为消息类型和内容），消息队列的标识（用来唯一标识这个消息队列）和epoll描述符（我们生产者需要不断从消息队列中epoll出数据）。
 struct message { long msg_type; char msg_text[256]; }; int msg_id; // 消息队列标识符 int epoll_fd; // epoll描述符 然后我们实现第一个线程用来发送消息到消息队列，在下面这个例子中每隔 2S 写一条消息到消息队列中，因为是 while (1)，所以这个线程永远不会退出。
 void *send_thread(void *arg) { struct message msg; int msg_count = 1; while (1) { msg.msg_type = 1; // 构造消息内容 snprintf(msg.msg_text, sizeof(msg.msg_text), &amp;quot;Message %d from send_thread&amp;quot;, msg_count); // 发送消息到消息队列 if (msgsnd(msg_id, &amp;amp;msg, sizeof(msg), 0) == -1) { perror(&amp;quot;msgsnd&amp;quot;); exit(1); } printf(&amp;quot;Sent: %s\n&amp;quot;, msg.msg_text); msg_count++; sleep(2); } return NULL; } 接收消息的线程相比较于发送消息的线程稍微复杂了一点，因为这里用到了 epoll 的系统调用。当消息队列中有事件被监听到之后会通知消费者去处理消息。在这个例子中增加 epoll 的原因是在没有事件发生时，线程会自动进入睡眠状态，不会浪费资源。一旦有事件发生，线程将被唤醒来处理这些事件。这使得 epoll 成为处理大量并发连接的有效工具，因为它能够高效地管理和处理事件而不会占用大量线程资源。</description>

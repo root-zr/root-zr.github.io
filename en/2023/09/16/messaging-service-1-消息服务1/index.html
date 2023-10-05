@@ -103,7 +103,7 @@ code.has-jax {
 
 <p>Albert Wang 
  / 2023-09-16 
-/ 300 Words/has been Read  <span id="busuanzi_value_page_pv"></span>&nbsp;&nbsp;Times
+/ 400 Words/has been Read  <span id="busuanzi_value_page_pv"></span>&nbsp;&nbsp;Times
 
 </p>
 
@@ -137,8 +137,7 @@ Table of Contents:
 
 
 <div class="body-text list-text">
-<p>一般来说两台服务器之间的通信都可以简单抽象成两个进程之间的通信，而进程之间的通信有管道，消息队列，共享内存等各种的通信方式。其中消息队列是一种非常方便于我们理解的方式，比如下面这个例子，我们可以首先创建一个消息队列，然后载创建两个线程 send_tid, receive_tid，它们两个线程分别承担了生产者和消费者的角色，前者发送消息到消息队列，后者从消息队列中获取消息。</p>
-<p>我们的故事先从两个进程之间的通信说起。进程之间的通信有管道，消息队列，共享内存等各种通信方式，其中消息队列是一种非常方便于我们理解的方式。比如下面这个例子，我们可以首先创建一个消息队列，然后载创建两个线程 send_tid, receive_tid，它们两个线程分别承担了生产者和消费者的角色，前者发送消息到消息队列，后者从消息队列中获取消息。</p>
+<p>一般来说两台服务器之间的通信都可以简单抽象成两个进程之间的通信，而进程之间的通信有管道，消息队列，共享内存等各种的通信方式。我们的故事先从两个进程之间的通信说起。进程之间的通信有管道，消息队列，共享内存等各种通信方式，其中消息队列是一种非常方便于我们理解的方式。比如下面这个例子，我们可以首先创建一个消息队列，然后载创建两个线程 send_tid, receive_tid，它们两个线程分别承担了生产者和消费者的角色，前者发送消息到消息队列，后者从消息队列中获取消息。</p>
 <p>在开始之前我们先定义下面的一些表示，包括消息的封装（分为消息类型和内容），消息队列的标识（用来唯一标识这个消息队列）和epoll描述符（我们生产者需要不断从消息队列中epoll出数据）。</p>
 <pre tabindex="0"><code>struct message {
     long msg_type;
@@ -249,7 +248,33 @@ int epoll_fd; // epoll描述符
 <p><img src="/img/2023/09/image-20230917215259536.png" alt="image-20230917215259536"></p>
 <p>上面这个例子其实就完成了下图所示的这一件事，生产者发送消息到消息队列，然后消费者从消息队列中接收消息。这是进程间通信的一个例子，假入我们把两个进程抽象成不同服务器上的两个进程，是不是也可以通过一个消息队列的方式来实现两个服务器之间的通信呢？答案当然也是肯定的，我们可以把消息队列也放在单独的一台服务器上，这就出现了三台服务器之间在不停地进行信息交互。</p>
 <p><img src="/img/2023/09/5682e7f89feab2d9c43b1ca55d8adca3.png" alt="img"></p>
-<p>以上就是消息服务的开始，主要谈了使用消息队列进行进程间通信。</p>
+<p>以上就是消息服务的开始，主要谈了使用消息队列进行进程间通信。当然上面的示例也可以用其他语言来实现，一般都会比 C 语言简单很多。比如下面的例子就是先创建一个通道，然后一个  goroutine 发消息到通道，主 goroutine 从通道接收消息。值得一提的是下面的例子中在发完消息后关闭了通道，这个时候再往里面写消息就会引发 panic，但是仍然可以从通道里读数据。</p>
+<pre tabindex="0"><code>package main
+
+import (
+	&quot;fmt&quot;
+	&quot;time&quot;
+)
+
+func main() {
+	messageChannel := make(chan string)
+
+	// 启动一个 goroutine 来发送消息到通道
+	go func() {
+		for i := 1; i &lt;= 3; i++ {
+			message := fmt.Sprintf(&quot;Message %d&quot;, i)
+			messageChannel &lt;- message // 将消息发送到通道
+			time.Sleep(time.Second)   // 等待一秒钟
+		}
+		close(messageChannel) // 关闭通道
+	}()
+
+	for message := range messageChannel {
+		fmt.Println(&quot;Received:&quot;, message)
+	}
+}
+</code></pre><p>代码执行效果如下图所示</p>
+<p><img src="/img/2023/10/image-20231006012415974.png" alt="image-20231006012415974"></p>
 
 <p style="color:#777;">Last modified on 2023-09-16</p>
 </div>
