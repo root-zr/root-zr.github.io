@@ -256,17 +256,24 @@ import (
 	&quot;time&quot;
 )
 
-func main() {
-	messageChannel := make(chan string)
+var (
+	messageChannel chan string
+)
 
+func sendMsg() {
+	for i := 1; i &lt;= 3; i++ {
+		message := fmt.Sprintf(&quot;Message %d&quot;, i)
+		messageChannel &lt;- message // 将消息发送到通道
+		time.Sleep(time.Second)   // 等待一秒钟
+	}
+	close(messageChannel) // 关闭通道
+}
+
+func main() {
+	messageChannel = make(chan string)
 	// 启动一个 goroutine 来发送消息到通道
 	go func() {
-		for i := 1; i &lt;= 3; i++ {
-			message := fmt.Sprintf(&quot;Message %d&quot;, i)
-			messageChannel &lt;- message // 将消息发送到通道
-			time.Sleep(time.Second)   // 等待一秒钟
-		}
-		close(messageChannel) // 关闭通道
+		sendMsg()
 	}()
 
 	for message := range messageChannel {
