@@ -8,6 +8,17 @@
     <language>en-us</language>
     <lastBuildDate>Fri, 07 May 2021 01:53:34 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>Debug with GDB | GDB调试</title>
+      <link>https://root-zr.github.io/en/2023/12/03/debug-with-gdb-gdb%E8%B0%83%E8%AF%95/</link>
+      <pubDate>Sun, 03 Dec 2023 13:39:37 +0800</pubDate>
+      
+      <guid>https://root-zr.github.io/en/2023/12/03/debug-with-gdb-gdb%E8%B0%83%E8%AF%95/</guid>
+      <description>背景 现网代码一般需要需要长期运行，如果我们想知道某一个时刻程序的状态，用 gdb 就算是一个很好的选择。GDB是一个强大的调试器，用于检测程序中的错误和问题。它可以帮助你跟踪程序的执行，查看变量的值，分析内存，并找出程序崩溃的原因。
+我们以下面的代码为例，这段代码就是一个在主线程里设置了一个死循环，它会不断地执行 gdb_test1() 和 gdb_test2() 函数，将局部变量 main_thread_var + 1，并且打印相应的值。在 gdb_test1() 和gdb_test2() 函数内部都会将全局变量 g_gdbVar + 1，并且打印 + 1 后的值。
+#include &amp;lt;stdio.h&amp;gt; #include &amp;lt;stdlib.h&amp;gt; #include &amp;lt;unistd.h&amp;gt; unsigned int g_gdbVar; void gdb_test1() { g_gdbVar++; printf(&amp;quot;gdbtest func 1, g_gdbVar is %u ...\n&amp;quot;, g_gdbVar); } void gdb_test2() { g_gdbVar++; printf(&amp;quot;gdbtest func 2, g_gdbVar is %u ...\n&amp;quot;, g_gdbVar); } int main() { g_gdbVar = 0; unsigned int main_thread_var = 0; while (1) { gdb_test1(); sleep(1); gdb_test2(); sleep(1); main_thread_var++; printf(&amp;quot;gdbtest 3, main_thread_var is %u .</description>
+    </item>
+    
+    <item>
       <title>Deploy Cluster System with Docker Swarm and Docker Machine | 使用 Docker Swarm 和 Docker Machine 部署集群</title>
       <link>https://root-zr.github.io/en/2023/10/03/deploy-cluster-system-with-docker-swarm-and-docker-machine-%E4%BD%BF%E7%94%A8-docker-swarm-%E5%92%8C-docker-machine-%E9%83%A8%E7%BD%B2%E9%9B%86%E7%BE%A4/</link>
       <pubDate>Tue, 03 Oct 2023 13:39:37 +0800</pubDate>

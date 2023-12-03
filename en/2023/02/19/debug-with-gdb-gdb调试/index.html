@@ -1,0 +1,283 @@
+<a name="top"></a>
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  	
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Debug with GDB | GDB调试 - Albert Wang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/font.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega@5.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.12.2"></script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+
+
+  </head>
+  
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav" >
+      <a href="/" class="nav-logo">
+        <img src="/media/logo.JPG"
+         width="50"
+         height="50"
+         alt="Hugo-ht">
+      </a>
+
+      <ul class="nav-links" >
+       
+       
+       
+       <li><a href="/">Home</a></li>
+       
+       <li><a href="/en/posts/">Blog</a></li>
+       
+       <li><a href="/categories/">Categories</a></li>
+       
+       <li><a href="/en/project/">Project</a></li>
+       
+       <li><a href="/en/about/">About</a></li>
+       
+       
+      </ul>
+</nav>
+		<script type="text/javascript"
+        async
+        src="https://cdn.bootcss.com/mathjax/2.7.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\[\[','\]\]']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+});
+
+MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<style>
+code.has-jax {
+    font: inherit;
+    font-size: 100%;
+    background: inherit;
+    border: inherit;
+    color: #515151;
+}
+</style>
+      </header>
+
+<main class = "content" role="main">
+<div style="text-align: center">
+
+<h1>Debug with GDB | GDB调试</h1>
+
+<p>Albert Wang 
+ / 2023-02-19 
+/ 300 Words/has been Read  <span id="busuanzi_value_page_pv"></span>&nbsp;&nbsp;Times
+
+</p>
+
+
+
+<hr/>
+
+
+</div>
+
+<span class="article-toolbar">
+  
+  
+  
+  
+  
+  
+  
+  <a href='https://github.com/root-zren%5cposts%5c2023%5cGDB.md'style="font-size: 24px; color: black;" target="_blank"><i class="fa fa-edit" aria-hidden="true" title="Suggest an edit of this page"></i>
+  </a>
+  
+  
+  
+</span>
+
+
+<aside class="toc">
+Table of Contents:
+<nav id="TableOfContents">
+  <ol>
+    <li><a href="#背景">背景</a></li>
+    <li><a href="#进入gdb">进入GDB</a></li>
+    <li><a href="#print">print</a></li>
+    <li><a href="#backtrace">backtrace</a></li>
+    <li><a href="#stepnext">step/next</a></li>
+    <li><a href="#break-和-continue">break 和 continue</a></li>
+    <li><a href="#delete">delete</a></li>
+    <li><a href="#call">call</a></li>
+  </ol>
+</nav>
+</aside>
+
+
+<div class="body-text list-text">
+<h2 id="背景">背景<a href="#背景" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>现网代码一般需要需要长期运行，如果我们想知道某一个时刻程序的状态，用 gdb 就算是一个很好的选择。GDB是一个强大的调试器，用于检测程序中的错误和问题。它可以帮助你跟踪程序的执行，查看变量的值，分析内存，并找出程序崩溃的原因。</p>
+<p>我们以下面的代码为例，这段代码就是一个在主线程里设置了一个死循环，它会不断地执行 <code>gdb_test1()</code> 和 <code>gdb_test2()</code> 函数，将局部变量 main_thread_var + 1，并且打印相应的值。在 <code>gdb_test1()</code> 和<code>gdb_test2()</code> 函数内部都会将全局变量 g_gdbVar + 1，并且打印 + 1 后的值。</p>
+<pre tabindex="0"><code>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+
+unsigned int g_gdbVar;
+
+void gdb_test1() {
+    g_gdbVar++;
+    printf(&quot;gdbtest func 1, g_gdbVar is %u ...\n&quot;, g_gdbVar);
+}
+
+void gdb_test2() {
+    g_gdbVar++;
+    printf(&quot;gdbtest func 2, g_gdbVar is %u ...\n&quot;, g_gdbVar);
+}
+
+int main() {
+    g_gdbVar = 0;
+    unsigned int main_thread_var = 0;
+
+    while (1) {
+        gdb_test1();
+        sleep(1);
+
+        gdb_test2();
+        sleep(1);
+
+        main_thread_var++;
+        printf(&quot;gdbtest 3, main_thread_var is %u ...\n&quot;, main_thread_var);
+        sleep(1);
+    }
+
+    return 0;
+}
+</code></pre><p>运行这段代码的效果如下图</p>
+<p><img src="/img/2023/12/image-20231203143538443.png" alt="image-20231203143538443"></p>
+<h2 id="进入gdb">进入GDB<a href="#进入gdb" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>下面我们开始尝试使用GDB，首先需要找到我们运行这段代码对应哪个进程，使用下面的命令来过滤查找。</p>
+<pre tabindex="0"><code>ps aux | grep gdb_test
+</code></pre><p>ps aux 会列出系统上所有的进程。其中，a 表示显示所有用户的进程，u 表示以用户为主的格式显示进程信息，x 表示显示没有控制终端的进程。</p>
+<p><img src="/img/2023/12/image-20231203143632635.png" alt="image-20231203143632635"></p>
+<p>从上图中我们发现进程号是 26186， 然后我们进入 gdb 调试，为了方便这里建议使用 sudo 权限进入。</p>
+<pre tabindex="0"><code>sudo gdb attach 26186
+</code></pre><p>这个时候我们会发现正在运行的代码已经被我们断住了，它开始停止继续打印</p>
+<p><img src="/img/2023/12/image-20231203143839908.png" alt="image-20231203143839908"></p>
+<h2 id="print">print<a href="#print" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>print 命令可以打出当前变量的值，比如我们想要打出全局变量 g_gdbVar 的值可以用下面的命令</p>
+<pre tabindex="0"><code>print *(unsigned int*)&amp;g_gdbVar
+</code></pre><p><img src="/img/2023/12/image-20231203144633174.png" alt="image-20231203144633174"></p>
+<p>当我们想要看局部变量 main_thread_var 的值就会报错，因为上面静态的全局变量 g_gdbVar 是在数据段的，而局部变量在栈空间，所以 gdb 找不到局部变量的位置。</p>
+<p><img src="/img/2023/12/image-20231203144753716.png" alt="image-20231203144753716"></p>
+<h2 id="backtrace">backtrace<a href="#backtrace" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>使用 GDB 的 <code>backtrace</code>（或简写为 <code>bt</code>）命令可以查看当前的函数调用堆栈，</p>
+<p><img src="/img/2023/12/image-20231203145252950.png" alt="image-20231203145252950"></p>
+<h2 id="stepnext">step/next<a href="#stepnext" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>可以使用 <code>step</code> 或 <code>next</code> 命令来逐步执行代码，观察变量值的变化。</p>
+<p><img src="/img/2023/12/image-20231203145641929.png" alt="image-20231203145641929"></p>
+<p>在GDB中，当你使用 <code>step</code> 命令逐行执行程序时，有时会出现显示源代码文件不存在的情况，这可能是因为系统库或特定函数的源代码并不包含在GDB调试信息中，因此GDB无法显示相应的源代码。</p>
+<p>在上图所示的情况下，<code>nanosleep.c</code> 和 <code>sleep.c</code> 文件是系统库的文件，不一定包含在GDB的调试信息中。因此，GDB无法显示这些文件的源代码。</p>
+<p>尽管GDB无法显示这些文件的源代码，但我们仍然可以通过查看堆栈跟踪来了解程序的执行情况。在堆栈跟踪中，你可以看到调用关系，了解函数是如何相互调用的。</p>
+<p><img src="/img/2023/12/image-20231203145727918.png" alt="image-20231203145727918"></p>
+<h2 id="break-和-continue">break 和 continue<a href="#break-和-continue" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>break 用来设置断点，</p>
+<pre tabindex="0"><code>break &lt;line_number&gt;  # 在指定行设置断点
+break &lt;function_name&gt; # 对函数设置断点
+</code></pre><p><img src="/img/2023/12/image-20231203150145188.png" alt="image-20231203150145188"></p>
+<p>continue 命令继续执行程序直到下一个断点。</p>
+<p><img src="/img/2023/12/image-20231203150235216.png" alt="image-20231203150235216"></p>
+<p>在GDB中，可以使用条件断点在满足特定条件时暂停程序的执行。这样可以帮助我们在程序的特定状态或特定条件下进行调试。要设置条件断点，使用 <code>break</code> 命令并在其后加上 <code>if</code> 关键字，然后指定条件。条件可以是任何合法的表达式，当该表达式的值为真时，断点会触发。</p>
+<pre tabindex="0"><code>break filename.c:linenumber if g_gdbVar == 10  # 对指定行
+break function_name if g_gdbVar == 10  # 对函数
+</code></pre><h2 id="delete">delete<a href="#delete" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>在GDB中，删除断点可以使用 <code>delete</code> 命令。有几种方式可以删除断点：</p>
+<pre tabindex="0"><code>delete  # 删除所有断点
+delete &lt;breakpoint_number&gt; 删除特定断点
+</code></pre><p>确保你了解要删除的断点的编号或者类型，以免误删其他重要断点。可以使用 <code>info breakpoints</code> 命令来列出当前设置的断点，以查看它们的编号和类型，然后再使用 <code>delete</code> 命令进行删除。</p>
+<p><img src="/img/2023/12/image-20231203150854141.png" alt="image-20231203150854141"></p>
+<h2 id="call">call<a href="#call" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>在 GDB 中可以使用 <code>call</code> 命令来调用函数，并在调试会话中执行该函数。这个命令允许你在程序执行过程中临时调用函数并查看其返回值或对程序状态进行修改。使用 <code>call</code> 命令的基本语法如下</p>
+<pre tabindex="0"><code>call (void)gdb_test1()
+call (void)gdb_test1(arg1, arg2, ...)
+</code></pre><p>在调用结束后，你可以查看函数的返回值以及它对程序状态的影响。</p>
+<p><img src="/img/2023/12/image-20231203151639159.png" alt="image-20231203151639159"></p>
+<p>请注意，在调试会话中调用函数可能会改变程序状态，因此在调用前确认你了解函数的行为和可能的影响，以免产生不可预料的结果。</p>
+
+<p style="color:#777;">Last modified on 2023-02-19</p>
+</div>
+<a href="#top"><i class="fa fa-chevron-up" style="font-size: 30px; color: black;"></i></a>
+
+</main>
+
+<footer class="footer">
+  <script type="text/javascript" src="/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/javascript" src="/js/center-img.js"></script>
+
+<script type="text/javascript" src="//rf.revolvermaps.com/0/0/6.js?i=5sz67w4rqwe&amp;m=0&amp;c=ff0000&amp;cr1=ffffff&amp;f=times_new_roman&amp;l=1" async="async"></script>
+
+     <ul class="footer-links">
+      
+       
+       
+       
+       <li><a href="/en/posts/index.xml" type="application/rss+xml" title="RSS feed">
+       Subscribe </a>
+       </li>
+       
+       
+       <li>
+       
+        <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
+       
+        License
+        <i class="fa fa-cc" aria-hidden="true" title="Attribution-NonCommercial-ShareAlike 4.0 International"></i> 
+        </a>
+       </li>
+       
+     </ul>
+     
+	    <span id="busuanzi_container_site_pv"> 本站访问量：<span id="busuanzi_value_site_pv"></span>次</span>&nbsp;
+	    <span id="busuanzi_container_site_uv"> 您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者</span>
+
+		
+     
+</footer>
+
+
+
+
+
