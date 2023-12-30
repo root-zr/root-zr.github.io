@@ -1,0 +1,275 @@
+<a name="top"></a>
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  	
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Design Patterns: Iterator Pattern, Factory Pattern | 设计模式之迭代器模式，工厂模式 - Albert Wang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/font.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega@5.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.12.2"></script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+
+
+  </head>
+  
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav" >
+      <a href="/" class="nav-logo">
+        <img src="/media/logo.JPG"
+         width="50"
+         height="50"
+         alt="Hugo-ht">
+      </a>
+
+      <ul class="nav-links" >
+       
+       
+       
+       <li><a href="/">Home</a></li>
+       
+       <li><a href="/en/posts/">Blog</a></li>
+       
+       <li><a href="/categories/">Categories</a></li>
+       
+       <li><a href="/en/project/">Project</a></li>
+       
+       <li><a href="/en/about/">About</a></li>
+       
+       
+      </ul>
+</nav>
+		<script type="text/javascript"
+        async
+        src="https://cdn.bootcss.com/mathjax/2.7.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\[\[','\]\]']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+});
+
+MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<style>
+code.has-jax {
+    font: inherit;
+    font-size: 100%;
+    background: inherit;
+    border: inherit;
+    color: #515151;
+}
+</style>
+      </header>
+
+<main class = "content" role="main">
+<div style="text-align: center">
+
+<h1>Design Patterns: Iterator Pattern, Factory Pattern | 设计模式之迭代器模式，工厂模式</h1>
+
+<p>Albert Wang 
+ / 2023-12-30 
+/ 200 Words/has been Read  <span id="busuanzi_value_page_pv"></span>&nbsp;&nbsp;Times
+
+</p>
+
+
+
+<hr/>
+
+
+</div>
+
+<span class="article-toolbar">
+  
+  
+  
+  
+  
+  
+  
+  <a href='https://github.com/root-zren%5cposts%5c2023%5c%e8%ae%be%e8%ae%a1%e6%a8%a1%e5%bc%8f.md'style="font-size: 24px; color: black;" target="_blank"><i class="fa fa-edit" aria-hidden="true" title="Suggest an edit of this page"></i>
+  </a>
+  
+  
+  
+</span>
+
+
+<aside class="toc">
+Table of Contents:
+<nav id="TableOfContents">
+  <ol>
+    <li><a href="#背景">背景</a></li>
+    <li><a href="#迭代器模式">迭代器模式</a></li>
+    <li><a href="#工厂模式">工厂模式</a>
+      <ol>
+        <li><a href="#工厂方法模式">工厂方法模式</a></li>
+        <li><a href="#抽象工厂模式">抽象工厂模式</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+</aside>
+
+
+<div class="body-text list-text">
+<h2 id="背景">背景<a href="#背景" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<h2 id="迭代器模式">迭代器模式<a href="#迭代器模式" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>在软件开发中，经常需要对集合对象进行操作，例如列表、数组或树等。通常，我们需要对这些集合中的元素执行各种操作，如遍历、查找、过滤或操作等。在处理这些情况时，传统的做法可能是直接操作集合对象本身，使用索引或指针直接访问其中的元素。然而，这样的方法存在一些问题：</p>
+<ol>
+<li><strong>耦合性高：</strong> 直接操作集合对象会使得代码与特定的集合类型紧密耦合，导致代码可维护性降低。</li>
+<li><strong>扩展性差：</strong> 如果需要更换或新增其他类型的集合，可能需要修改现有代码，违背了开放-封闭原则。</li>
+<li><strong>安全性问题：</strong> 直接访问集合可能引发越界访问、空指针异常等问题。</li>
+</ol>
+<p>为解决这些问题，迭代器模式应运而生。该模式将对集合的访问封装在一个独立的迭代器对象中，提供了一个统一的访问接口，使得可以以相似的方式处理不同类型的集合对象，而无需了解其底层实现细节。迭代器模式是一种行为设计模式。</p>
+<p><img src="/img/2023/12/image-20231230234425060.png" alt="image-20231230234425060"></p>
+<p>迭代器模式主要由4部分组成，</p>
+<ul>
+<li>迭代器（Iterator）：迭代器是一个接口，它定义了用于访问和遍历集合中元素的方法。它包含了两个抽象函数hasNext和next，前者用来判断是否有下一个元素，后者用来访问下一个元素。</li>
+<li>具体迭代器（Concrete Iterator）：Iterator 抽象函数由具体迭代器实现，它与特定的集合对象相关联。这个具体迭代器维护了对应集合对象的引用，并提供了在集合中移动的方法，如向前或向后遍历，获取当前元素等。Concrete Iterator 的成员变量里包括了具体的集合对象aggregate和当前遍历的位置index，这两个实例都必须在构造函数中被初始化。</li>
+<li>聚合对象（Aggregate）：聚合对象是一个抽象接口，它包含了一个抽象函数 iterator 用来创建一个迭代器。</li>
+<li>具体聚合对象（Concrete Aggregate）：具体聚合对象用来实现 iterator 函数，而在 iterator 函数中会调用 Concrete Iterator的构造函数，把聚合对象 Concrete Aggregate 自己通过this指针当作参数传进去</li>
+</ul>
+<p>上面4个组成中 Iterator 和 Aggregate 是不变的部分，Concrete Iterator 和 Concrete Aggregate 可以后续再扩展，比如实现书籍的迭代器或者员工的迭代器等等。</p>
+<h2 id="工厂模式">工厂模式<a href="#工厂模式" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>在软件开发中，对象的创建通常是一个重要的环节。通常情况下，我们可能会在代码中直接使用 <code>new</code> 关键字来创建对象，这样做存在以下问题：</p>
+<ol>
+<li><strong>耦合性高：</strong> 直接在代码中创建对象会将对象的创建过程和具体的类耦合在一起，使得使用者需要知道如何实例化对象，降低了代码的灵活性和可维护性。</li>
+<li><strong>难以扩展：</strong> 如果需要更改对象的实例化方式或引入新的类，可能需要修改大量的代码，违反了开放-封闭原则。</li>
+</ol>
+<p>工厂模式通过引入一个工厂类来解决上述问题。工厂类负责创建对象实例，使用者只需通过工厂类的接口来请求所需对象，而无需关心对象是如何创建的。这种方式将对象的创建与使用者解耦，使得代码更加灵活，易于维护和扩展。</p>
+<p>工厂模式是软件开发中一种常见的创建型设计模式。主要包括工厂方法模式和抽象工厂模式两种变体，每种模式都有着自己的特点和应用场景。</p>
+<h3 id="工厂方法模式">工厂方法模式<a href="#工厂方法模式" class="header-anchor" ariaLabel="Anchor"> # </a></h3>
+<p>工厂方法模式（Factory Method Pattern）是工厂模式的一种常见形式。它定义了一个创建对象的接口，但将具体的对象创建延迟到子类中实现。这种模式通过将对象的实例化推迟到子类来解耦对象的使用和创建。</p>
+<p>在工厂方法模式中，通常有以下角色：</p>
+<ul>
+<li><strong>抽象产品（Abstract Product）：</strong> 定义了工厂方法创建的产品的接口。</li>
+<li><strong>具体产品（Concrete Product）：</strong> 实现了抽象产品接口的具体类。</li>
+<li><strong>抽象工厂（Creator）：</strong> 声明了工厂方法的接口，用于创建抽象产品。</li>
+<li><strong>具体工厂（Concrete Creator）：</strong> 实现了抽象工厂接口，负责创建具体产品的实例，Concrete Factory 里面实现了 factoryMethod 函数， 这个函数会返回一个具体实例的对象。</li>
+</ul>
+<p><img src="/img/2023/12/image-20231231005411163.png" alt="image-20231231005411163"></p>
+<p>在上图中框架层表示的类都是不会变化的，不管后续需要创建多少不同类型的对象，在框架层一律认为需要创建的是 Product，只是在子类中才会用 new 去创建真实的实例。</p>
+<p>下面是使用工厂方法的一个例子：</p>
+<pre tabindex="0"><code>public class CreatorImpl {
+	Creator factory;
+	public CreatorImpl(Creator factory) {
+		this.factory = factory;
+	}
+	
+	public func() {
+		Product product = factory.factoryMethod();
+		product.method1();
+	}
+}
+
+public static void main(String[] args) {
+	CreatorImpl test1 = new CreatorImpl(new ConcreteFactory1());
+	test1.func();
+
+	CreatorImpl test2 = new CreatorImpl(new ConcreteFactory2());
+	test2.func();
+}
+</code></pre><h3 id="抽象工厂模式">抽象工厂模式<a href="#抽象工厂模式" class="header-anchor" ariaLabel="Anchor"> # </a></h3>
+<p>抽象工厂模式（Abstract Factory Pattern）是另一种工厂模式的变体。它提供了一个接口，用于<strong>创建一系列相关或相互依赖的对象</strong>，而不需要指定其具体类。抽象工厂模式将一组相关的工厂方法封装在一个接口中，使得可以在不指定具体工厂类的情况下创建一系列产品。</p>
+<p>在抽象工厂模式中，主要有以下角色：</p>
+<ul>
+<li><strong>抽象工厂（Abstract Factory）：</strong> 声明了一组用于创建一系列产品的工厂方法。</li>
+<li><strong>具体工厂（Concrete Factory）：</strong> 实现了抽象工厂接口，负责创建一系列具体产品的实例。</li>
+<li><strong>抽象产品（Abstract Product）：</strong> 定义了一组产品的接口。</li>
+<li><strong>具体产品（Concrete Product）：</strong> 实现了抽象产品接口的具体类。</li>
+<li>**委托者（Client）：**调用 Abstract Factory 和 Abstract Product 的接口进行工作。</li>
+</ul>
+<p><img src="/img/2023/12/image-20231231020507239.png" alt="image-20231231020507239"></p>
+<p>抽象工厂和工厂方法不同的地方在于存在一系列相互依赖的对象，对于下面的图来说，在 Concrete Factory 里我们需要创建 3 个具体的产品，这三个产品和创建它的 Concrete Factory 是强绑定的，也就是说奔驰车工厂必须安装的是奔驰的轮子和发动机，不能和其他工厂的搞混。但是在 factory 里我们都是抽象的产品，所以在 Abstract Factory 里只需要创建轮子和发动机就行，具体是什么类型的轮子和发动机依赖于Concrete Factory。</p>
+<p><img src="/img/2023/12/image-20231231021201733.png" alt="image-20231231021201733"></p>
+<p>下面是一个抽象工厂的使用示例：</p>
+<pre tabindex="0"><code>public class Client {
+	AbstractFactory factory = new ConcreteFactory();
+	AbstractProduct1 product1 = factory.createProduct1();
+	AbstractProduct1 product2 = factory.createProduct2();
+	AbstractProduct1 product2 = factory.createProduct2();
+}
+
+</code></pre><p>从上面的例子中我们也能看到，通过一个 ConcreteFactory 的实例我们可以创建出配套的几个 product 来，这几个 product 相互之间是有关系的。</p>
+
+<p style="color:#777;">Last modified on 2023-12-30</p>
+</div>
+<a href="#top"><i class="fa fa-chevron-up" style="font-size: 30px; color: black;"></i></a>
+
+</main>
+
+<footer class="footer">
+  <script type="text/javascript" src="/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/javascript" src="/js/center-img.js"></script>
+
+<script type="text/javascript" src="//rf.revolvermaps.com/0/0/6.js?i=5sz67w4rqwe&amp;m=0&amp;c=ff0000&amp;cr1=ffffff&amp;f=times_new_roman&amp;l=1" async="async"></script>
+
+     <ul class="footer-links">
+      
+       
+       
+       
+       <li><a href="/en/posts/index.xml" type="application/rss+xml" title="RSS feed">
+       Subscribe </a>
+       </li>
+       
+       
+       <li>
+       
+        <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
+       
+        License
+        <i class="fa fa-cc" aria-hidden="true" title="Attribution-NonCommercial-ShareAlike 4.0 International"></i> 
+        </a>
+       </li>
+       
+     </ul>
+     
+	    <span id="busuanzi_container_site_pv"> 本站访问量：<span id="busuanzi_value_site_pv"></span>次</span>&nbsp;
+	    <span id="busuanzi_container_site_uv"> 您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者</span>
+
+		
+     
+</footer>
+
+
+
+
+

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>设计模式 on Albert Wang</title>
+    <link>https://root-zr.github.io/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</link>
+    <description>Recent content in 设计模式 on Albert Wang</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 30 Dec 2023 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Design Patterns: Iterator Pattern, Factory Pattern | 设计模式之迭代器模式，工厂模式</title>
+      <link>https://root-zr.github.io/en/2023/12/30/design-patterns-iterator-pattern-factory-pattern-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%BF%AD%E4%BB%A3%E5%99%A8%E6%A8%A1%E5%BC%8F%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/</link>
+      <pubDate>Sat, 30 Dec 2023 13:39:37 +0800</pubDate>
+      
+      <guid>https://root-zr.github.io/en/2023/12/30/design-patterns-iterator-pattern-factory-pattern-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%BF%AD%E4%BB%A3%E5%99%A8%E6%A8%A1%E5%BC%8F%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/</guid>
+      <description>背景 迭代器模式 在软件开发中，经常需要对集合对象进行操作，例如列表、数组或树等。通常，我们需要对这些集合中的元素执行各种操作，如遍历、查找、过滤或操作等。在处理这些情况时，传统的做法可能是直接操作集合对象本身，使用索引或指针直接访问其中的元素。然而，这样的方法存在一些问题：
+ 耦合性高： 直接操作集合对象会使得代码与特定的集合类型紧密耦合，导致代码可维护性降低。 扩展性差： 如果需要更换或新增其他类型的集合，可能需要修改现有代码，违背了开放-封闭原则。 安全性问题： 直接访问集合可能引发越界访问、空指针异常等问题。  为解决这些问题，迭代器模式应运而生。该模式将对集合的访问封装在一个独立的迭代器对象中，提供了一个统一的访问接口，使得可以以相似的方式处理不同类型的集合对象，而无需了解其底层实现细节。迭代器模式是一种行为设计模式。
+迭代器模式主要由4部分组成，
+ 迭代器（Iterator）：迭代器是一个接口，它定义了用于访问和遍历集合中元素的方法。它包含了两个抽象函数hasNext和next，前者用来判断是否有下一个元素，后者用来访问下一个元素。 具体迭代器（Concrete Iterator）：Iterator 抽象函数由具体迭代器实现，它与特定的集合对象相关联。这个具体迭代器维护了对应集合对象的引用，并提供了在集合中移动的方法，如向前或向后遍历，获取当前元素等。Concrete Iterator 的成员变量里包括了具体的集合对象aggregate和当前遍历的位置index，这两个实例都必须在构造函数中被初始化。 聚合对象（Aggregate）：聚合对象是一个抽象接口，它包含了一个抽象函数 iterator 用来创建一个迭代器。 具体聚合对象（Concrete Aggregate）：具体聚合对象用来实现 iterator 函数，而在 iterator 函数中会调用 Concrete Iterator的构造函数，把聚合对象 Concrete Aggregate 自己通过this指针当作参数传进去  上面4个组成中 Iterator 和 Aggregate 是不变的部分，Concrete Iterator 和 Concrete Aggregate 可以后续再扩展，比如实现书籍的迭代器或者员工的迭代器等等。
+工厂模式 在软件开发中，对象的创建通常是一个重要的环节。通常情况下，我们可能会在代码中直接使用 new 关键字来创建对象，这样做存在以下问题：
+ 耦合性高： 直接在代码中创建对象会将对象的创建过程和具体的类耦合在一起，使得使用者需要知道如何实例化对象，降低了代码的灵活性和可维护性。 难以扩展： 如果需要更改对象的实例化方式或引入新的类，可能需要修改大量的代码，违反了开放-封闭原则。  工厂模式通过引入一个工厂类来解决上述问题。工厂类负责创建对象实例，使用者只需通过工厂类的接口来请求所需对象，而无需关心对象是如何创建的。这种方式将对象的创建与使用者解耦，使得代码更加灵活，易于维护和扩展。
+工厂模式是软件开发中一种常见的创建型设计模式。主要包括工厂方法模式和抽象工厂模式两种变体，每种模式都有着自己的特点和应用场景。
+工厂方法模式 工厂方法模式（Factory Method Pattern）是工厂模式的一种常见形式。它定义了一个创建对象的接口，但将具体的对象创建延迟到子类中实现。这种模式通过将对象的实例化推迟到子类来解耦对象的使用和创建。
+在工厂方法模式中，通常有以下角色：
+ 抽象产品（Abstract Product）： 定义了工厂方法创建的产品的接口。 具体产品（Concrete Product）： 实现了抽象产品接口的具体类。 抽象工厂（Creator）： 声明了工厂方法的接口，用于创建抽象产品。 具体工厂（Concrete Creator）： 实现了抽象工厂接口，负责创建具体产品的实例，Concrete Factory 里面实现了 factoryMethod 函数， 这个函数会返回一个具体实例的对象。  在上图中框架层表示的类都是不会变化的，不管后续需要创建多少不同类型的对象，在框架层一律认为需要创建的是 Product，只是在子类中才会用 new 去创建真实的实例。</description>
+    </item>
+    
+  </channel>
+</rss>
