@@ -6,14 +6,27 @@
     <description>Recent content in English Posts on Albert Wang</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 30 Dec 2023 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/en/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 31 Dec 2023 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/en/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Design Patterns: Observer Pattern | 设计模式之观察者模式</title>
+      <link>https://root-zr.github.io/en/2023/12/31/design-patterns-observer-pattern-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/</link>
+      <pubDate>Sun, 31 Dec 2023 13:39:37 +0800</pubDate>
+      
+      <guid>https://root-zr.github.io/en/2023/12/31/design-patterns-observer-pattern-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/</guid>
+      <description>在软件开发中，经常会遇到一个对象状态的变化需要通知其他相关对象的情况。例如，当一个对象改变了自身的状态时，它可能需要通知到其他对象做出相应的变化。在这种情况下，如果对象之间的关系耦合性过高，就会导致代码难以维护和扩展。
+观察者模式解决了这一问题。观察者模式（Observer Pattern）是一种常见的行为型设计模式，用于构建对象之间的一对多依赖关系，使得多个观察者对象同时监听一个主题对象。当主题对象状态发生变化时，所有依赖于它的观察者都会收到通知并作出相应的更新。
+观察者模式主要包含以下几个角色：
+ 主题（Subject）： 定义了被观察的对象，包含观察者列表和用于添加、删除观察者的方法。当主题状态发生变化时，会通过调用 notifyObservers 函数通知所有观察者。 观察者（Observer）： 定义了接收主题通知的接口，包含更新状态的方法，用于在接收到主题通知时执行相应的操作。 具体主题（Concrete Subject）： 实现了主题接口，负责维护一组观察者并发送通知。当其状态发生变化时，会通知所有注册的观察者。 具体观察者（Concrete Observer）： 实现了观察者接口，在收到主题的通知后进行相应的更新操作。  通过观察 Subject 的 UML 图，我们看到里面有一个 observers 的成员变量，用来记录所有的订阅这个主题的观察者。既然 Subject 是通过 notifyObservers 函数通知所有观察者的，那这个函数内部应当有一个观察者的迭代器，通过这个迭代器通知到每一个观察者。下面是 notifyObservers 函数实现的一个例子：
+public abstract class Subject { private ArrayList&amp;lt;Observer&amp;gt; observers = new ArrayList&amp;lt;&amp;gt;(); public void addObserver(Observer observer) { observers.add(observer); } pubilc void notifyObservers() { Iterator it = observers.oterator(); while (it.hasNext()) { Observer observer = (Observer)it.next(); observer.update(this); } } } 现在我们知道了状态变化的时候调用的是 notifyObservers 函数，那它是在哪里被调用的呢？这个问题的答案就在 Concrete Subject，这个具体的主题可以有各种各样的类型，以常见的生产者-消费者模型为例，假如 Observer 是消费者，它们订阅了物品的数量，当物品的数量大于 0 的时候就去通知消费者。下面是一个简单的 GoodSubject 例子：</description>
+    </item>
+    
     <item>
       <title>Design Patterns: Iterator Pattern, Factory Pattern | 设计模式之迭代器模式，工厂模式</title>
       <link>https://root-zr.github.io/en/2023/12/30/design-patterns-iterator-pattern-factory-pattern-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%BF%AD%E4%BB%A3%E5%99%A8%E6%A8%A1%E5%BC%8F%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/</link>
       <pubDate>Sat, 30 Dec 2023 13:39:37 +0800</pubDate>
       
       <guid>https://root-zr.github.io/en/2023/12/30/design-patterns-iterator-pattern-factory-pattern-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%BF%AD%E4%BB%A3%E5%99%A8%E6%A8%A1%E5%BC%8F%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/</guid>
-      <description>背景 迭代器模式 在软件开发中，经常需要对集合对象进行操作，例如列表、数组或树等。通常，我们需要对这些集合中的元素执行各种操作，如遍历、查找、过滤或操作等。在处理这些情况时，传统的做法可能是直接操作集合对象本身，使用索引或指针直接访问其中的元素。然而，这样的方法存在一些问题：
+      <description>迭代器模式 在软件开发中，经常需要对集合对象进行操作，例如列表、数组或树等。通常，我们需要对这些集合中的元素执行各种操作，如遍历、查找、过滤或操作等。在处理这些情况时，传统的做法可能是直接操作集合对象本身，使用索引或指针直接访问其中的元素。然而，这样的方法存在一些问题：
  耦合性高： 直接操作集合对象会使得代码与特定的集合类型紧密耦合，导致代码可维护性降低。 扩展性差： 如果需要更换或新增其他类型的集合，可能需要修改现有代码，违背了开放-封闭原则。 安全性问题： 直接访问集合可能引发越界访问、空指针异常等问题。  为解决这些问题，迭代器模式应运而生。该模式将对集合的访问封装在一个独立的迭代器对象中，提供了一个统一的访问接口，使得可以以相似的方式处理不同类型的集合对象，而无需了解其底层实现细节。迭代器模式是一种行为设计模式。
 迭代器模式主要由4部分组成，
  迭代器（Iterator）：迭代器是一个接口，它定义了用于访问和遍历集合中元素的方法。它包含了两个抽象函数hasNext和next，前者用来判断是否有下一个元素，后者用来访问下一个元素。 具体迭代器（Concrete Iterator）：Iterator 抽象函数由具体迭代器实现，它与特定的集合对象相关联。这个具体迭代器维护了对应集合对象的引用，并提供了在集合中移动的方法，如向前或向后遍历，获取当前元素等。Concrete Iterator 的成员变量里包括了具体的集合对象aggregate和当前遍历的位置index，这两个实例都必须在构造函数中被初始化。 聚合对象（Aggregate）：聚合对象是一个抽象接口，它包含了一个抽象函数 iterator 用来创建一个迭代器。 具体聚合对象（Concrete Aggregate）：具体聚合对象用来实现 iterator 函数，而在 iterator 函数中会调用 Concrete Iterator的构造函数，把聚合对象 Concrete Aggregate 自己通过this指针当作参数传进去  上面4个组成中 Iterator 和 Aggregate 是不变的部分，Concrete Iterator 和 Concrete Aggregate 可以后续再扩展，比如实现书籍的迭代器或者员工的迭代器等等。
