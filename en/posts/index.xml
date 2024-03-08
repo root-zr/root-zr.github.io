@@ -6,7 +6,18 @@
     <description>Recent content in English Posts on Albert Wang</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 31 Dec 2023 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/en/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 08 Mar 2024 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/en/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Skip List | 跳表</title>
+      <link>https://root-zr.github.io/en/2024/03/08/skip-list-%E8%B7%B3%E8%A1%A8/</link>
+      <pubDate>Fri, 08 Mar 2024 13:39:37 +0800</pubDate>
+      
+      <guid>https://root-zr.github.io/en/2024/03/08/skip-list-%E8%B7%B3%E8%A1%A8/</guid>
+      <description>跳表是一种基于链表的动态数据结构，它允许快速地进行查找、插入和删除操作，且实现相对简单。跳表通过在链表的不同层级上建立索引，从而提高了查找效率。跳表的基本思想是在原始链表的基础上建立多层索引，每一层索引都是原始链表的子集，且越高层的索引节点越稀疏。
+跳表的节点结构如下面代码中所示，每个节点包含一个键值对以及指向下一层的指针数组，其中 forward[ i ] 表示这个 node 指向跳表第 i 层的下一个节点，也就说说普通的链表 node 都是只有一个 next 节点，而跳表的 node 每一层都有一个 next 节点。跳表的层级是动态的，随着插入操作的进行而逐渐增加。在跳表中，每个节点都包含一个层级属性，表示它在跳表中所处的层数。
+#define MAX_LEVEL 6 typedef struct SkipListNode { int key; int value; struct SkipListNode *forward[MAX_LEVEL + 1]; } SkipListNode; typedef struct SkipList { int level; SkipListNode *header; } SkipList; SkipListNode *createNode(int key, int value, int level) { SkipListNode *newNode = (SkipListNode *)malloc(sizeof(SkipListNode)); newNode-&amp;gt;key = key; newNode-&amp;gt;value = value; for (int i = 0; i &amp;lt;= level; i++) { newNode-&amp;gt;forward[i] = NULL; } return newNode; } SkipList *createSkipList() { SkipList *skipList = (SkipList *)malloc(sizeof(SkipList)); skipList-&amp;gt;level = 0; skipList-&amp;gt;header = createNode(-1, -1, MAX_LEVEL); return skipList; } 跳表的插入操作通过随机生成一个层数，并将新节点插入到对应的层级链表中。</description>
+    </item>
+    
     <item>
       <title>Design Patterns: Observer Pattern | 设计模式之观察者模式</title>
       <link>https://root-zr.github.io/en/2023/12/31/design-patterns-observer-pattern-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/</link>
