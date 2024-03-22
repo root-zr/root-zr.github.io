@@ -8,6 +8,21 @@
     <language>en-us</language>
     <lastBuildDate>Fri, 07 May 2021 01:53:34 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>Operating System Architecture | 操作系统体系结构</title>
+      <link>https://root-zr.github.io/en/2024/03/22/operating-system-architecture-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/</link>
+      <pubDate>Fri, 22 Mar 2024 13:39:37 +0800</pubDate>
+      
+      <guid>https://root-zr.github.io/en/2024/03/22/operating-system-architecture-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/</guid>
+      <description>这篇博客主要讨论了几种常见操作系统的历史以及它们的体系结构。首先从几个常见操作系统的背景以及它们之间的关系开始。
+图1 从图 1 中可以看到，最早的操作系统是 MULTICS（Multiplexed Information and Computing Service），最初由麻省理工学院、美国通用电气公司和贝尔实验室合作开发。其旨在为大型机提供一个分时操作系统，能够支持多个用户同时访问和共享计算资源。MULTICS 是一个里程碑式的项目，对于操作系统和计算机科学的发展产生了深远的影响。
+在 MULTICS 项目因各种技术和管理上的挑战而陷入困境后，UNIX 的创始人之一 Ken Thompson 和 Dennis Ritchie 决定启动一个新的项目，旨在设计一个更加简单、灵活和易于实现的操作系统。这个项目后来成为了 UNIX 操作系统的原型。
+随后，UNIX 的版本不断迭代，到第6版时，加州大学伯克利分校（University of California, Berkeley）的计算机系统研究小组（Computer Systems Research Group，简称CSRG）在此基础上进行了一系列的改进和扩展，开发了一系列的 BSD 版本。BSD 项目为 UNIX 社区做出了重要贡献，引入了许多与网络相关的功能和协议，对于互联网的发展起到了重要作用。
+SunOS 是由 Sun 公司基于 BSD UNIX 开发的一种 UNIX 操作系统，最初是用于其早期的 Sun 工作站和服务器上。SunOS 最初发布于1982年。Solaris 是 Sun 后来发布的 UNIX 操作系统，最早版本是在1992年发布的 Solaris 2.0。它是在 SunOS 4.x 的基础上进行了重大改进和扩展，引入了虚拟内存管理、多线程支持等特性，并被广泛应用于企业级服务器和大型系统中。Sun 公司现在已经被 Oracle 收购，Java 编程语言也是这家公司的产品。
+macOS 最初是基于 NeXTSTEP 开发的，随后逐步集成了 FreeBSD 的部分特性和功能。
+此外，还有一个与 UNIX 有关的操作系统是 Linux，由 Linus Torvalds 在 1991 年首次发布的一个开源的类 UNIX 操作系统内核。Linux 在设计和实现上深受 UNIX 的影响，继承了 UNIX 的许多设计理念和原则。Linux 与 UNIX 兼容性良好，可以运行许多 UNIX 应用程序和工具。</description>
+    </item>
+    
+    <item>
       <title>Skip List | 跳表</title>
       <link>https://root-zr.github.io/en/2024/03/08/skip-list-%E8%B7%B3%E8%A1%A8/</link>
       <pubDate>Fri, 08 Mar 2024 13:39:37 +0800</pubDate>

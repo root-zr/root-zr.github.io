@@ -1,0 +1,258 @@
+<a name="top"></a>
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  	
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Operating System Architecture | 操作系统体系结构 - Albert Wang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/font.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega@5.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.12.2"></script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+
+
+  </head>
+  
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav" >
+      <a href="/" class="nav-logo">
+        <img src="/media/logo.JPG"
+         width="50"
+         height="50"
+         alt="Hugo-ht">
+      </a>
+
+      <ul class="nav-links" >
+       
+       
+       
+       <li><a href="/">Home</a></li>
+       
+       <li><a href="/en/posts/">Blog</a></li>
+       
+       <li><a href="/categories/">Categories</a></li>
+       
+       <li><a href="/en/project/">Project</a></li>
+       
+       <li><a href="/en/about/">About</a></li>
+       
+       
+      </ul>
+</nav>
+		<script type="text/javascript"
+        async
+        src="https://cdn.bootcss.com/mathjax/2.7.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\[\[','\]\]']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+});
+
+MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<style>
+code.has-jax {
+    font: inherit;
+    font-size: 100%;
+    background: inherit;
+    border: inherit;
+    color: #515151;
+}
+</style>
+      </header>
+
+<main class = "content" role="main">
+<div style="text-align: center">
+
+<h1>Operating System Architecture | 操作系统体系结构</h1>
+
+<p>Albert Wang 
+ / 2024-03-22 
+/ 300 Words/has been Read  <span id="busuanzi_value_page_pv"></span>&nbsp;&nbsp;Times
+
+</p>
+
+
+
+<hr/>
+
+
+</div>
+
+<span class="article-toolbar">
+  
+  
+  
+  
+  
+  
+  
+  <a href='https://github.com/root-zren%5cposts%5c2024%5c%e6%93%8d%e4%bd%9c%e7%b3%bb%e7%bb%9f%e6%9e%b6%e6%9e%84.md'style="font-size: 24px; color: black;" target="_blank"><i class="fa fa-edit" aria-hidden="true" title="Suggest an edit of this page"></i>
+  </a>
+  
+  
+  
+</span>
+
+
+<aside class="toc">
+Table of Contents:
+<nav id="TableOfContents">
+  <ol>
+    <li><a href="#dos-操作系统架构">DOS 操作系统架构</a></li>
+    <li><a href="#unix-操作系统架构">UNIX 操作系统架构</a></li>
+    <li><a href="#linux-操作系统架构">Linux 操作系统架构</a></li>
+    <li><a href="#minux-操作系统架构">Minux 操作系统架构</a></li>
+    <li><a href="#windows-操作系统架构">Windows 操作系统架构</a></li>
+    <li><a href="#solaris-操作系统架构">Solaris 操作系统架构</a></li>
+    <li><a href="#mac-操作系统架构">mac 操作系统架构</a></li>
+  </ol>
+</nav>
+</aside>
+
+
+<div class="body-text list-text">
+<p>这篇博客主要讨论了几种常见操作系统的历史以及它们的体系结构。首先从几个常见操作系统的背景以及它们之间的关系开始。</p>
+<p><img src="/img/2024/03/os-his.PNG" alt="image-20240309030246676"></p>
+<center>图1</center>
+<p>从图 1 中可以看到，最早的操作系统是 MULTICS（Multiplexed Information and Computing Service），最初由麻省理工学院、美国通用电气公司和贝尔实验室合作开发。其旨在为大型机提供一个分时操作系统，能够支持多个用户同时访问和共享计算资源。MULTICS 是一个里程碑式的项目，对于操作系统和计算机科学的发展产生了深远的影响。</p>
+<p>在 MULTICS 项目因各种技术和管理上的挑战而陷入困境后，UNIX 的创始人之一 Ken Thompson 和 Dennis Ritchie 决定启动一个新的项目，旨在设计一个更加简单、灵活和易于实现的操作系统。这个项目后来成为了 UNIX 操作系统的原型。</p>
+<p>随后，UNIX 的版本不断迭代，到第6版时，加州大学伯克利分校（University of California, Berkeley）的计算机系统研究小组（Computer Systems Research Group，简称CSRG）在此基础上进行了一系列的改进和扩展，开发了一系列的 BSD 版本。BSD 项目为 UNIX 社区做出了重要贡献，引入了许多与网络相关的功能和协议，对于互联网的发展起到了重要作用。</p>
+<p>SunOS 是由 Sun 公司基于 BSD UNIX 开发的一种 UNIX 操作系统，最初是用于其早期的 Sun 工作站和服务器上。SunOS 最初发布于1982年。Solaris 是 Sun 后来发布的 UNIX 操作系统，最早版本是在1992年发布的 Solaris 2.0。它是在 SunOS 4.x 的基础上进行了重大改进和扩展，引入了虚拟内存管理、多线程支持等特性，并被广泛应用于企业级服务器和大型系统中。Sun 公司现在已经被 Oracle 收购，Java 编程语言也是这家公司的产品。</p>
+<p>macOS 最初是基于 NeXTSTEP 开发的，随后逐步集成了 FreeBSD 的部分特性和功能。</p>
+<p>此外，还有一个与 UNIX 有关的操作系统是 Linux，由 Linus Torvalds 在 1991 年首次发布的一个开源的类 UNIX 操作系统内核。Linux 在设计和实现上深受 UNIX 的影响，继承了 UNIX 的许多设计理念和原则。Linux 与 UNIX 兼容性良好，可以运行许多 UNIX 应用程序和工具。</p>
+<p>然后是一条全新的线，就是微软的 DOS 操作系统，同时在 MS-DOS 的基础上逐步发展出了 Windows 操作系统。</p>
+<p>接下来，我们将介绍这些常见操作系统的体系结构。</p>
+<h2 id="dos-操作系统架构">DOS 操作系统架构<a href="#dos-操作系统架构" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>首先是 DOS 操作系统，这是早期个人计算机上广泛使用的操作系统之一，它的架构相对简单，可以概括为以下几个主要部分：</p>
+<ol>
+<li><strong>引导加载程序（Boot Loader）</strong>：这部分是直接写在 ROM BIOS 里的程序，位于整个体系结构的最底层。DOS 的运行始于计算机启动时加载到内存中的引导加载程序。在早期的 PC 中，通常使用的是基于硬盘上的引导扇区，这个引导扇区包含了引导加载程序的代码，它负责将 DOS 内核加载到内存中并将控制权转交给它。</li>
+<li><strong>DOS 驱动程序（DOS Device Driver）</strong>：在 BIOS 之上的这一层就是 DOS 驱动程序, DOS 驱动程序是整个操作系统的核心部分，负责管理系统的资源和提供基本的操作功能。DOS 驱动程序相对简单，主要包括一些基本的文件管理、内存管理和设备管理功能，例如，文件的打开、读写、关闭，内存的分配和释放，以及对硬件设备（如磁盘驱动器、显示器、键盘等）的访问。</li>
+<li><strong>常驻系统程序（Resident System Program）</strong>： 严格来说在 DOS 驱动程序上面的都属于应用程序。但是 DOS 专门分出来了一类程序叫常驻系统程序， 常驻系统程序是一种特殊类型的程序，它们在系统启动时加载到内存中，并且一直驻留在内存中，以便在需要时随时被调用。</li>
+<li><strong>应用程序（Applications）</strong>：DOS 系统上运行的应用程序范围广泛，包括文本编辑器、批处理脚本、游戏等。这些应用程序通常直接运行在 DOS 的环境中，通过调用 DOS 提供的系统服务来完成各种任务。</li>
+</ol>
+<p><img src="https://img1.baidu.com/it/u=187857254,2275963642&amp;fm=253&amp;fmt=auto&amp;app=138&amp;f=PNG?w=406&amp;h=390" alt="img"></p>
+<center>图2</center>
+<p>总的来说，DOS 的架构相对简单，它由引导加载程序、DOS 内核、命令解释器、系统服务和应用程序等几个主要部分组成，提供了基本的文件管理、设备访问和命令行交互功能。</p>
+<p>我们通过观察图 2 可以看到有些应用程序是可以直接绕过 DOS 内核直接访问最底层的信息，这种结构带来了很多安全上的问题。但受限于当时硬件条件的限制，很难做到由操作系统完全去管理硬件。</p>
+<h2 id="unix-操作系统架构">UNIX 操作系统架构<a href="#unix-操作系统架构" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>图 3 所示是 UNIX 操作系统的体系结构，UNIX 将底层的硬件完全由操作系统管理，弥补了 DOS 绕过内核直接访问最底层的缺陷。同时 UNIX 系统架构也是一个分层的体系结构，由多个不同层次的组件组成，每个组件负责不同的任务和功能。</p>
+<ol>
+<li><strong>硬件层（Hardware Layer）</strong>：UNIX 系统可以运行在各种不同架构的计算机硬件上，包括个人计算机、服务器、嵌入式系统等。</li>
+<li><strong>内核层（Kernel Layer）</strong>：UNIX 内核是 UNIX 系统的核心部分，负责管理系统的资源并提供基本的系统服务。</li>
+<li><strong>用户空间层（User Space Layer）</strong>：用户空间包括用户级别的应用程序、工具和库。用户空间的程序通过系统调用接口与内核进行通信，以访问系统资源和执行系统服务。用户空间的常见组件包括：</li>
+<li><strong>应用层（Application Layer）</strong>：应用层包括用户运行的各种应用程序，如 Web 浏览器、邮件客户端、办公软件等。</li>
+</ol>
+<p>UNIX 系统架构的分层设计使得系统更加模块化和灵活，允许不同的组件在不同层次上进行开发、测试和维护，从而提高了系统的稳定性和可维护性。此外，UNIX 系统的开放性和可定制性也使得用户能够根据自己的需求对系统进行定制和扩展。</p>
+<p><img src="/img/2024/03/unix.PNG" alt="image-20240309030246676"></p>
+<center>图3</center>
+<h2 id="linux-操作系统架构">Linux 操作系统架构<a href="#linux-操作系统架构" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>Linux 是一个开源的操作系统内核，它是 UNIX 系统的一个变种。从图 4 中我们仍然可以看到它的层次结构类似于 UNIX。那这种结构是不是就已经是最好的了呢？应该不能说是最理想的解决方案。因为我们可以从图中观察到内核这一层做了很多的事情，包括进程管理、文件系统、网络管理等。它们之间难免会进行相互调用，会产生功能的相互耦合，假如某一个模块发生故障可能会导致整个系统崩溃。比如文件系统故障，理想的情况是我们直接将文件系统隔离出去，不要影响到其他模块的正常工作，等我们修复完再将它加回来，完全做到模块之间的隔离。</p>
+<p><img src="/img/2024/03/image-20240323002312339.png" alt="image-20240323002312339"></p>
+<center>图4</center>
+<h2 id="minux-操作系统架构">Minux 操作系统架构<a href="#minux-操作系统架构" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>MINIX（Mini UNIX）是一个轻量级的 UNIX 兼容操作系统，最初由安德鲁·坦尼鲍姆（Andrew S. Tanenbaum）开发，他写的操作系统和计算机网络的书非常有名，MINIX 最初就是为了教学使用的。巧合的是坦尼鲍姆就是 Linux 操作系统的作者 Linus Torvalds 的老师，Linus 在编写 Linux 操作系统的时候也参考过 MINUX 的源代码。更为有趣的是他们两个为了操作系统的架构设计展开过一场轰轰烈烈的辩论，神仙打架名场面的细节可以点击<a href="https://zh.wikipedia.org/wiki/%E5%A1%94%E8%83%BD%E9%AE%91%E5%A7%86-%E6%89%98%E7%93%A6%E8%8C%B2%E8%BE%AF%E8%AB%96" target="_blank" rel="noreferrer noopener">这里</a>
+
+了解。</p>
+<p>MINIX 是一个微内核操作系统，其内核被设计为尽可能小而简单，只包含最基本的功能，如进程管理、进程间通信（IPC）等。这种架构使得系统更加模块化、可扩展和易于维护。</p>
+<p>在 MINIX 的微内核中，大部分操作系统功能被实现为用户空间的服务器进程，通过 IPC 与内核通信。这样的设计使得系统的各个组件能够相对独立地进行开发和维护。</p>
+<p><img src="/img/2024/03/minix.PNG" alt="image-20240309030246676"></p>
+<center>图5</center>
+<p>微内核的设计在理论上是要更加完美一点，但是在工程实践中的效果并不是特别理想。因为一个简简单单的输出操作可能就需要进行连续的用户态内核态切换，导致速度很慢，这也导致现在微内核的设备主要还是在嵌入式设备上使用。</p>
+<h2 id="windows-操作系统架构">Windows 操作系统架构<a href="#windows-操作系统架构" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>windows 操作系统系统最开始使用的是 nt 内核，如下图所示，这也是一个微内核的结构。但是同样由于效率的关系，后续不断地在内核里面加入了各种功能，导致现在的 wondows 系统架构已经变成了类似于宏内核的结构。</p>
+<p><img src="/img/2024/03/win-nt.PNG" alt="image-20240309030246676"></p>
+<center>图6</center>
+<h2 id="solaris-操作系统架构">Solaris 操作系统架构<a href="#solaris-操作系统架构" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>Solaris 结合了微内核和宏内核的特点，一方面把一些重要的操作加到了内核里保证效率，另一方面严格进行内核里模块间的功能拆分，保证每个模块都是独立工作，互相不受影响。</p>
+<p><img src="/img/2024/03/solaris.PNG" alt="image-20240309030246676"></p>
+<center>图7</center>
+<h2 id="mac-操作系统架构">mac 操作系统架构<a href="#mac-操作系统架构" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>mac 操作系统架构，macOS 的内核称为 XNU（X is Not Unix），它是一个混合内核，由微内核 Mach 和 BSD 内核组成。</p>
+<ul>
+<li>Mach 内核负责处理进程管理、内存管理和线程调度等底层任务，提供了多任务处理、虚拟内存等核心功能。</li>
+<li>BSD 内核提供了 UNIX 系统的标准功能，包括文件系统、网络协议栈、套接字接口等，它是 macOS 上大部分用户空间功能的基础。</li>
+</ul>
+<p><img src="/img/2024/03/mac.PNG" alt="image-20240309030246676"></p>
+<center>图8</center>
+
+<p style="color:#777;">Last modified on 2024-03-22</p>
+</div>
+<a href="#top"><i class="fa fa-chevron-up" style="font-size: 30px; color: black;"></i></a>
+
+</main>
+
+<footer class="footer">
+  <script type="text/javascript" src="/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/javascript" src="/js/center-img.js"></script>
+
+<script type="text/javascript" src="//rf.revolvermaps.com/0/0/6.js?i=5sz67w4rqwe&amp;m=0&amp;c=ff0000&amp;cr1=ffffff&amp;f=times_new_roman&amp;l=1" async="async"></script>
+
+     <ul class="footer-links">
+      
+       
+       
+       
+       <li><a href="/en/posts/index.xml" type="application/rss+xml" title="RSS feed">
+       Subscribe </a>
+       </li>
+       
+       
+       <li>
+       
+        <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
+       
+        License
+        <i class="fa fa-cc" aria-hidden="true" title="Attribution-NonCommercial-ShareAlike 4.0 International"></i> 
+        </a>
+       </li>
+       
+     </ul>
+     
+	    <span id="busuanzi_container_site_pv"> 本站访问量：<span id="busuanzi_value_site_pv"></span>次</span>&nbsp;
+	    <span id="busuanzi_container_site_uv"> 您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者</span>
+
+		
+     
+</footer>
+
+
+
+
+
