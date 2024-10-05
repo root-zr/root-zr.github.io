@@ -1,0 +1,216 @@
+<a name="top"></a>
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  	
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Elastic Block Storage | 云计算之块存储 - Albert Wang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/font.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega@5.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.12.2"></script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+
+
+  </head>
+  
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav" >
+      <a href="/" class="nav-logo">
+        <img src="/media/logo.JPG"
+         width="50"
+         height="50"
+         alt="Hugo-ht">
+      </a>
+
+      <ul class="nav-links" >
+       
+       
+       
+       <li><a href="/">Home</a></li>
+       
+       <li><a href="/en/posts/">Blog</a></li>
+       
+       <li><a href="/categories/">Categories</a></li>
+       
+       <li><a href="/en/project/">Project</a></li>
+       
+       <li><a href="/en/about/">About</a></li>
+       
+       
+      </ul>
+</nav>
+		<script type="text/javascript"
+        async
+        src="https://cdn.bootcss.com/mathjax/2.7.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\[\[','\]\]']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+});
+
+MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<style>
+code.has-jax {
+    font: inherit;
+    font-size: 100%;
+    background: inherit;
+    border: inherit;
+    color: #515151;
+}
+</style>
+      </header>
+
+<main class = "content" role="main">
+<div style="text-align: center">
+
+<h1>Elastic Block Storage | 云计算之块存储</h1>
+
+<p>Albert Wang 
+ / 2024-10-05 
+/ 200 Words/has been Read  <span id="busuanzi_value_page_pv"></span>&nbsp;&nbsp;Times
+
+</p>
+
+
+
+<hr/>
+
+
+</div>
+
+<span class="article-toolbar">
+  
+  
+  
+  
+  
+  
+  
+  <a href='https://github.com/root-zren%5cposts%5c2024%5c%e4%ba%91%e8%ae%a1%e7%ae%97%e4%b9%8b%e5%9d%97%e5%ad%98%e5%82%a8.md'style="font-size: 24px; color: black;" target="_blank"><i class="fa fa-edit" aria-hidden="true" title="Suggest an edit of this page"></i>
+  </a>
+  
+  
+  
+</span>
+
+
+
+<div class="body-text list-text">
+<p>这篇博客主要从阿里巴巴的论文 “What&rsquo;s the Story in EBS Glory: Evolutions and Lessons in Building Cloud Block Store” 来介绍云块存储。详细的内容可以参考 Fast2024 主页的演讲<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>。如果存在网络问题也可以从我本地连接下载，<a href="/files/fast24-zhang-weidong.pdf">论文原文点击这里</a>
+
+，<a href="/files/fast24_slides-zhang_weidong.pdf">PPT点击这里</a>
+
+。</p>
+<p>阿里巴巴的云块存储从开始发展至今已经经过了多次迭代，从下面的时间线可以看出距离 2012 年的 EBS1 开始已经发展到了 EBSX 的版本。</p>
+<p><img src="/img/2024/10/timeline.PNG" alt="image-20240309030246676"></p>
+<p>在云计算的 IaaS 中，云厂商可以把计算资源和存储资源这些基础设施抽象成服务，对外以虚拟机的方式出售。云计算的客户只会感知到虚拟机提供的资源，但是在云计算厂商内部，虚拟机内的资源可以映射到不同的物理机上。计算和存储分离就是其中一种设计，通过将计算资源和存储资源放在不同的集群中，集群中间通过数据中心网络连接。这些设计也在微软的 Azure 和 Google 的数据中心中被采用。</p>
+<p>块存储对外提供的是一种虚拟磁盘（Virtual Disk，VD），一台虚拟机可以挂载多个 VD。到目前我们云计算客户如果要使用存储资源，他们可以先购买不同容量的 VD，然后把 VD 挂载到自己的虚拟机中。事实上 EBS1 的设计也是如此，下图中计算集群中的 1 个 BlockClient  可以负责多个 VM，它们负责将 IO 请求转发到存储集群的 BlockServer 中。</p>
+<p><img src="/img/2024/10/ebs1.PNG" alt="image-20240309030246676"></p>
+<p>BlockServer 本身是无状态的，这就需要构建 BlockManager 集群来管理 VD 的元数据，包括容量，快照版本等等。另外 VD 的逻辑块地址（LBA）被划分成一个个 64M 的块（chunk）。ChunkServer 就是用来处理这一个个的 chunk。同样地，也需要有 ChunkManager 来管理 chunk 的元数据。</p>
+<p>这时一个 IO 从计算集群的 VM 发过来，BlockClient 会先从 BlockManager 找到该 IO 应该发给哪个 BlockServer ，收到 ACK 之后发到对应的 BlockServer，然后 BlockServer 从 ChunkManager 查到该请求应该发给哪个 ChunkServer ，最后在一层层返回 ACK 给 BlockClient，这样就完成了一次 IO。</p>
+<p>同样地，如果每次 IO 请求都需要从 Manage 集群查找对应的 Server 集群，将会带来很大的网络和时延上的消耗。所以在  BlockClient 和 BlockServer 中都会缓存这些元数据，这样就不用每次都去 Manage 集群中查询了。</p>
+<p>以上是 EBS1 的主要内容，它虽然被部署到数百个集群中，但是仍然存在下面几个问题：</p>
+<ol>
+<li>数据是 3 副本保存，会带来很大的写放大；</li>
+<li>存储介质是 HDD，时延较高；</li>
+<li>一个 VD 和一台 BlockServer 绑定，容易产生热点。</li>
+</ol>
+<p>EBS2 的设计主要修复了上面的缺陷。从下图中可以看出新增了一层盘古分布式文件系统，它对外只提供了 append 写的原语，将 EBS1 的原地更新改为了追加写。因为只能 append，这就导致肯定会出现垃圾数据，从而需要有垃圾回收（GC）的流程。在 GC 的过程中通过校验码（EC）加压缩的方式来减少写放大，从原来的 3 倍减少到了 1.29 倍。存储介质也从 HDD 换成了 SSD，将平均时延提升到了 100us。</p>
+<p><img src="/img/2024/10/ebs2.PNG" alt="image-20240309030246676"></p>
+<p>100us 最后的一个特性是将一个 VD 拆分成多个 128 GB 的段组，然后进一步将每个段组拆分成多个 32 GB 的段，这有助于缓解热点的问题。</p>
+<p><img src="/img/2024/10/segment.PNG" alt="image-20240309030246676"></p>
+<p>EBS2 也带来了一些局限性，</p>
+<ol>
+<li>它将流量放大从 EBS1 的 3 变成了 4.69，包括前台写的 3 副本，加后台 GC 读的 1，和 EC/压缩之后的 0.69，这导致最后只有 15.5% 的网络带宽是用来处理 VD 的请求。</li>
+<li>EC 的引入为了实现高压缩和编码效率，要求数据块大小至少为 16KB, 然而实际中近 70% 的请求小于 16 KB.</li>
+</ol>
+<section class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1" role="doc-endnote">
+<p>https://www.usenix.org/conference/fast24/presentation/zhang-weidong&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</section>
+
+<p style="color:#777;">Last modified on 2024-10-05</p>
+</div>
+<a href="#top"><i class="fa fa-chevron-up" style="font-size: 30px; color: black;"></i></a>
+
+</main>
+
+<footer class="footer">
+  <script type="text/javascript" src="/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/javascript" src="/js/center-img.js"></script>
+
+<script type="text/javascript" src="//rf.revolvermaps.com/0/0/6.js?i=5sz67w4rqwe&amp;m=0&amp;c=ff0000&amp;cr1=ffffff&amp;f=times_new_roman&amp;l=1" async="async"></script>
+
+     <ul class="footer-links">
+      
+       
+       
+       
+       <li><a href="/en/posts/index.xml" type="application/rss+xml" title="RSS feed">
+       Subscribe </a>
+       </li>
+       
+       
+       <li>
+       
+        <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
+       
+        License
+        <i class="fa fa-cc" aria-hidden="true" title="Attribution-NonCommercial-ShareAlike 4.0 International"></i> 
+        </a>
+       </li>
+       
+     </ul>
+     
+	    <span id="busuanzi_container_site_pv"> 本站访问量：<span id="busuanzi_value_site_pv"></span>次</span>&nbsp;
+	    <span id="busuanzi_container_site_uv"> 您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者</span>
+
+		
+     
+</footer>
+
+
+
+
+

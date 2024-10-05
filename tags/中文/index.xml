@@ -6,7 +6,21 @@
     <description>Recent content in 中文 on Albert Wang</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 05 May 2024 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/tags/%E4%B8%AD%E6%96%87/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 05 Oct 2024 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/tags/%E4%B8%AD%E6%96%87/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Elastic Block Storage | 云计算之块存储</title>
+      <link>https://root-zr.github.io/en/2024/10/05/elastic-block-storage-%E4%BA%91%E8%AE%A1%E7%AE%97%E4%B9%8B%E5%9D%97%E5%AD%98%E5%82%A8/</link>
+      <pubDate>Sat, 05 Oct 2024 13:39:37 +0800</pubDate>
+      
+      <guid>https://root-zr.github.io/en/2024/10/05/elastic-block-storage-%E4%BA%91%E8%AE%A1%E7%AE%97%E4%B9%8B%E5%9D%97%E5%AD%98%E5%82%A8/</guid>
+      <description>这篇博客主要从阿里巴巴的论文 “What&amp;rsquo;s the Story in EBS Glory: Evolutions and Lessons in Building Cloud Block Store” 来介绍云块存储。详细的内容可以参考 Fast2024 主页的演讲1。如果存在网络问题也可以从我本地连接下载，论文原文点击这里 ，PPT点击这里 。
+阿里巴巴的云块存储从开始发展至今已经经过了多次迭代，从下面的时间线可以看出距离 2012 年的 EBS1 开始已经发展到了 EBSX 的版本。
+在云计算的 IaaS 中，云厂商可以把计算资源和存储资源这些基础设施抽象成服务，对外以虚拟机的方式出售。云计算的客户只会感知到虚拟机提供的资源，但是在云计算厂商内部，虚拟机内的资源可以映射到不同的物理机上。计算和存储分离就是其中一种设计，通过将计算资源和存储资源放在不同的集群中，集群中间通过数据中心网络连接。这些设计也在微软的 Azure 和 Google 的数据中心中被采用。
+块存储对外提供的是一种虚拟磁盘（Virtual Disk，VD），一台虚拟机可以挂载多个 VD。到目前我们云计算客户如果要使用存储资源，他们可以先购买不同容量的 VD，然后把 VD 挂载到自己的虚拟机中。事实上 EBS1 的设计也是如此，下图中计算集群中的 1 个 BlockClient 可以负责多个 VM，它们负责将 IO 请求转发到存储集群的 BlockServer 中。
+BlockServer 本身是无状态的，这就需要构建 BlockManager 集群来管理 VD 的元数据，包括容量，快照版本等等。另外 VD 的逻辑块地址（LBA）被划分成一个个 64M 的块（chunk）。ChunkServer 就是用来处理这一个个的 chunk。同样地，也需要有 ChunkManager 来管理 chunk 的元数据。
+这时一个 IO 从计算集群的 VM 发过来，BlockClient 会先从 BlockManager 找到该 IO 应该发给哪个 BlockServer ，收到 ACK 之后发到对应的 BlockServer，然后 BlockServer 从 ChunkManager 查到该请求应该发给哪个 ChunkServer ，最后在一层层返回 ACK 给 BlockClient，这样就完成了一次 IO。</description>
+    </item>
+    
     <item>
       <title>Travel Diary of Guangzhou | 广州游记</title>
       <link>https://root-zr.github.io/en/2024/05/05/travel-diary-of-guangzhou-%E5%B9%BF%E5%B7%9E%E6%B8%B8%E8%AE%B0/</link>
