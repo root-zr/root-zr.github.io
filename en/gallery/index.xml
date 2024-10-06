@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Gallery on Albert Wang</title>
+    <link>https://root-zr.github.io/en/gallery/</link>
+    <description>Recent content in Gallery on Albert Wang</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 07 May 2021 01:53:34 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/en/gallery/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>华山</title>
+      <link>https://root-zr.github.io/en/2024/10/06/%E5%8D%8E%E5%B1%B1/</link>
+      <pubDate>Sun, 06 Oct 2024 13:39:37 +0800</pubDate>
+      
+      <guid>https://root-zr.github.io/en/2024/10/06/%E5%8D%8E%E5%B1%B1/</guid>
+      <description>华山：                        </description>
+    </item>
+    
+    <item>
+      <title>广州</title>
+      <link>https://root-zr.github.io/en/2024/10/06/%E5%B9%BF%E5%B7%9E/</link>
+      <pubDate>Sun, 06 Oct 2024 13:39:37 +0800</pubDate>
+      
+      <guid>https://root-zr.github.io/en/2024/10/06/%E5%B9%BF%E5%B7%9E/</guid>
+      <description>广州：          </description>
+    </item>
+    
+    <item>
+      <title>惠州</title>
+      <link>https://root-zr.github.io/en/2024/10/06/%E6%83%A0%E5%B7%9E/</link>
+      <pubDate>Sun, 06 Oct 2024 13:39:37 +0800</pubDate>
+      
+      <guid>https://root-zr.github.io/en/2024/10/06/%E6%83%A0%E5%B7%9E/</guid>
+      <description>惠州：          </description>
+    </item>
+    
+    <item>
+      <title>梧桐山</title>
+      <link>https://root-zr.github.io/en/2024/10/06/%E6%A2%A7%E6%A1%90%E5%B1%B1/</link>
+      <pubDate>Sun, 06 Oct 2024 13:39:37 +0800</pubDate>
+      
+      <guid>https://root-zr.github.io/en/2024/10/06/%E6%A2%A7%E6%A1%90%E5%B1%B1/</guid>
+      <description>梧桐山：                  </description>
+    </item>
+    
+    <item>
+      <title>西安</title>
+      <link>https://root-zr.github.io/en/2024/10/06/%E8%A5%BF%E5%AE%89/</link>
+      <pubDate>Sun, 06 Oct 2024 13:39:37 +0800</pubDate>
+      
+      <guid>https://root-zr.github.io/en/2024/10/06/%E8%A5%BF%E5%AE%89/</guid>
+      <description>西安：                    </description>
+    </item>
+    
+  </channel>
+</rss>
