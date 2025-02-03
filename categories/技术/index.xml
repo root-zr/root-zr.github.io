@@ -6,7 +6,29 @@
     <description>Recent content in 技术 on Albert Wang</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 05 Oct 2024 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/categories/%E6%8A%80%E6%9C%AF/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 03 Feb 2025 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/categories/%E6%8A%80%E6%9C%AF/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Disaggregated Memory | 云计算之分解内存系统</title>
+      <link>https://root-zr.github.io/en/2025/02/03/disaggregated-memory-%E4%BA%91%E8%AE%A1%E7%AE%97%E4%B9%8B%E5%88%86%E8%A7%A3%E5%86%85%E5%AD%98%E7%B3%BB%E7%BB%9F/</link>
+      <pubDate>Mon, 03 Feb 2025 13:39:37 +0800</pubDate>
+      
+      <guid>https://root-zr.github.io/en/2025/02/03/disaggregated-memory-%E4%BA%91%E8%AE%A1%E7%AE%97%E4%B9%8B%E5%88%86%E8%A7%A3%E5%86%85%E5%AD%98%E7%B3%BB%E7%BB%9F/</guid>
+      <description>这篇博客主要介绍云计算中的分解内存系统。在分解内存系统中，计算节点和内存节点分别负责计算和存储。
+分解内存系统 内存缓存系统是云服务的核心组件。然而，由于传统单体服务器中CPU与内存的紧耦合，现有缓存系统无法以资源高效且敏捷的方式弹性调整资源。为实现更好的弹性，人们将内存缓存系统移植到分解内存系统（Disaggregated Memory, DM）架构中，该架构将计算与内存资源解耦并支持灵活分配。分解内存系统将内存、存储和计算资源分离为独立的资源池，以实现高资源利用率、灵活的硬件可扩展性和高效的数据共享。采用支持RDMA的网络进行通信，RDMA具有高吞吐量（40-400 Gbps）、低延迟（几微秒）和绕过远程CPU/内核的特点。分解内存系统已成为许多应用的重要基础设施，包括数据库和内存键值（KV）存储。
+索引 树结构和学习索引是两种广泛使用的有序KV存储结构，它们通过识别给定范围内的项来提供高效的范围查询性能。
+基于树的结构 （例如 B+ 树）将数据存储在叶子节点中，并通过构建多级内部节点来搜索叶子。然而，当数据超出有限的本地缓存时，基于树的结构变得低效，必须进行多次网络往返时间（RTT）来检索内部节点。
+学习索引在搜索速度和内存消耗方面相较于基于树的结构具有显著优势，这得益于易于使用且小尺寸的学习模型。具体来说，学习索引将数据搜索过程视为回归模型，通过近似排序键的累积分布函数（CDF）来记录所有数据的位置 。学习模型比树结构的内部节点节省了 2 到 4 个数量级的空间，这使得本地机器能够缓存整个索引结构，避免了多次 RTT 的惩罚，从而确定远程数据的位置。
+XStore 提出了一个混合索引结构，即维护一个 B 树来处理修改，并本地缓存学习索引以进行远程数据访问。XStore 提供了高效的搜索性能，因为它仅需要一次 RTT 来访问静态工作负载。对于动态工作负载，XStore 通过在内存节点上修改 B 树来处理数据修改请求。同时，XStore 扩展过时的模型到较大的预测范围，以确保新插入的数据被包含在内。
+然而，这种设计在解耦内存系统中变得低效，因为内存节点的计算资源有限，无法高效处理密集的修改请求。新模型未能及时重新训练，且由于模型扩展，过时的模型导致搜索远程数据时的准确性过低，无法在一次 RTT 内完成。因此，本地缓存变得无效，后续的数据请求通过经典的 RPC 转发到内存节点。由于内存节点的计算资源有限，整体性能显著下降。
+上图展示了 ROLEX 的总体架构1。在内存池中，ROLEX 将所有数据存储为固定大小的叶节点（即数组），并基于这些数据构建一个与重训练解耦的学习索引。为了处理动态工作负载，计算节点直接修改远程叶节点，而无需重训练模型，因为我们将插入操作和重训练操作解耦。通过添加偏置和一些数据迁移约束，非重训练模型能够在插入新数据后正确识别所有数据。
+缓存性能 在DM上构建弹性缓存系统面临两大挑战：
+ 绕过远程CPU的访问阻碍缓存算法执行：客户端通过远程直接内存访问（RDMA）直接操作数据，导致集中式热度监控失效，且维护缓存数据结构需多次高延迟远程访问。 资源动态调整影响缓存命中率：计算资源（客户端并发数）和内存资源（缓存容量）的变化会改变数据访问模式，使得固定缓存算法难以适应动态场景。  Ditto采用分布式自适应缓存策略，通过实时评估多个缓存算法的性能，动态切换至最佳适配算法以提升缓存命中率2。
+上图展示了 Ditto 的整体架构。Ditto 采用哈希表组织内存池中存储的对象。该哈希表保存指向缓存对象地址的指针。遵循现有DM存储系统架构，应用程序运行于计算节点，每个应用程序通过本地子进程托管一个Ditto客户端。每个Ditto客户端在专用核心上运行多线程，应用程序通过本地共享内存与Ditto客户端通信，执行Get和Set操作。在此架构下，应用程序可通过增减分配给Ditto的线程数和CPU核心数自由扩缩计算资源。由于增减CPU核心时无需调整内存池的缓存容量，计算资源调整与缓存数据完全解耦。
+Ditto通过两大核心机制实现DM上的缓存淘汰：
+ 以客户端为中心的缓存框架：通过为不同缓存算法生成多组淘汰候选，高效执行多种算法。 分布式自适应缓存策略：利用机器学习分析当前数据访问模式特征，选择性能最优的算法淘汰候选。    https://www.usenix.org/conference/fast23/presentation/li-pengfei&amp;#160;&amp;#x21a9;&amp;#xfe0e;
+ Jiacheng Shen, Pengfei Zuo, Xuchuan Luo, Yuxin Su, Jiazhen Gu, Hao Feng, Yangfan Zhou, Michael Lyu, “Ditto: An Elastic and Adaptive Memory-Disaggregated Caching System”, Proceedings of the 29th ACM Symposium on Operating Systems Principles (SOSP), 2023.</description>
+    </item>
+    
     <item>
       <title>Elastic Block Storage | 云计算之块存储</title>
       <link>https://root-zr.github.io/en/2024/10/05/elastic-block-storage-%E4%BA%91%E8%AE%A1%E7%AE%97%E4%B9%8B%E5%9D%97%E5%AD%98%E5%82%A8/</link>

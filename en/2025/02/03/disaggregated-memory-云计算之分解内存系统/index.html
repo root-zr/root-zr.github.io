@@ -1,0 +1,227 @@
+<a name="top"></a>
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  	
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Disaggregated Memory | 云计算之分解内存系统 - Albert Wang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/font.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega@5.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.12.2"></script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+
+
+  </head>
+  
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav" >
+      <a href="/" class="nav-logo">
+        <img src="/media/logo.JPG"
+         width="50"
+         height="50"
+         alt="Hugo-ht">
+      </a>
+
+      <ul class="nav-links" >
+       
+       
+       
+       <li><a href="/">Home</a></li>
+       
+       <li><a href="/en/posts/">Blog</a></li>
+       
+       <li><a href="/en/gallery/">Gallery</a></li>
+       
+       <li><a href="/en/project/">Project</a></li>
+       
+       <li><a href="/en/about/">About</a></li>
+       
+       
+      </ul>
+</nav>
+		<script type="text/javascript"
+        async
+        src="https://cdn.bootcss.com/mathjax/2.7.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\[\[','\]\]']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+});
+
+MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<style>
+code.has-jax {
+    font: inherit;
+    font-size: 100%;
+    background: inherit;
+    border: inherit;
+    color: #515151;
+}
+</style>
+      </header>
+
+<main class = "content" role="main">
+<div style="text-align: center">
+
+<h1>Disaggregated Memory | 云计算之分解内存系统</h1>
+
+<p>Albert Wang 
+ / 2025-02-03 
+/ 100 Words/has been Read  <span id="busuanzi_value_page_pv"></span>&nbsp;&nbsp;Times
+
+</p>
+
+
+
+<hr/>
+
+
+</div>
+
+<span class="article-toolbar">
+  
+  
+  
+  
+  
+  
+  
+  <a href='https://github.com/root-zren%5cposts%5c2025%5c%e4%ba%91%e8%ae%a1%e7%ae%97%e4%b9%8b%e5%88%86%e8%a7%a3%e5%86%85%e5%ad%98%e7%b3%bb%e7%bb%9f.md'style="font-size: 24px; color: black;" target="_blank"><i class="fa fa-edit" aria-hidden="true" title="Suggest an edit of this page"></i>
+  </a>
+  
+  
+  
+</span>
+
+
+<aside class="toc">
+Table of Contents:
+<nav id="TableOfContents">
+  <ol>
+    <li><a href="#分解内存系统">分解内存系统</a></li>
+    <li><a href="#索引">索引</a></li>
+    <li><a href="#缓存性能">缓存性能</a></li>
+  </ol>
+</nav>
+</aside>
+
+
+<div class="body-text list-text">
+<p>这篇博客主要介绍云计算中的分解内存系统。在分解内存系统中，计算节点和内存节点分别负责计算和存储。</p>
+<h2 id="分解内存系统">分解内存系统<a href="#分解内存系统" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>内存缓存系统是云服务的核心组件。然而，由于传统单体服务器中CPU与内存的紧耦合，现有缓存系统无法以资源高效且敏捷的方式弹性调整资源。为实现更好的弹性，人们将内存缓存系统移植到<strong>分解内存系统（Disaggregated Memory, DM）架构</strong>中，该架构将计算与内存资源解耦并支持灵活分配。<strong>分解内存系统</strong>将内存、存储和计算资源分离为独立的资源池，以实现高资源利用率、灵活的硬件可扩展性和高效的数据共享。采用支持RDMA的网络进行通信，RDMA具有高吞吐量（40-400 Gbps）、低延迟（几微秒）和绕过远程CPU/内核的特点。分解内存系统已成为许多应用的重要基础设施，包括数据库和内存键值（KV）存储。</p>
+<h2 id="索引">索引<a href="#索引" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>树结构和学习索引是两种广泛使用的有序KV存储结构，它们通过识别给定范围内的项来提供高效的范围查询性能。</p>
+<p>基于树的结构 （例如 B+ 树）将数据存储在叶子节点中，并通过构建多级内部节点来搜索叶子。然而，当数据超出有限的本地缓存时，基于树的结构变得低效，必须进行多次网络往返时间（RTT）来检索内部节点。</p>
+<p>学习索引在搜索速度和内存消耗方面相较于基于树的结构具有显著优势，这得益于易于使用且小尺寸的学习模型。具体来说，学习索引将数据搜索过程视为回归模型，通过近似排序键的累积分布函数（CDF）来记录所有数据的位置 。学习模型比树结构的内部节点节省了 2 到 4 个数量级的空间，这使得本地机器能够缓存整个索引结构，避免了多次 RTT 的惩罚，从而确定远程数据的位置。</p>
+<p>XStore 提出了一个混合索引结构，即维护一个 B 树来处理修改，并本地缓存学习索引以进行远程数据访问。XStore 提供了高效的搜索性能，因为它仅需要一次 RTT 来访问静态工作负载。对于动态工作负载，XStore 通过在内存节点上修改 B 树来处理数据修改请求。同时，XStore 扩展过时的模型到较大的预测范围，以确保新插入的数据被包含在内。</p>
+<p>然而，这种设计在解耦内存系统中变得低效，因为内存节点的计算资源有限，无法高效处理密集的修改请求。新模型未能及时重新训练，且由于模型扩展，过时的模型导致搜索远程数据时的准确性过低，无法在一次 RTT 内完成。因此，本地缓存变得无效，后续的数据请求通过经典的 RPC 转发到内存节点。由于内存节点的计算资源有限，整体性能显著下降。</p>
+<p><img src="/img/2025/02/image-20250204022110561.png" alt="image-20250204022110561"></p>
+<p>上图展示了 ROLEX 的总体架构<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>。在内存池中，ROLEX 将所有数据存储为固定大小的叶节点（即数组），并基于这些数据构建一个与重训练解耦的学习索引。为了处理动态工作负载，计算节点直接修改远程叶节点，而无需重训练模型，因为我们将插入操作和重训练操作解耦。通过添加偏置和一些数据迁移约束，非重训练模型能够在插入新数据后正确识别所有数据。</p>
+<h2 id="缓存性能">缓存性能<a href="#缓存性能" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>在DM上构建弹性缓存系统面临两大挑战：</p>
+<ol>
+<li><strong>绕过远程CPU的访问阻碍缓存算法执行</strong>：客户端通过远程直接内存访问（RDMA）直接操作数据，导致集中式热度监控失效，且维护缓存数据结构需多次高延迟远程访问。</li>
+<li><strong>资源动态调整影响缓存命中率</strong>：计算资源（客户端并发数）和内存资源（缓存容量）的变化会改变数据访问模式，使得固定缓存算法难以适应动态场景。</li>
+</ol>
+<p>Ditto采用<strong>分布式自适应缓存策略</strong>，通过实时评估多个缓存算法的性能，动态切换至最佳适配算法以提升缓存命中率<sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup>。</p>
+<p><img src="/img/2025/02/image-20250204023336455.png" alt="image-20250204023336455"></p>
+<p>上图展示了 Ditto 的整体架构。Ditto 采用<strong>哈希表</strong>组织内存池中存储的对象。该哈希表保存指向缓存对象地址的指针。遵循现有DM存储系统架构，应用程序运行于计算节点，每个应用程序通过本地子进程托管一个Ditto客户端。每个Ditto客户端在专用核心上运行多线程，应用程序通过本地共享内存与Ditto客户端通信，执行<code>Get</code>和<code>Set</code>操作。在此架构下，应用程序可通过增减分配给Ditto的线程数和CPU核心数自由扩缩计算资源。由于增减CPU核心时无需调整内存池的缓存容量，计算资源调整与缓存数据完全解耦。</p>
+<p>Ditto通过两大核心机制实现DM上的缓存淘汰：</p>
+<ol>
+<li><strong>以客户端为中心的缓存框架</strong>：通过为不同缓存算法生成多组淘汰候选，高效执行多种算法。</li>
+<li><strong>分布式自适应缓存策略</strong>：利用机器学习分析当前数据访问模式特征，选择性能最优的算法淘汰候选。</li>
+</ol>
+<section class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1" role="doc-endnote">
+<p>https://www.usenix.org/conference/fast23/presentation/li-pengfei&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2" role="doc-endnote">
+<p>Jiacheng Shen, Pengfei Zuo, Xuchuan Luo, Yuxin Su, Jiazhen Gu, Hao Feng, Yangfan Zhou, Michael Lyu, “Ditto: An Elastic and Adaptive Memory-Disaggregated Caching System”, Proceedings of the 29th ACM Symposium on Operating Systems Principles (SOSP), 2023.&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</section>
+
+<p style="color:#777;">Last modified on 2025-02-03</p>
+</div>
+<a href="#top"><i class="fa fa-chevron-up" style="font-size: 30px; color: black;"></i></a>
+
+</main>
+
+<footer class="footer">
+  <script type="text/javascript" src="/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/javascript" src="/js/center-img.js"></script>
+
+<script type="text/javascript" src="//rf.revolvermaps.com/0/0/6.js?i=5sz67w4rqwe&amp;m=0&amp;c=ff0000&amp;cr1=ffffff&amp;f=times_new_roman&amp;l=1" async="async"></script>
+
+     <ul class="footer-links">
+      
+       
+       
+       
+       <li><a href="/en/posts/index.xml" type="application/rss+xml" title="RSS feed">
+       Subscribe </a>
+       </li>
+       
+       
+       <li>
+       
+        <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
+       
+        License
+        <i class="fa fa-cc" aria-hidden="true" title="Attribution-NonCommercial-ShareAlike 4.0 International"></i> 
+        </a>
+       </li>
+       
+     </ul>
+     
+	    <span id="busuanzi_container_site_pv"> 本站访问量：<span id="busuanzi_value_site_pv"></span>次</span>&nbsp;
+	    <span id="busuanzi_container_site_uv"> 您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者</span>
+
+		
+     
+</footer>
+
+
+
+
+
