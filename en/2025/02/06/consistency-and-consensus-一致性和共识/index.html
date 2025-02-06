@@ -1,0 +1,218 @@
+<a name="top"></a>
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  	
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Consistency and Consensus | 一致性和共识 - Albert Wang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/font.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega@5.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.17.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.12.2"></script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+
+
+  </head>
+  
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav" >
+      <a href="/" class="nav-logo">
+        <img src="/media/logo.JPG"
+         width="50"
+         height="50"
+         alt="Hugo-ht">
+      </a>
+
+      <ul class="nav-links" >
+       
+       
+       
+       <li><a href="/">Home</a></li>
+       
+       <li><a href="/en/posts/">Blog</a></li>
+       
+       <li><a href="/en/gallery/">Gallery</a></li>
+       
+       <li><a href="/en/project/">Project</a></li>
+       
+       <li><a href="/en/about/">About</a></li>
+       
+       
+      </ul>
+</nav>
+		<script type="text/javascript"
+        async
+        src="https://cdn.bootcss.com/mathjax/2.7.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\[\[','\]\]']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+});
+
+MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<style>
+code.has-jax {
+    font: inherit;
+    font-size: 100%;
+    background: inherit;
+    border: inherit;
+    color: #515151;
+}
+</style>
+      </header>
+
+<main class = "content" role="main">
+<div style="text-align: center">
+
+<h1>Consistency and Consensus | 一致性和共识</h1>
+
+<p>Albert Wang 
+ / 2025-02-06 
+/ 100 Words/has been Read  <span id="busuanzi_value_page_pv"></span>&nbsp;&nbsp;Times
+
+</p>
+
+
+
+<hr/>
+
+
+</div>
+
+<span class="article-toolbar">
+  
+  
+  
+  
+  
+  
+  
+  <a href='https://github.com/root-zren%5cposts%5c2025%5c%e4%b8%80%e8%87%b4%e6%80%a7%e5%92%8c%e5%85%b1%e8%af%86.md'style="font-size: 24px; color: black;" target="_blank"><i class="fa fa-edit" aria-hidden="true" title="Suggest an edit of this page"></i>
+  </a>
+  
+  
+  
+</span>
+
+
+<aside class="toc">
+Table of Contents:
+<nav id="TableOfContents">
+  <ol>
+    <li><a href="#一致性">一致性</a>
+      <ol>
+        <li><a href="#强一致性-strong-consistency">强一致性 (Strong Consistency)</a></li>
+        <li><a href="#弱一致性-weak-consistency">弱一致性 (Weak Consistency)</a></li>
+      </ol>
+    </li>
+    <li><a href="#共识">共识</a></li>
+  </ol>
+</nav>
+</aside>
+
+
+<div class="body-text list-text">
+<p>这篇博客记录一下分布式系统中的几个比较容易让人混淆的概念。</p>
+<h2 id="一致性">一致性<a href="#一致性" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>在分布式系统中，一致性模型用于描述多个副本或节点之间的数据一致性程度。越强的一致性往往意味着越差的处理性能。根据选择一致性的强度不同，分为强一致性和弱一致性。</p>
+<h3 id="强一致性-strong-consistency">强一致性 (Strong Consistency)<a href="#强一致性-strong-consistency" class="header-anchor" ariaLabel="Anchor"> # </a></h3>
+<p>强一致性要求所有操作按全局顺序执行，任何读取操作都能看到最新写入的数据。系统表现得像只有一个数据副本，所有操作按顺序执行。</p>
+<p>想象这样一种场景：用户A向用户B转账100元。</p>
+<p>强一致性要求转账完成后，用户A和用户B的账户余额必须立即更新，且任何查询操作都能看到最新的余额。如果用户B在转账后立即查询余额，一定会看到增加了100元的结果。</p>
+<p>强一致性还分为顺序一致性和线性一致性。</p>
+<ul>
+<li>
+<p><strong>顺序一致性 (Sequential Consistency)</strong>：要求所有操作按某个全局顺序执行，且每个节点的操作顺序与程序顺序一致。不保证实时性，但保证所有节点看到相同的操作顺序。如果两个线程同时对一个共享变量进行操作。</p>
+<p>线程1执行：x = 1，然后x = 2。线程2执行：x = 3，然后读取x的值。顺序一致性要求所有线程看到的操作顺序必须一致。例如，线程2可能看到操作顺序为x = 1 -&gt; x = 3 -&gt; x = 2，但所有线程必须看到相同的顺序。</p>
+</li>
+<li>
+<p><strong>线性一致性 (Linearizability)</strong>：强一致性的特例，要求所有操作按全局顺序执行，且操作实时生效。任何读取操作都能看到之前所有写入的结果。在多个客户端尝试获取同一个锁的场景下，线性一致性要求锁的获取和释放操作必须按真实时间顺序生效。如果客户端A在时间点T1获取了锁，客户端B在时间点T2尝试获取锁（T2 &gt; T1），那么客户端B必须看到锁已被A持有，直到A释放锁。系统表现得像只有一个锁服务，所有操作按真实时间顺序执行。操作按全局顺序执行，且实时生效。</p>
+</li>
+</ul>
+<h3 id="弱一致性-weak-consistency">弱一致性 (Weak Consistency)<a href="#弱一致性-weak-consistency" class="header-anchor" ariaLabel="Anchor"> # </a></h3>
+<p>弱一致性不保证读取操作能看到最新写入的数据，允许数据在一段时间内不一致，但最终会达到一致状态。</p>
+<p>假如用户A发布了一条动态，用户B尝试查看这条动态。弱一致性允许用户B可能不会立即看到用户A的动态，因为系统可能存在延迟，数据还未同步到所有节点。用户B可能需要刷新几次页面，或者等待一段时间才能看到用户A的动态。</p>
+<h2 id="共识">共识<a href="#共识" class="header-anchor" ariaLabel="Anchor"> # </a></h2>
+<p>共识算法是分布式系统中用于确保所有节点就某一状态或决策达成一致的机制。其核心目标是让系统在存在故障或网络延迟的情况下，仍能正常运行并保持一致。</p>
+<p>一致性的概念比共识广泛，一致性指系统在某一时刻所有节点的数据状态相同，强调结果；共识指分布式系统中所有节点就某一状态或决策达成一致的过程，强调过程。</p>
+
+<p style="color:#777;">Last modified on 2025-02-06</p>
+</div>
+<a href="#top"><i class="fa fa-chevron-up" style="font-size: 30px; color: black;"></i></a>
+
+</main>
+
+<footer class="footer">
+  <script type="text/javascript" src="/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/javascript" src="/js/center-img.js"></script>
+
+<script type="text/javascript" src="//rf.revolvermaps.com/0/0/6.js?i=5sz67w4rqwe&amp;m=0&amp;c=ff0000&amp;cr1=ffffff&amp;f=times_new_roman&amp;l=1" async="async"></script>
+
+     <ul class="footer-links">
+      
+       
+       
+       
+       <li><a href="/en/posts/index.xml" type="application/rss+xml" title="RSS feed">
+       Subscribe </a>
+       </li>
+       
+       
+       <li>
+       
+        <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
+       
+        License
+        <i class="fa fa-cc" aria-hidden="true" title="Attribution-NonCommercial-ShareAlike 4.0 International"></i> 
+        </a>
+       </li>
+       
+     </ul>
+     
+	    <span id="busuanzi_container_site_pv"> 本站访问量：<span id="busuanzi_value_site_pv"></span>次</span>&nbsp;
+	    <span id="busuanzi_container_site_uv"> 您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者</span>
+
+		
+     
+</footer>
+
+
+
+
+
