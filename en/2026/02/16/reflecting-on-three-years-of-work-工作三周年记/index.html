@@ -1,0 +1,112 @@
+<a name=top></a><!doctype html>
+<html lang=en-us>
+<head>
+<script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<title>Reflecting on Three Years of Work | 工作三周年记 - Albert Wang</title>
+<link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css>
+<link rel=stylesheet href=/css/style.css>
+<link rel=stylesheet href=/css/font.css>
+<link href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css rel=stylesheet>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/vega@5.17.0></script>
+<script src=https://cdn.jsdelivr.net/npm/vega-lite@4.17.0></script>
+<script src=https://cdn.jsdelivr.net/npm/vega-embed@6.12.2></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</head>
+<body>
+<div class=wrapper>
+<header class=header>
+<nav class=nav>
+<a href=/ class=nav-logo>
+<img src=/media/logo.JPG width=50 height=50 alt=Hugo-ht>
+</a>
+<ul class=nav-links>
+<li><a href=/>Home</a></li>
+<li><a href=/en/posts/>Blog</a></li>
+<li><a href=/en/gallery/>Gallery</a></li>
+<li><a href=/en/project/>Project</a></li>
+<li><a href=/en/about/>About</a></li>
+</ul>
+</nav>
+<script type=text/x-mathjax-config>
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\\[','\\]']],
+    processEscapes: false,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+  },
+  TeX: {
+    equationNumbers: { autoNumber: "AMS" },
+    extensions: ["AMSmath.js", "AMSsymbols.js"]
+  },
+  "HTML-CSS": {
+    linebreaks: { automatic: true, width: "container" }
+  }
+});
+</script>
+<script type=text/javascript async src="https://cdn.bootcss.com/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>MathJax.Hub.Queue(function(){for(var b=MathJax.Hub.getAllJax(),a=0;a<b.length;a+=1)b[a].SourceElement().parentNode.className+=' has-jax'})</script>
+<style>code.has-jax{font:inherit;font-size:100%;background:inherit;border:inherit;color:inherit}</style>
+</header>
+<main class=content role=main>
+<div style=text-align:center>
+<h1>Reflecting on Three Years of Work | 工作三周年记</h1>
+<p>Albert Wang
+/ 2026-02-16
+/ 100 Words/has been Read <span id=busuanzi_value_page_pv></span>&nbsp;&nbsp;Times
+</p>
+<hr>
+</div>
+<span class=article-toolbar>
+<a href=https://github.com/root-zren/posts/2026/%e5%b7%a5%e4%bd%9c%e4%b8%89%e5%91%a8%e5%b9%b4%e8%ae%b0.md style=font-size:24px;color:#000 target=_blank><i class="fa fa-edit" aria-hidden=true title="Suggest an edit of this page"></i>
+</a>
+</span>
+<aside class=toc>
+Table of Contents:
+<nav id=TableOfContents></nav>
+</aside>
+<div class="body-text list-text">
+<p>我毕业已经三年多了，距离上次写总结，也过去了两年。工作一年之后，我慢慢适应了工作的节奏，也开始认真思考下一步的方向。那时候我的想法很明确：走技术深耕的路线。但在当时的团队里，我也逐渐遇到了一些瓶颈，最突出的问题就是资料严重匮乏。</p>
+<p>一方面，我做的内容和硬件强相关，很多代码细节其实是在绕过硬件的一些坑。但团队的人来来去去，这些坑的前因后果已经没有人能说清楚了。后来的人只能带着越来越多的疑问去读代码，读着读着，疑问还是疑问。</p>
+<p>另一方面，我们的代码是在公司一个很大的公共平台上开发的，依赖了很多平台的组件和接口。但这个平台本身也维护了很多年，文档缺失、架构逐渐腐化，成了常态。</p>
+<p>我挺想改变这个状况的，至少让以后的人别那么难受。于是我开始试着搭建文档——从大的架构讲起，先说明整个代码仓是干什么的，再慢慢补充每个分支的细节。那段时间我正好在负责接口问题，有机会接触到其他领域和硬件，也能从别的团队了解到一些技术背景。定位问题的过程中，我会顺手把一些信息记录下来。有时候也会去翻公司的文档库，找最初架构设计的资料，尽量还原当初的设计意图。</p>
+<p>后来我自己还挺满意的，觉得好歹搭出了一个框架。如果有人愿意接着补充，特别是新同事在学习过程中把细节一点点加进去，说不定真的能帮到后面的人。但遗憾的是，差不多两年后我再点进去看，文档几乎没有新增的内容，还是我当初写的那一版。也就是说，这次尝试其实失败了。不过，虽然结果不尽如人意，我至少试过。现在回头看，这件事依然是我觉得在第一个部门做过最有意义的事之一。</p>
+<p>随着在部门待的时间越来越长，我对部门的一些文化也慢慢产生了不太认同的感觉。这些感受也让我开始更认真地思考接下来的发展方向。</p>
+<p>那段时间有个项目比较急，我经常走得很晚。公司有个周三晚上不加班的倡导，有一天周三，我九点多骑车回家。骑到半路，接到了一个电话，电话那头说他们在做云上分布式的 KV 存储，问我有没有兴趣。KV 存储是我一直想做的方向，想了两天后，我就决定转过去。也从此开始了这两年新的生活。</p>
+<p>我很幸运，进了一个能沉淀技术的方向，这两年的技术能力也确实有了不少长进。更幸运的是，我遇到了一个很好的团队，也有很好的领导。刚转过去的时候，我对分布式云存储几乎一窍不通，甚至得去查 LBA、扇区这些最基础的概念。刚开始的压力挺大的，但也挺兴奋——以前只在面试里聊过的数据结构和设计理念，居然就这么直接摆在代码里，触手可及。</p>
+<p>之后就是按部就班做项目。很多项目对我挺有挑战，但也让我学到不少。做完开发后，要和测试团队一起加固，保证上线不出问题。在原来的团队，开发和测试像是两个对立的阵营，经常是开发觉得没问题、测试觉得有问题，来回拉扯。但在云的业务里，大家的目标是一致的：项目别出问题。开发和测试也愿意一起把事情做好，这样的关系让我舒服很多。</p>
+<p>2025 年对公司来说应该挺难的。AI 这么火，公司似乎更想发挥硬件的长处，做“卖铲人”，不太想在大模型上投太多。也有可能确实投了，但方向没踩准。我以前听过老板提过一个想法：用更精炼的行业数据，训练一些能服务特定行业的“小模型”。我理解这有点像机器学习一直做的事——数据处理、特征工程、模型训练，最后学出一个有特定功能的模型。可能是我想得不对，没领会到真正的意思。不过从结果来看，公司确实没有拿得出手的大模型，连自己家的都卷进了舆论风波，到现在也没人能说清怎么回事。</p>
+<p>光 AI 投错方向也还好，最多是不赚钱。但问题是公司一直很稳的基本盘，突然收入大幅下滑。管理层可能有点慌，想勒紧腰带过日子，于是早餐推迟十分钟、晚餐推迟十分钟，让大家多“投入”一点工作，而不是踩点打卡。但如果真这么算，一年也省不了多少时间。不过，时间嘛，就像鲁迅说的，挤一挤总是有的。然后领导层真就挤出来了——如果把台风天本来该放的一天假给省了，广东那么多人，省下来的时间可不少。效果应该也挺符合领导预期的吧。</p>
+<p>公司的艰难还不止于此。就在我慢慢觉得自己入了分布式云存储的门时，突然传来消息：说公司的 AI 不行，是因为云不行。后来又发酵说云一直不赚钱，拖了公司后腿。再后来爆出云上业务造假，包括 CEO 在内的一些领导被罚了。一时间云成了众矢之的——有人说技术最差，有人说态度最差，有人说云的人除了欺上瞒下什么都不会。各种说法铺天盖地。</p>
+<p>可与此同时，我还在按部就班做新项目，身边的同事还是那么友好。我一直觉得我们团队挺高效的——做纯软件，不受硬件周期限制；有完善的 UT 框架，问题能早点发现，迭代也快；有很多技术大牛，能及时指出方案的坑；流程也不重，不用像公司引以为傲的 IPD 那样开一堆评审会。一夜之间好像什么都变了。到今天我也没完全搞明白怎么回事。好在同事开导我：和你有关系的，其实是你所在的团队，其他的都不那么直接。我也就没再固执地找答案。</p>
+<p>我本科毕业就工作了，所以在时间上给了自己挺大的自由度。当时我希望未来三年不受时间和地域的约束，尽量做自己喜欢的事，就当自己读了个研。转眼三年过去了，回头看，我对自己现在的状态还挺满意的，也达到了当初的预期。不过接下来，我也不得不开始考虑更长远的规划。那时候，我也不再是“一人吃饱全家不饿”的状态，决策会受到更多现实因素的制约——家庭、社会关系等等。我可能会越来越瞻前顾后，也不知道这算是一个好的开始，还是坏的开始。</p>
+<p>这可能是我人生的又一个十字路口。但遗憾是，写这些文字的时候，我还没想清楚下一步该怎么走。不过也许也不需要想得太清楚，至少保证自己在必须做决策的时候，还有选择的机会就好。</p>
+<p>这几年，工作占了大头。生活里我也做了一些新尝试——看了不少脱口秀、live house、演唱会，也去了些地方旅游。但这些记忆点往往都挺短暂的。反倒是待在一个阳光还不错的房间里，对着电脑里那些东西，更容易让我放松下来。</p>
+<p>上次总结的时候，我说想学一门乐器。我确实试了，但因为一些原因没能坚持下来。不过这个目标我还不想放弃，以后某个时间，还是会再捡起来的。</p>
+<p style=color:#777>Last modified on 2026-02-16</p>
+</div>
+<a href=#top><i class="fa fa-chevron-up" style=font-size:30px;color:#000></i></a>
+</main>
+<footer class=footer>
+<script type=text/javascript src="//rf.revolvermaps.com/0/0/6.js?i=5sz67w4rqwe&m=0&c=ff0000&cr1=ffffff&f=times_new_roman&l=1" async></script>
+<ul class=footer-links>
+<li><a href=/en/posts/index.xml type=application/rss+xml title="RSS feed">
+Subscribe </a>
+</li>
+<li>
+<a href=http://creativecommons.org/licenses/by-nc-sa/4.0/ target=_blank>
+License
+<i class="fa fa-cc" aria-hidden=true title="Attribution-NonCommercial-ShareAlike 4.0 International"></i>
+</a>
+</li>
+</ul>
+<span id=busuanzi_container_site_pv> 本站访问量：<span id=busuanzi_value_site_pv></span>次</span>&nbsp;
+<span id=busuanzi_container_site_uv> 您是本站第 <span id=busuanzi_value_site_uv></span> 位访问者</span>
+</footer>

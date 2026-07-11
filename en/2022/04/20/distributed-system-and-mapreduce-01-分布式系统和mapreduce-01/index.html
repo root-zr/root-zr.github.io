@@ -1,0 +1,115 @@
+<a name=top></a><!doctype html>
+<html lang=en-us>
+<head>
+<script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<title>Distributed System and MapReduce 01 | 分布式系统和MapReduce 01 - Albert Wang</title>
+<link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css>
+<link rel=stylesheet href=/css/style.css>
+<link rel=stylesheet href=/css/font.css>
+<link href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css rel=stylesheet>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/vega@5.17.0></script>
+<script src=https://cdn.jsdelivr.net/npm/vega-lite@4.17.0></script>
+<script src=https://cdn.jsdelivr.net/npm/vega-embed@6.12.2></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</head>
+<body>
+<div class=wrapper>
+<header class=header>
+<nav class=nav>
+<a href=/ class=nav-logo>
+<img src=/media/logo.JPG width=50 height=50 alt=Hugo-ht>
+</a>
+<ul class=nav-links>
+<li><a href=/>Home</a></li>
+<li><a href=/en/posts/>Blog</a></li>
+<li><a href=/en/gallery/>Gallery</a></li>
+<li><a href=/en/project/>Project</a></li>
+<li><a href=/en/about/>About</a></li>
+</ul>
+</nav>
+<script type=text/x-mathjax-config>
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\\[','\\]']],
+    processEscapes: false,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+  },
+  TeX: {
+    equationNumbers: { autoNumber: "AMS" },
+    extensions: ["AMSmath.js", "AMSsymbols.js"]
+  },
+  "HTML-CSS": {
+    linebreaks: { automatic: true, width: "container" }
+  }
+});
+</script>
+<script type=text/javascript async src="https://cdn.bootcss.com/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>MathJax.Hub.Queue(function(){for(var b=MathJax.Hub.getAllJax(),a=0;a<b.length;a+=1)b[a].SourceElement().parentNode.className+=' has-jax'})</script>
+<style>code.has-jax{font:inherit;font-size:100%;background:inherit;border:inherit;color:inherit}</style>
+</header>
+<main class=content role=main>
+<div style=text-align:center>
+<h1>Distributed System and MapReduce 01 | 分布式系统和MapReduce 01</h1>
+<p>Albert Wang
+/ 2022-04-20
+/ 100 Words/has been Read <span id=busuanzi_value_page_pv></span>&nbsp;&nbsp;Times
+</p>
+<hr>
+</div>
+<span class=article-toolbar>
+<a href=https://github.com/root-zren/posts/2022/%e5%88%86%e5%b8%83%e5%bc%8f%e7%b3%bb%e7%bb%9f%e5%92%8cMapReduce01.md style=font-size:24px;color:#000 target=_blank><i class="fa fa-edit" aria-hidden=true title="Suggest an edit of this page"></i>
+</a>
+</span>
+<aside class=toc>
+Table of Contents:
+<nav id=TableOfContents>
+<ol>
+<li><a href=#mapreduce>MapReduce</a></li>
+</ol>
+</nav>
+</aside>
+<div class="body-text list-text">
+<p>这篇博客主要是学习MIT的公开课6.824<a href=https://www.bilibili.com/video/BV1R7411t71W target=_blank rel="noreferrer noopener">分布式系统</a>
+的学习笔记，在课程一开始老师主要介绍了分布式系统的和MapReduce的基本概念，后续有关于实现一个具体的MapReduce的实验。</p>
+<h2 id=mapreduce>MapReduce<a href=#mapreduce class=header-anchor arialabel=Anchor> # </a></h2>
+<p>MapReduce是谷歌大数据三驾马车中的其中一篇论文，它被提出的目的是用来解决海量网页数据索引和排序之类的问题。它包含Map和Reduce两个过程，以WordCount为例，它的计算过程如下图所示：</p>
+<p><img src=/img/2022/04/mapreduce/1.png alt=image-20220421010250907 loading=lazy>
+</p>
+<p>当我们面临着一个大文件的时候，谷歌的文件系统GFS(Google File System)会把它差分成多个64kb的块，用来做任务分配的master服务器知道它们具体在哪台机器上，然后它会指定work machine去执行Map的操作。加入这些文件块的存放位置和work machine不是同一台机器，那就需要通过网络通信来进行数据交换，可是这样会导致效率下降，所以一般都会将它们放在同一台机器上，work machine只需要做一个文件读取的操作就可以了。Map(k,v)的v指的就是某一个块的全部文字，所以下面只需要将单词拆分开然后变成key,1的形式就可以了。</p>
+<p><img src=/img/2022/04/mapreduce/image-map.png alt=image-20220422122807273 loading=lazy>
+<br>
+图片来源：Google MapReduce论文</p>
+<p>在整个Map的过程中master是不需要去一致盯着每台机器去做运算的，每个work machine会将自己运算的中间结果保存在自己的本地磁盘上。以上图中的INPUT 1为例，它最终会保存（a,1)和(b,1)两个值。</p>
+<p>然后是Reduce的过程，MapReduce worker通过网络收集所有完成了map worker中&lt;key(i), 1>的任务task，从存储在各个Map worker磁盘上收集数据。这里并不要求每一个Map的所有任务都完成，如果只请求(a,1)这个Map过程，只要work machine完成了这一个任务，就可以将结果返回，不用等全部工作完成。Reduce的伪代码可以表示如下：</p>
+<p><img src=/img/2022/04/mapreduce/image-reduce.png alt=image-20220422122943973 loading=lazy>
+<br>
+图片来源：Google MapReduce论文</p>
+<p>它的实现相对简单一点，只是对这些收集到的信息做一个加总的操作，计算出长度就行了。</p>
+<p style=color:#777>Last modified on 2022-04-20</p>
+</div>
+<a href=#top><i class="fa fa-chevron-up" style=font-size:30px;color:#000></i></a>
+</main>
+<footer class=footer>
+<script type=text/javascript src="//rf.revolvermaps.com/0/0/6.js?i=5sz67w4rqwe&m=0&c=ff0000&cr1=ffffff&f=times_new_roman&l=1" async></script>
+<ul class=footer-links>
+<li><a href=/en/posts/index.xml type=application/rss+xml title="RSS feed">
+Subscribe </a>
+</li>
+<li>
+<a href=http://creativecommons.org/licenses/by-nc-sa/4.0/ target=_blank>
+License
+<i class="fa fa-cc" aria-hidden=true title="Attribution-NonCommercial-ShareAlike 4.0 International"></i>
+</a>
+</li>
+</ul>
+<span id=busuanzi_container_site_pv> 本站访问量：<span id=busuanzi_value_site_pv></span>次</span>&nbsp;
+<span id=busuanzi_container_site_uv> 您是本站第 <span id=busuanzi_value_site_uv></span> 位访问者</span>
+</footer>

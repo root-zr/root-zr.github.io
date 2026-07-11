@@ -1,0 +1,498 @@
+<a name=top></a><!doctype html>
+<html lang=en-us>
+<head>
+<script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<title>A Complete Guide to Creating a Voice Conversion Development Environment Using Conda | 使用Conda创建语音转换开发环境的完整指南 - Albert Wang</title>
+<link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css>
+<link rel=stylesheet href=/css/style.css>
+<link rel=stylesheet href=/css/font.css>
+<link href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css rel=stylesheet>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/vega@5.17.0></script>
+<script src=https://cdn.jsdelivr.net/npm/vega-lite@4.17.0></script>
+<script src=https://cdn.jsdelivr.net/npm/vega-embed@6.12.2></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</head>
+<body>
+<div class=wrapper>
+<header class=header>
+<nav class=nav>
+<a href=/ class=nav-logo>
+<img src=/media/logo.JPG width=50 height=50 alt=Hugo-ht>
+</a>
+<ul class=nav-links>
+<li><a href=/>Home</a></li>
+<li><a href=/en/posts/>Blog</a></li>
+<li><a href=/en/gallery/>Gallery</a></li>
+<li><a href=/en/project/>Project</a></li>
+<li><a href=/en/about/>About</a></li>
+</ul>
+</nav>
+<script type=text/x-mathjax-config>
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\\[','\\]']],
+    processEscapes: false,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+  },
+  TeX: {
+    equationNumbers: { autoNumber: "AMS" },
+    extensions: ["AMSmath.js", "AMSsymbols.js"]
+  },
+  "HTML-CSS": {
+    linebreaks: { automatic: true, width: "container" }
+  }
+});
+</script>
+<script type=text/javascript async src="https://cdn.bootcss.com/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>MathJax.Hub.Queue(function(){for(var b=MathJax.Hub.getAllJax(),a=0;a<b.length;a+=1)b[a].SourceElement().parentNode.className+=' has-jax'})</script>
+<style>code.has-jax{font:inherit;font-size:100%;background:inherit;border:inherit;color:inherit}</style>
+</header>
+<main class=content role=main>
+<div style=text-align:center>
+<h1>A Complete Guide to Creating a Voice Conversion Development Environment Using Conda | 使用Conda创建语音转换开发环境的完整指南</h1>
+<p>Albert Wang
+/ 2025-12-28
+/ 800 Words/has been Read <span id=busuanzi_value_page_pv></span>&nbsp;&nbsp;Times
+</p>
+<hr>
+</div>
+<span class=article-toolbar>
+<a href=https://github.com/root-zren/posts/2025/%e4%bd%bf%e7%94%a8Conda%e5%88%9b%e5%bb%ba%e8%af%ad%e9%9f%b3%e8%bd%ac%e6%8d%a2%e5%bc%80%e5%8f%91%e7%8e%af%e5%a2%83%e7%9a%84%e5%ae%8c%e6%95%b4%e6%8c%87%e5%8d%97.md style=font-size:24px;color:#000 target=_blank><i class="fa fa-edit" aria-hidden=true title="Suggest an edit of this page"></i>
+</a>
+</span>
+<aside class=toc>
+Table of Contents:
+<nav id=TableOfContents>
+<ol>
+<li><a href=#概述>概述</a></li>
+<li><a href=#详细命令解析>详细命令解析</a>
+<ol>
+<li><a href=#1-创建新环境>1. 创建新环境</a></li>
+<li><a href=#2-激活新环境>2. 激活新环境</a></li>
+<li><a href=#3-安装jupyter内核支持>3. 安装Jupyter内核支持</a></li>
+<li><a href=#4-将环境注册为jupyter内核>4. 将环境注册为Jupyter内核</a></li>
+</ol>
+</li>
+<li><a href=#安装语音转换专用包>安装语音转换专用包</a>
+<ol>
+<li><a href=#核心音频处理包安装>核心音频处理包安装</a></li>
+<li><a href=#开发工具增强包>开发工具增强包</a></li>
+</ol>
+</li>
+<li><a href=#jupyter-notebook集成>Jupyter Notebook集成</a></li>
+<li><a href=#创建语音转换示例notebook>创建语音转换示例Notebook</a></li>
+</ol>
+</nav>
+</aside>
+<div class="body-text list-text">
+<h2 id=概述>概述<a href=#概述 class=header-anchor arialabel=Anchor> # </a></h2>
+<p>本文将详细介绍如何使用Conda创建一个专门用于语音转换（Voice Conversion）项目的Python开发环境。这些命令组合在一起，为我们搭建了一个包含必要科学计算库，并集成Jupyter Notebook支持的完整开发环境。</p>
+<h2 id=详细命令解析>详细命令解析<a href=#详细命令解析 class=header-anchor arialabel=Anchor> # </a></h2>
+<h3 id=1-创建新环境>1. 创建新环境<a href=#1-创建新环境 class=header-anchor arialabel=Anchor> # </a></h3>
+<pre tabindex=0><code>conda create -n voice_env python=3.10 numpy=1.24 scipy matplotlib pandas -c conda-forge -y
+</code></pre><p><strong>参数解析：</strong></p>
+<ul>
+<li><code>conda create</code>：创建新的虚拟环境</li>
+<li><code>-n voice_env</code>：指定环境名称为<code>voice_env</code></li>
+<li><code>python=3.10</code>：指定Python版本为3.10（平衡了新特性与稳定性）</li>
+<li><code>numpy=1.24</code>：安装NumPy 1.24版本（指定版本确保兼容性）</li>
+<li><code>scipy</code>：安装SciPy库（科学计算核心工具）</li>
+<li><code>matplotlib</code>：安装数据可视化库</li>
+<li><code>pandas</code>：安装数据分析库</li>
+<li><code>-c conda-forge</code>：从conda-forge频道安装（通常有更多、更新的包）</li>
+<li><code>-y</code>：自动确认所有提示（无需手动输入yes）</li>
+</ul>
+<p><strong>环境命名建议：</strong> 使用描述性名称如<code>voice_env</code>有助于识别环境用途，便于多项目管理。</p>
+<h3 id=2-激活新环境>2. 激活新环境<a href=#2-激活新环境 class=header-anchor arialabel=Anchor> # </a></h3>
+<pre tabindex=0><code>conda activate voice_env
+</code></pre><p><strong>作用：</strong></p>
+<ul>
+<li>切换到刚刚创建的<code>voice_env</code>环境</li>
+<li>所有后续安装的命令包都会安装到此环境中</li>
+<li>与系统Python环境隔离，避免版本冲突</li>
+</ul>
+<p><strong>注意：</strong> 在Windows系统上，如果使用PowerShell，可能需要先运行<code>conda init powershell</code>初始化。</p>
+<h3 id=3-安装jupyter内核支持>3. 安装Jupyter内核支持<a href=#3-安装jupyter内核支持 class=header-anchor arialabel=Anchor> # </a></h3>
+<pre tabindex=0><code>conda install ipykernel -y
+</code></pre><p><strong>功能说明：</strong></p>
+<ul>
+<li><code>ipykernel</code>是Jupyter内核的核心组件</li>
+<li>允许Jupyter Notebook/Lab运行此环境中的Python代码</li>
+<li>提供代码执行、调试和交互式开发的能力</li>
+</ul>
+<h3 id=4-将环境注册为jupyter内核>4. 将环境注册为Jupyter内核<a href=#4-将环境注册为jupyter内核 class=header-anchor arialabel=Anchor> # </a></h3>
+<pre tabindex=0><code>python -m ipykernel install --user --name=voice_env --display-name=&quot;Python (Voice Conversion)&quot;
+</code></pre><p><strong>参数详解：</strong></p>
+<ul>
+<li><code>python -m ipykernel install</code>：使用当前环境中的Python注册内核</li>
+<li><code>--user</code>：安装到用户目录，无需管理员权限</li>
+<li><code>--name=voice_env</code>：内核内部标识符</li>
+<li><code>--display-name="Python (Voice Conversion)"</code>：在Jupyter界面中显示的名称</li>
+</ul>
+<p><strong>显示名称的作用：</strong> 在Jupyter的"New"下拉菜单中，会显示"Python (Voice Conversion)"，方便识别。</p>
+<h2 id=安装语音转换专用包>安装语音转换专用包<a href=#安装语音转换专用包 class=header-anchor arialabel=Anchor> # </a></h2>
+<p>在成功创建基础环境后，我们需要安装语音转换项目专用的音频处理和深度学习库。</p>
+<h3 id=核心音频处理包安装>核心音频处理包安装<a href=#核心音频处理包安装 class=header-anchor arialabel=Anchor> # </a></h3>
+<pre tabindex=0><code># 安装音频处理包
+pip install librosa soundfile so-vits-svc-fork
+</code></pre><h4 id=包功能详解>包功能详解：<a href=#包功能详解 class=header-anchor arialabel=Anchor> # </a></h4>
+<ol>
+<li><strong>Librosa</strong>：音频分析专业库
+<ul>
+<li>音频加载和保存（支持多种格式）</li>
+<li>时频分析（STFT、Mel频谱图）</li>
+<li>特征提取（MFCC、色度特征、节拍跟踪）</li>
+<li>音高估计和谐波分析</li>
+</ul>
+</li>
+<li><strong>SoundFile</strong>：高效音频文件I/O
+<ul>
+<li>基于libsndfile，支持WAV、FLAC、OGG等格式</li>
+<li>比librosa自带的音频I/O更高效</li>
+<li>提供低级别的音频数据访问</li>
+</ul>
+</li>
+<li><strong>so-vits-svc-fork</strong>：语音转换深度学习框架
+<ul>
+<li>基于VITS（Variational Inference with adversarial learning for end-to-end Text-to-Speech）的歌声/语音转换系统</li>
+<li>支持实时语音转换</li>
+<li>包含预训练模型和训练工具</li>
+<li>Fork版本通常包含更多功能和改进</li>
+</ul>
+</li>
+</ol>
+<h3 id=开发工具增强包>开发工具增强包<a href=#开发工具增强包 class=header-anchor arialabel=Anchor> # </a></h3>
+<pre tabindex=0><code># 可选：安装其他常用工具
+pip install tqdm rich jupyterlab
+</code></pre><h4 id=开发工具说明>开发工具说明：<a href=#开发工具说明 class=header-anchor arialabel=Anchor> # </a></h4>
+<ol>
+<li><strong>tqdm</strong>：进度条显示</li>
+<li><strong>Rich</strong>：终端富文本输出</li>
+<li><strong>JupyterLab</strong>：下一代Jupyter界面
+<ul>
+<li>模块化界面，可拖拽调整布局</li>
+<li>集成终端、文本编辑器、数据查看器</li>
+<li>支持扩展插件生态系统</li>
+</ul>
+</li>
+</ol>
+<h2 id=jupyter-notebook集成>Jupyter Notebook集成<a href=#jupyter-notebook集成 class=header-anchor arialabel=Anchor> # </a></h2>
+<p>启动Jupyter Notebook</p>
+<pre tabindex=0><code>jupyter notebook
+</code></pre><ol>
+<li><strong>重新启动Jupyter</strong>（如果正在运行）：
+<ul>
+<li>如果Jupyter已经在运行，需要重启服务以识别新内核</li>
+<li>在终端按<code>Ctrl+C</code>停止服务，然后重新启动</li>
+</ul>
+</li>
+<li><strong>创建或打开Notebook</strong>：
+<ul>
+<li>在Jupyter界面点击"New"按钮</li>
+<li>选择"Python (Voice Conversion)&ldquo;内核</li>
+</ul>
+</li>
+<li><strong>手动切换运行中的Notebook内核</strong>：
+<ul>
+<li>在已打开的Notebook中</li>
+<li>点击顶部菜单：<code>Kernel</code> → <code>Change kernel</code></li>
+<li>选择<code>Python (Voice Conversion)</code></li>
+</ul>
+</li>
+<li><strong>验证Notebook环境</strong>：</li>
+</ol>
+<pre tabindex=0><code># 在Notebook单元格中运行
+import sys
+print(f&quot;Python executable: {sys.executable}&quot;)
+print(f&quot;Python version: {sys.version}&quot;)
+
+# 测试导入关键库
+import numpy as np
+import librosa
+import soundfile as sf
+
+print(&quot;\n关键库版本:&quot;)
+print(f&quot;NumPy: {np.__version__}&quot;)
+print(f&quot;Librosa: {librosa.__version__}&quot;)
+
+# 创建简单音频可视化
+import matplotlib.pyplot as plt
+
+# 生成测试信号
+fs = 44100  # 采样率
+t = np.linspace(0, 1, fs)  # 1秒时间轴
+freq = 440  # 频率 (Hz)
+signal = 0.5 * np.sin(2 * np.pi * freq * t)
+
+# 绘制波形
+plt.figure(figsize=(10, 4))
+plt.plot(t[:1000], signal[:1000])  # 只显示前1000个样本
+plt.title('440Hz正弦波测试信号')
+plt.xlabel('时间 (秒)')
+plt.ylabel('振幅')
+plt.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.show()
+</code></pre><p><img src=/img/2025/12/1.png alt=image-20250204022110561 loading=lazy>
+</p>
+<h2 id=创建语音转换示例notebook>创建语音转换示例Notebook<a href=#创建语音转换示例notebook class=header-anchor arialabel=Anchor> # </a></h2>
+<p>以下是完整的示例代码，展示基础音频处理流程。可以讲第一首歌曲演唱者的音色提取出来，转换成第二首歌的音色。</p>
+<pre tabindex=0><code>def voice_conversion(source_path, target_path, output_path):
+    &quot;&quot;&quot;
+    改进的音色转换方法
+    使用频谱转换技术
+    &quot;&quot;&quot;
+    import librosa
+    import numpy as np
+    import soundfile as sf
+    from scipy import signal
+    
+    # 加载音频
+    source_audio, sr1 = librosa.load(source_path, sr=None)
+    target_audio, sr2 = librosa.load(target_path, sr=None)
+    
+    print(f&quot;源音频采样率: {sr1}, 时长: {len(source_audio)/sr1:.2f}秒&quot;)
+    print(f&quot;目标音频采样率: {sr2}, 时长: {len(target_audio)/sr2:.2f}秒&quot;)
+    
+    # 统一采样率
+    target_sr = 22050  # 设置一个标准的采样率
+    if sr1 != target_sr:
+        source_audio = librosa.resample(source_audio, orig_sr=sr1, target_sr=target_sr)
+    if sr2 != target_sr:
+        target_audio = librosa.resample(target_audio, orig_sr=sr2, target_sr=target_sr)
+    
+    # 提取源音频和目标音频的频谱特征
+    def extract_features(audio, sr):
+        # 短时傅里叶变换
+        stft = librosa.stft(audio, n_fft=2048, hop_length=512, win_length=2048)
+        
+        # 幅度谱和相位谱
+        magnitude = np.abs(stft)
+        phase = np.angle(stft)
+        
+        # 梅尔频谱
+        mel_spec = librosa.feature.melspectrogram(S=magnitude**2, sr=sr, n_mels=128)
+        
+        # 频谱包络（近似音色）
+        spec_env = np.mean(magnitude, axis=1)  # 平均频谱包络
+        
+        return {
+            'stft': stft,
+            'magnitude': magnitude,
+            'phase': phase,
+            'mel_spec': mel_spec,
+            'spec_env': spec_env,
+            'audio': audio
+        }
+    
+    print(&quot;提取源音频特征...&quot;)
+    source_features = extract_features(source_audio, target_sr)
+    
+    print(&quot;提取目标音频特征...&quot;)
+    target_features = extract_features(target_audio, target_sr)
+    
+    # 方法1：频谱包络转换
+    def method_spectral_envelope(source_features, target_features):
+        &quot;&quot;&quot;
+        频谱包络转换方法
+        将目标音频的频谱包络调整为源音频的频谱包络
+        &quot;&quot;&quot;
+        # 获取源音频的频谱包络（平均）
+        source_env = source_features['spec_env']
+        target_env = target_features['spec_env']
+        
+        # 计算频谱包络的比例
+        # 避免除零
+        target_env_safe = np.where(target_env &gt; 1e-10, target_env, 1e-10)
+        env_ratio = source_env / target_env_safe
+        
+        # 限制比例范围，避免过度失真
+        env_ratio = np.clip(env_ratio, 0.5, 2.0)
+        
+        # 将比例应用到目标音频的STFT幅度
+        converted_magnitude = target_features['magnitude'].copy()
+        
+        # 对每个频率bin应用包络调整
+        for i in range(len(env_ratio)):
+            converted_magnitude[i, :] *= env_ratio[i]
+        
+        # 保持目标音频的相位
+        converted_stft = converted_magnitude * np.exp(1j * target_features['phase'])
+        
+        # 使用ISTFT重建音频
+        converted_audio = librosa.istft(
+            converted_stft,
+            hop_length=512,
+            win_length=2048,
+            length=len(target_audio)
+        )
+        
+        return converted_audio
+    
+    # 方法2：梅尔频谱转换（更稳定）
+    def method_mel_conversion(source_features, target_features, sr):
+        &quot;&quot;&quot;
+        梅尔频谱转换方法
+        保持目标音频的时域特性，只改变频谱特征
+        &quot;&quot;&quot;
+        # 获取目标音频的梅尔频谱
+        target_mel = librosa.power_to_db(target_features['mel_spec'])
+        
+        # 计算源音频和目标音频的梅尔频谱统计
+        source_mel_mean = np.mean(librosa.power_to_db(source_features['mel_spec']), axis=1)
+        target_mel_mean = np.mean(target_mel, axis=1)
+        
+        # 避免除零
+        target_mel_mean_safe = np.where(target_mel_mean &gt; 1e-10, target_mel_mean, 1e-10)
+        mel_ratio = source_mel_mean / target_mel_mean_safe
+        
+        # 限制范围
+        mel_ratio = np.clip(mel_ratio, 0.7, 1.5)
+        
+        # 创建转换矩阵
+        conversion_matrix = np.tile(mel_ratio[:, np.newaxis], (1, target_mel.shape[1]))
+        
+        # 应用转换
+        converted_mel = target_mel * conversion_matrix
+        
+        # 将梅尔频谱转换回线性频谱
+        converted_mel_power = librosa.db_to_power(converted_mel)
+        
+        # 使用Griffin-Lim算法重建音频
+        # 这是一种相位重建算法
+        n_iter = 50  # 迭代次数，越高效果越好但越慢
+        
+        print(&quot;正在使用Griffin-Lim算法重建音频...&quot;)
+        converted_audio = librosa.feature.inverse.mel_to_audio(
+            converted_mel_power,
+            sr=sr,
+            n_iter=n_iter,
+            n_fft=2048,
+            hop_length=512,
+            win_length=2048
+        )
+        
+        return converted_audio
+    
+    # 方法3：使用源滤波器方法
+    def method_source_filter(source_features, target_features, sr):
+        &quot;&quot;&quot;
+        源-滤波器模型方法
+        将目标音频视为源（声带振动），将源音频视为滤波器（声道形状）
+        &quot;&quot;&quot;
+        # 提取源音频的频谱包络作为滤波器
+        source_env = source_features['spec_env']
+        
+        # 提取目标音频的包络
+        target_env = target_features['spec_env']
+        
+        # 计算滤波器响应
+        # 这实际上是一个频谱整形滤波器
+        filter_response = source_env / (target_env + 1e-10)
+        filter_response = np.clip(filter_response, 0.3, 3.0)
+        
+        # 将滤波器应用到目标音频的STFT
+        converted_magnitude = target_features['magnitude'].copy()
+        
+        # 应用滤波器
+        for i in range(len(filter_response)):
+            converted_magnitude[i, :] *= filter_response[i]
+        
+        # 重建音频
+        converted_stft = converted_magnitude * np.exp(1j * target_features['phase'])
+        
+        converted_audio = librosa.istft(
+            converted_stft,
+            hop_length=512,
+            win_length=2048,
+            length=len(target_audio)
+        )
+        
+        return converted_audio
+    
+    print(&quot;正在进行音色转换...&quot;)
+    
+    # 尝试不同的方法并选择最好的一个
+    try:
+        # 方法1：频谱包络转换
+        print(&quot;尝试方法1: 频谱包络转换...&quot;)
+        result1 = method_spectral_envelope(source_features, target_features)
+        
+        # 方法2：梅尔频谱转换
+        print(&quot;尝试方法2: 梅尔频谱转换...&quot;)
+        result2 = method_mel_conversion(source_features, target_features, target_sr)
+        
+        # 方法3：源滤波器方法
+        print(&quot;尝试方法3: 源滤波器方法...&quot;)
+        result3 = method_source_filter(source_features, target_features, target_sr)
+        
+        # 混合结果以获得更好的效果
+        # 给方法2（梅尔转换）更高的权重，因为它通常更稳定
+        converted_audio = 0.1 * result1[:len(target_audio)] + \
+                          0.7 * result2[:len(target_audio)] + \
+                          0.2 * result3[:len(target_audio)]
+        
+    except Exception as e:
+        print(f&quot;转换过程中出现错误: {e}&quot;)
+        print(&quot;使用回退方法...&quot;)
+        # 简单的回退方法
+        converted_audio = target_audio  # 直接返回目标音频
+    
+    # 归一化音频
+    if len(converted_audio) &gt; 0:
+        max_val = np.max(np.abs(converted_audio))
+        if max_val &gt; 0:
+            converted_audio = converted_audio / max_val * 0.9  # 稍微降低音量避免削波
+    
+    # 确保长度匹配
+    if len(converted_audio) &gt; len(target_audio):
+        converted_audio = converted_audio[:len(target_audio)]
+    else:
+        # 如果转换后的音频较短，用静音填充
+        padding = np.zeros(len(target_audio) - len(converted_audio))
+        converted_audio = np.concatenate([converted_audio, padding])
+    
+    # 保存结果
+    sf.write(output_path, converted_audio, target_sr)
+    print(f&quot;转换完成！结果已保存至：{output_path}&quot;)
+    print(f&quot;输出音频时长: {len(converted_audio)/target_sr:.2f}秒&quot;)
+    
+    return converted_audio
+
+# 使用示例
+if __name__ == &quot;__main__&quot;:
+    # 测试转换
+    voice_conversion(
+        &quot;./audio/a.mp3&quot;,  # 源音频（提供音色）
+        &quot;./audio/b.mp3&quot;,  # 目标音频（保持旋律和内容）
+        &quot;./audio/converted_song_b.wav&quot;   # 输出音频
+    )
+</code></pre>
+<p style=color:#777>Last modified on 2025-12-28</p>
+</div>
+<a href=#top><i class="fa fa-chevron-up" style=font-size:30px;color:#000></i></a>
+</main>
+<footer class=footer>
+<script type=text/javascript src="//rf.revolvermaps.com/0/0/6.js?i=5sz67w4rqwe&m=0&c=ff0000&cr1=ffffff&f=times_new_roman&l=1" async></script>
+<ul class=footer-links>
+<li><a href=/en/posts/index.xml type=application/rss+xml title="RSS feed">
+Subscribe </a>
+</li>
+<li>
+<a href=http://creativecommons.org/licenses/by-nc-sa/4.0/ target=_blank>
+License
+<i class="fa fa-cc" aria-hidden=true title="Attribution-NonCommercial-ShareAlike 4.0 International"></i>
+</a>
+</li>
+</ul>
+<span id=busuanzi_container_site_pv> 本站访问量：<span id=busuanzi_value_site_pv></span>次</span>&nbsp;
+<span id=busuanzi_container_site_uv> 您是本站第 <span id=busuanzi_value_site_uv></span> 位访问者</span>
+</footer>

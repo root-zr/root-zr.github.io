@@ -1,0 +1,267 @@
+<a name=top></a><!doctype html>
+<html lang=en-us>
+<head>
+<script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<title>Binary Search | 二分查找 - Albert Wang</title>
+<link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css>
+<link rel=stylesheet href=/css/style.css>
+<link rel=stylesheet href=/css/font.css>
+<link href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css rel=stylesheet>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/vega@5.17.0></script>
+<script src=https://cdn.jsdelivr.net/npm/vega-lite@4.17.0></script>
+<script src=https://cdn.jsdelivr.net/npm/vega-embed@6.12.2></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</head>
+<body>
+<div class=wrapper>
+<header class=header>
+<nav class=nav>
+<a href=/ class=nav-logo>
+<img src=/media/logo.JPG width=50 height=50 alt=Hugo-ht>
+</a>
+<ul class=nav-links>
+<li><a href=/>Home</a></li>
+<li><a href=/en/posts/>Blog</a></li>
+<li><a href=/en/gallery/>Gallery</a></li>
+<li><a href=/en/project/>Project</a></li>
+<li><a href=/en/about/>About</a></li>
+</ul>
+</nav>
+<script type=text/x-mathjax-config>
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\\[','\\]']],
+    processEscapes: false,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+  },
+  TeX: {
+    equationNumbers: { autoNumber: "AMS" },
+    extensions: ["AMSmath.js", "AMSsymbols.js"]
+  },
+  "HTML-CSS": {
+    linebreaks: { automatic: true, width: "container" }
+  }
+});
+</script>
+<script type=text/javascript async src="https://cdn.bootcss.com/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>MathJax.Hub.Queue(function(){for(var b=MathJax.Hub.getAllJax(),a=0;a<b.length;a+=1)b[a].SourceElement().parentNode.className+=' has-jax'})</script>
+<style>code.has-jax{font:inherit;font-size:100%;background:inherit;border:inherit;color:inherit}</style>
+</header>
+<main class=content role=main>
+<div style=text-align:center>
+<h1>Binary Search | 二分查找</h1>
+<p>Albert Wang
+/ 2026-03-15
+/ 600 Words/has been Read <span id=busuanzi_value_page_pv></span>&nbsp;&nbsp;Times
+</p>
+<hr>
+</div>
+<span class=article-toolbar>
+<a href=https://github.com/root-zren/posts/2026/%e4%ba%8c%e5%88%86%e6%9f%a5%e6%89%be.md style=font-size:24px;color:#000 target=_blank><i class="fa fa-edit" aria-hidden=true title="Suggest an edit of this page"></i>
+</a>
+</span>
+<aside class=toc>
+Table of Contents:
+<nav id=TableOfContents>
+<ol>
+<li><a href=#闭区间写法--left-right>闭区间写法 [left, right]</a></li>
+<li><a href=#左闭右开区间写法--left-right>左闭右开区间写法 [left, right)</a></li>
+<li><a href=#左开右闭区间写法--left-right>左开右闭区间写法 (left, right]</a></li>
+<li><a href=#开区间写法--left-right>开区间写法 (left, right)</a></li>
+<li><a href=#总结与对比>总结与对比</a></li>
+</ol>
+</nav>
+</aside>
+<div class="body-text list-text">
+<p>二分查找的边界条件之所以容易让人困惑，是因为<strong>循环的终止条件</strong>、<strong>搜索区间的定义</strong>以及<strong>左右边界的更新方式</strong>三者必须严格保持一致。如果其中一个地方搞错了，就会导致死循环或者漏查元素。</p>
+<p>在开始之前，请记住一个原则：<strong>区间不变性</strong>。
+也就是说，你定义的 [left, right] 或者 [left, right)，在每一轮循环开始的时候，都要保证目标值（如果存在）一定在这个范围内。边界更新的目的，就是根据中间值的比较结果，<strong>缩小区间但保持这个性质</strong>。</p>
+<h2 id=闭区间写法--left-right>闭区间写法 [left, right]<a href=#闭区间写法--left-right class=header-anchor arialabel=Anchor> # </a></h2>
+<p>这是最直观的写法。</p>
+<ul>
+<li><strong>区间定义</strong>：left 和 right 都是有效的数组下标，即搜索范围包含两端。</li>
+<li><strong>循环条件</strong>：left &lt;= right。因为当 left == right 时，区间 [left, right]内还有一个元素，需要继续查找。</li>
+<li><strong>右边界更新</strong>：right = mid - 1。因为 mid 已经检查过了，且比目标值大（假设场景），所以新的右边界应该是 mid 前面的那个位置。</li>
+<li><strong>左边界更新</strong>：left = mid + 1。同理，mid 已经检查过，新的左边界是 mid 后面的位置。</li>
+</ul>
+<pre tabindex=0><code>def binary_search_closed(nums, target):
+   if not nums:
+       return -1
+   
+   left, right = 0, len(nums) - 1
+   
+   while left &lt;= right:  # 注意是 &lt;=
+       mid = left + (right - left) // 2  # 防止溢出
+       if nums[mid] == target:
+           return mid
+       elif nums[mid] &lt; target:
+           left = mid + 1  # mid 在左边，排除它
+       else:
+           right = mid - 1 # mid 在右边，排除它
+           
+   return -1
+</code></pre><h2 id=左闭右开区间写法--left-right>左闭右开区间写法 [left, right)<a href=#左闭右开区间写法--left-right class=header-anchor arialabel=Anchor> # </a></h2>
+<p>这是 C++ STL 标准库中常用的写法，也是很多算法题解中常见的风格。</p>
+<ul>
+<li><strong>区间定义</strong>： left 是有效的下标， right 是<strong>无效</strong>的下标（即搜索范围不包含 right ）。</li>
+<li><strong>循环条件</strong>： left &lt; right 。因为当 left == right 时，区间 [left, right) 已经为空，没有元素了。</li>
+<li><strong>右边界更新</strong>： right = mid 。因为当前区间不包含 right ，所以将 right 设置为 mid ，相当于把新搜索区间设置为 [left, mid) ，正好排除了已经检查过的 mid 。</li>
+<li><strong>左边界更新</strong>： left = mid + 1 。因为 left 是包含的，要排除 mid ，就得从 mid + 1 开始。</li>
+</ul>
+<pre tabindex=0><code>def binary_search_left_closed(nums, target):
+    if not nums:
+        return -1
+    
+    left, right = 0, len(nums)  # 注意 right 是 len(nums)，不包含
+    
+    while left &lt; right:  # 注意是 &lt;
+        mid = left + (right - left) // 2
+        if nums[mid] == target:
+            return mid
+        elif nums[mid] &lt; target:
+            left = mid + 1   # 进入区间 [mid+1, right)
+        else:
+            right = mid      # 进入区间 [left, mid)
+            
+    return -1
+</code></pre><h2 id=左开右闭区间写法--left-right>左开右闭区间写法 (left, right]<a href=#左开右闭区间写法--left-right class=header-anchor arialabel=Anchor> # </a></h2>
+<p>这种写法相对少见，主要为了对称性理解。由于数组下标从 0 开始，左开区间需要处理 -1 这个边界。</p>
+<ul>
+<li><strong>区间定义</strong>： left 是无效下标（不包含）， right 是有效下标（包含）。</li>
+<li><strong>初始化</strong>： left = -1 ， right = len(nums) - 1 。</li>
+<li><strong>循环条件</strong>： left &lt; right 。因为当 left + 1 == right 时，区间 (left, right] 内还有一个元素（即 right 本身），所以不能取等号。</li>
+<li><strong>右边界更新</strong>： right = mid - 1 。因为 mid 被检查过，且右区间是闭的，所以新右边界要跳过 mid 。</li>
+<li><strong>左边界更新</strong>： left = mid 。因为左区间是开的，将 left 更新为 mid ，相当于新的区间不包含旧的 left ，但包含 mid 吗？等等，这里容易混淆，我们需要仔细推演。<strong>实际上，这种写法为了保证区间不变性，更新规则与闭区间相反</strong></li>
+</ul>
+<pre tabindex=0><code>def binary_search_right_closed(nums, target):
+    if not nums:
+        return -1
+    
+    left, right = -1, len(nums) - 1  # 左开右闭 (left, right]
+    
+    while left &lt; right:
+        # 因为左开，为了确保 mid 落在有效区间内，通常需要向上取整
+        # 否则可能陷入死循环
+        mid = left + (right - left + 1) // 2  
+        
+        if nums[mid] == target:
+            return mid
+        elif nums[mid] &lt; target:
+            left = mid      # target 在右边，更新左边界为 mid (开区间)
+        else:
+            right = mid - 1 # target 在左边，更新右边界为 mid-1 (闭区间)
+            
+    return -1
+</code></pre><p><strong>为什么 mid 要向上取整？</strong>
+因为在左开右闭的写法中，如果只剩两个元素（例如 left = 0 , right = 1 ，实际指向索引1），向下取整得到 mid = 0 。如果 nums[0] &lt; target ，我们会执行 left = mid = 0 ，区间仍然是 (0, 1] ，导致死循环。向上取整得到 mid = 1 ，就能避免这个问题。</p>
+<h2 id=开区间写法--left-right>开区间写法 (left, right)<a href=#开区间写法--left-right class=header-anchor arialabel=Anchor> # </a></h2>
+<p>这种写法极端情况更多，主要用于理论探讨，实际工程中很少使用。</p>
+<ul>
+<li><strong>区间定义</strong>： left 和 right 都是无效下标。</li>
+<li><strong>初始化</strong>： left = -1 ， right = len(nums) 。</li>
+<li><strong>循环条件</strong>： left + 1 &lt; right 。表示区间内至少有一个元素时继续循环。</li>
+<li><strong>边界更新</strong>：
+<ul>
+<li>left = mid (排除 mid 左侧)</li>
+<li>right = mid (排除 mid 右侧)</li>
+</ul>
+</li>
+</ul>
+<pre tabindex=0><code>def binary_search_open(nums, target):
+    if not nums:
+        return -1
+        
+    left, right = -1, len(nums)  # 开区间 (left, right)
+    
+    while left + 1 &lt; right:
+        mid = left + (right - left) // 2
+        if nums[mid] == target:
+            return mid
+        elif nums[mid] &lt; target:
+            left = mid   # 进入区间 (mid, right)
+        else:
+            right = mid  # 进入区间 (left, mid)
+            
+    return -1
+</code></pre><h2 id=总结与对比>总结与对比<a href=#总结与对比 class=header-anchor arialabel=Anchor> # </a></h2>
+<table>
+<thead>
+<tr>
+<th style=text-align:left>区间类型</th>
+<th style=text-align:left>区间表示</th>
+<th style=text-align:left>初始化</th>
+<th style=text-align:left>循环条件</th>
+<th style=text-align:left>左边界更新</th>
+<th style=text-align:left>右边界更新</th>
+<th style=text-align:left>中间值取法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style=text-align:left><strong>闭区间</strong></td>
+<td style=text-align:left>[left, right]</td>
+<td style=text-align:left>0, len-1</td>
+<td style=text-align:left>left &lt;= right</td>
+<td style=text-align:left>left = mid + 1</td>
+<td style=text-align:left>right = mid - 1</td>
+<td style=text-align:left>向下取整</td>
+</tr>
+<tr>
+<td style=text-align:left><strong>左闭右开</strong></td>
+<td style=text-align:left>[left, right)</td>
+<td style=text-align:left>0, len</td>
+<td style=text-align:left>left &lt; right</td>
+<td style=text-align:left>left = mid + 1</td>
+<td style=text-align:left>right = mid</td>
+<td style=text-align:left>向下取整</td>
+</tr>
+<tr>
+<td style=text-align:left><strong>左开右闭</strong></td>
+<td style=text-align:left>(left, right]</td>
+<td style=text-align:left>-1, len-1</td>
+<td style=text-align:left>left &lt; right</td>
+<td style=text-align:left>left = mid</td>
+<td style=text-align:left>right = mid - 1</td>
+<td style=text-align:left><strong>向上取整</strong></td>
+</tr>
+<tr>
+<td style=text-align:left><strong>开区间</strong></td>
+<td style=text-align:left>(left, right)</td>
+<td style=text-align:left>-1, len</td>
+<td style=text-align:left>left + 1 &lt; right</td>
+<td style=text-align:left>left = mid</td>
+<td style=text-align:left>right = mid</td>
+<td style=text-align:left>向下取整</td>
+</tr>
+</tbody>
+</table>
+<p><strong>为什么边界难判断？</strong>
+因为只要记住一条原则，就可以推导出所有写法：<strong>确保每次循环后，搜索区间在缩小的同时，仍然覆盖所有可能包含目标值的元素，并且不会重复检查已排除的元素。</strong> 如果你忘了这个原则，只死记硬背代码，就很容易出错。</p>
+<p style=color:#777>Last modified on 2026-03-15</p>
+</div>
+<a href=#top><i class="fa fa-chevron-up" style=font-size:30px;color:#000></i></a>
+</main>
+<footer class=footer>
+<script type=text/javascript src="//rf.revolvermaps.com/0/0/6.js?i=5sz67w4rqwe&m=0&c=ff0000&cr1=ffffff&f=times_new_roman&l=1" async></script>
+<ul class=footer-links>
+<li><a href=/en/posts/index.xml type=application/rss+xml title="RSS feed">
+Subscribe </a>
+</li>
+<li>
+<a href=http://creativecommons.org/licenses/by-nc-sa/4.0/ target=_blank>
+License
+<i class="fa fa-cc" aria-hidden=true title="Attribution-NonCommercial-ShareAlike 4.0 International"></i>
+</a>
+</li>
+</ul>
+<span id=busuanzi_container_site_pv> 本站访问量：<span id=busuanzi_value_site_pv></span>次</span>&nbsp;
+<span id=busuanzi_container_site_uv> 您是本站第 <span id=busuanzi_value_site_uv></span> 位访问者</span>
+</footer>

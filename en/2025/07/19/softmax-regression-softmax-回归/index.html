@@ -1,0 +1,396 @@
+<a name=top></a><!doctype html>
+<html lang=en-us>
+<head>
+<script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<title>Softmax Regression ｜ Softmax 回归 - Albert Wang</title>
+<link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css>
+<link rel=stylesheet href=/css/style.css>
+<link rel=stylesheet href=/css/font.css>
+<link href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css rel=stylesheet>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/vega@5.17.0></script>
+<script src=https://cdn.jsdelivr.net/npm/vega-lite@4.17.0></script>
+<script src=https://cdn.jsdelivr.net/npm/vega-embed@6.12.2></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</head>
+<body>
+<div class=wrapper>
+<header class=header>
+<nav class=nav>
+<a href=/ class=nav-logo>
+<img src=/media/logo.JPG width=50 height=50 alt=Hugo-ht>
+</a>
+<ul class=nav-links>
+<li><a href=/>Home</a></li>
+<li><a href=/en/posts/>Blog</a></li>
+<li><a href=/en/gallery/>Gallery</a></li>
+<li><a href=/en/project/>Project</a></li>
+<li><a href=/en/about/>About</a></li>
+</ul>
+</nav>
+<script type=text/x-mathjax-config>
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\\[','\\]']],
+    processEscapes: false,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+  },
+  TeX: {
+    equationNumbers: { autoNumber: "AMS" },
+    extensions: ["AMSmath.js", "AMSsymbols.js"]
+  },
+  "HTML-CSS": {
+    linebreaks: { automatic: true, width: "container" }
+  }
+});
+</script>
+<script type=text/javascript async src="https://cdn.bootcss.com/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>MathJax.Hub.Queue(function(){for(var b=MathJax.Hub.getAllJax(),a=0;a<b.length;a+=1)b[a].SourceElement().parentNode.className+=' has-jax'})</script>
+<style>code.has-jax{font:inherit;font-size:100%;background:inherit;border:inherit;color:inherit}</style>
+</header>
+<main class=content role=main>
+<div style=text-align:center>
+<h1>Softmax Regression ｜ Softmax 回归</h1>
+<p>Albert Wang
+/ 2025-07-19
+/ 900 Words/has been Read <span id=busuanzi_value_page_pv></span>&nbsp;&nbsp;Times
+</p>
+<hr>
+</div>
+<span class=article-toolbar>
+<a href=https://github.com/root-zren/posts/2025/softmax%e5%9b%9e%e5%bd%92.md style=font-size:24px;color:#000 target=_blank><i class="fa fa-edit" aria-hidden=true title="Suggest an edit of this page"></i>
+</a>
+</span>
+<aside class=toc>
+Table of Contents:
+<nav id=TableOfContents>
+<ol>
+<li><a href=#softmax-定义>Softmax 定义</a></li>
+<li><a href=#softmax的从零开始实现>softmax的从零开始实现</a></li>
+<li><a href=#softmax的简洁实现><strong>Softmax的简洁实现</strong></a></li>
+</ol>
+</nav>
+</aside>
+<div class="body-text list-text">
+<h2 id=softmax-定义>Softmax 定义<a href=#softmax-定义 class=header-anchor arialabel=Anchor> # </a></h2>
+<p>Softmax 回归虽然名字叫回归，单实际上以一个分类模型。回归是估计一个连续值，对于神经网络来说，它的输出是一个神经元，而分类是预测一个离散的类别，输出是一组向量，这组向量只有一个项是 1，其余项都为 0. 下面是 softmax 函数的定义
+$$
+\hat{\mathbf{y}} = softmax(\mathbf{o})
+$$
+，其中 o 表示输出的一组向量，oi 就是其中一个表示概率的分类。这里的 softmax 表示对输出的向量进行施加一个 softmax 作用，具体的操作如下
+$$
+\begin{align*}
+\hat{\mathbf{y}}_i = \frac{e^{o_i}}{\sum {e^{o_k}}}
+\end{align*}
+$$
+这里的意思是对于最终估计项 yi 来说，它的值可以通过对第 i 项的输出 oi 做指数运算，再除以输出项每一项做指数运算的和。因为做了指数化，所以保证每一项都是非负的。</p>
+<p>softmax 衡量预测精度的损失函数采用交叉熵损失函数，它的定义如下
+$$
+L(\mathbf{y}, \hat{\mathbf{y}}) = -\sum_{k=1}^K y_k \log \hat{y}_k = -ylog\hat{y}_y
+$$
+，因为真实的标签中只有一项是 1，所以它就是真实项预测值的概率，这一项的概率越大，值越接近于 0。</p>
+<p>它的<strong>梯度是真实概率和预测概率的区别</strong>，下面是关于梯度的推导，
+$$
+l(\mathbf{y}, \hat{\mathbf{y}}) = - \sum_i y_i \log \hat{y}_i
+$$</p>
+<p>$$
+= - \sum_i y_i \log \left( \frac{\exp(o_i)}{\sum_j \exp(o_j)} \right)
+$$</p>
+<p>$$
+= - \sum_i y_i \left( o_i - \log \left( \sum_j \exp(o_j) \right) \right)
+$$</p>
+<p>$$
+= - \sum_i y_i o_i + \sum_i y_i \log \left( \sum_j \exp(o_j) \right)
+$$</p>
+<p>$$
+= - \sum_i y_i o_i + \log \left( \sum_j \exp(o_j) \right)
+$$</p>
+<p>$$
+\frac{\partial J}{\partial \mathbf{o}_i} = -y_i + \left( \frac{\exp(o_i)}{\sum_j \exp(o_j)} \right) = softmax(\mathbf{o_i}) - y_i
+$$</p>
+<h2 id=softmax的从零开始实现>softmax的从零开始实现<a href=#softmax的从零开始实现 class=header-anchor arialabel=Anchor> # </a></h2>
+<p>在开始之前我们首先需要导入一些依赖的库</p>
+<pre tabindex=0><code>%matplotlib inline
+import torch
+import torchvision
+from torch.utils import data
+from torchvision import transforms
+from matplotlib import pyplot as plt
+from IPython import display
+from matplotlib_inline import backend_inline
+backend_inline.set_matplotlib_formats('svg')
+</code></pre><p>数据集采用公开数据集 FashionMNIST，它是一堆物体的图像数据集，如下图所示，</p>
+<p><img src=/img/2025/07/05.png alt=image-20240309030246676 loading=lazy>
+</p>
+<p>这个数据集一共有十类标签，都是和衣服相关的数据。其中每张图片是 (1，28，28) 的规格，都是黑白的图片。上面显示的图片中有颜色是因为我使用 matplotlib 的 imshow 函数显示时，默认会使用一个颜色映射（colormap）来将灰度值映射为彩色。</p>
+<p>然后定义一个读取数据的函数，batch_size 表示一批的个数，resize 可以使得图片变得更大。数据本身是放在 pytorch 官网的，可以直接通过官方提供的 api 下载下来，</p>
+<pre tabindex=0><code>def load_data_fashion_mnist(batch_size, resize=None):  
+    &quot;&quot;&quot;下载Fashion-MNIST数据集，然后将其加载到内存中。&quot;&quot;&quot;
+    trans = [transforms.ToTensor()]
+    if resize:
+        trans.insert(0, transforms.Resize(resize))
+    trans = transforms.Compose(trans)
+    mnist_train = torchvision.datasets.FashionMNIST(root=&quot;../data&quot;,
+                                                    train=True,
+                                                    transform=trans,
+                                                    download=True)
+    mnist_test = torchvision.datasets.FashionMNIST(root=&quot;../data&quot;,
+                                                   train=False,
+                                                   transform=trans,
+                                                   download=True)
+    return (data.DataLoader(mnist_train, batch_size, shuffle=True,
+                            num_workers=4),
+            data.DataLoader(mnist_test, batch_size, shuffle=False,
+                            num_workers=4))
+</code></pre><p>下一步定义模型和损失函数。首先定义输入的维度是 784，视为28*28=784的向量，需要把原来的三维图像数据拉平。这里忽略拉平之后可能会造成空间上信息的损耗。由于数据集有10个类别，所以网络输出维度是10。其余函数的实现都和模型定义一致。</p>
+<pre tabindex=0><code>num_inputs = 784
+num_outputs = 10
+
+W = torch.normal(0, 0.01, size=(num_inputs, num_outputs), requires_grad=True)
+b = torch.zeros(num_outputs, requires_grad=True)
+
+def softmax(X):
+    X_exp = torch.exp(X)
+    partition = X_exp.sum(1, keepdim=True)
+    return X_exp / partition
+
+X = torch.normal(0, 1, (2, 5))
+X_prob = softmax(X)
+X_prob, X_prob.sum(1)
+
+def net(X):
+    return softmax(torch.matmul(X.reshape((-1, W.shape[0])), W) + b)
+
+def cross_entropy(y_hat, y):
+    return -torch.log(y_hat[range(len(y_hat)), y])
+
+</code></pre><p>再定义预测模型精度的函数，accuracy 函数是对估计的 y 和实际的 y 进行比较。因为真实的 y 是一组向量，有多少个 y 就应该有多少个带标签的 y_hat，同时 y_hat 本身输出是一组向量，所以这个时候 y_hat 的维度可能是个 2 维的张量，需要把它里面值最大的参数对应的下标拿出来作为预测的标签。这样 y_hat 和 y 的结构都变成一样了，然后再对向量里逐个元素进行比较，最后把类型一致的数累加起来，就可以得到预测正确的数量。</p>
+<p>在 evaluate_accuracy 函数中 net.eval() 操作可以把模型设为评估态，不会再进行梯度的计算，因为我们是在模型评估的时候采用，操作对象是验证数据集。data_iter 表示每一批的样本，首先调用 net 进行训练，然后用 accuracy 得到预测对的数据个数，再调用累加器对预测对的数据个数和样本总数进行累加。</p>
+<pre tabindex=0><code>def accuracy(y_hat, y):  
+    &quot;&quot;&quot;计算预测正确的数量。&quot;&quot;&quot;
+    if len(y_hat.shape) &gt; 1 and y_hat.shape[1] &gt; 1:
+        y_hat = y_hat.argmax(axis=1)
+    cmp = y_hat.type(y.dtype) == y
+    return float(cmp.type(y.dtype).sum())
+
+class Accumulator:  
+    &quot;&quot;&quot;在`n`个变量上累加。&quot;&quot;&quot;
+    def __init__(self, n):
+        self.data = [0.0] * n
+
+    def add(self, *args):
+        self.data = [a + float(b) for a, b in zip(self.data, args)]
+
+    def reset(self):
+        self.data = [0.0] * len(self.data)
+
+    def __getitem__(self, idx):
+        return self.data[idx]
+
+def evaluate_accuracy(net, data_iter):  
+    &quot;&quot;&quot;计算在指定数据集上模型的精度。&quot;&quot;&quot;
+    if isinstance(net, torch.nn.Module):
+        net.eval()
+    metric = Accumulator(2)
+    for X, y in data_iter:
+        metric.add(accuracy(net(X), y), y.numel())
+    return metric[0] / metric[1]
+</code></pre><p>训练的函数定义如下，这里的累加器增加了对于损失的累加，方便后续作图。如果是采用 PyTorch 进行训练，在上面训练结束之后都会把梯度设成 0，防止每次训练出现耦合。</p>
+<pre tabindex=0><code>def train_epoch(net, train_iter, loss, updater):  
+    if isinstance(net, torch.nn.Module):
+        net.train()
+    metric = Accumulator(3)
+    for X, y in train_iter:
+        y_hat = net(X)
+        l = loss(y_hat, y)
+        if isinstance(updater, torch.optim.Optimizer):
+            updater.zero_grad()
+            l.backward()
+            updater.step()
+            metric.add(
+                float(l) * len(y), accuracy(y_hat, y),
+                y.size().numel())
+        else:
+            l.sum().backward()
+            updater(X.shape[0])
+            metric.add(float(l.sum()), accuracy(y_hat, y), y.numel())
+    return metric[0] / metric[2], metric[1] / metric[2]
+</code></pre><p>下面是一个可以实时显示模型训练效果的库，方便在模型训练的过程中把精度和误差实时展示出来。</p>
+<pre tabindex=0><code>def set_axes(axes, xlabel, ylabel, xlim, ylim, xscale, yscale, legend):
+    &quot;&quot;&quot;设置matplotlib的轴
+
+    Defined in :numref:`sec_calculus`&quot;&quot;&quot;
+    axes.set_xlabel(xlabel)
+    axes.set_ylabel(ylabel)
+    axes.set_xscale(xscale)
+    axes.set_yscale(yscale)
+    axes.set_xlim(xlim)
+    axes.set_ylim(ylim)
+    if legend:
+        axes.legend(legend)
+    axes.grid()
+
+class Animator:
+    &quot;&quot;&quot;在动画中绘制数据（支持动态更新）&quot;&quot;&quot;
+    def __init__(self, xlabel=None, ylabel=None, legend=None, xlim=None,
+                 ylim=None, xscale='linear', yscale='linear',
+                 fmts=('-', 'm--', 'g-.', 'r:'), nrows=1, ncols=1,
+                 figsize=(3.5, 2.5)):
+        # 启用交互模式
+        plt.ion()
+        backend_inline.set_matplotlib_formats('svg')
+        
+        # 初始化图形
+        self.fig, self.axes = plt.subplots(nrows, ncols, figsize=figsize)
+        if nrows * ncols == 1:
+            self.axes = [self.axes]
+            
+        # 配置坐标轴
+        self.config_axes = lambda: set_axes(
+            self.axes[0], xlabel, ylabel, xlim, ylim, xscale, yscale, legend)
+        
+        # 初始化数据存储
+        self.X, self.Y, self.fmts = None, None, fmts
+        self.lines = []  # 存储线条对象
+
+    def add(self, x, y):
+        # 数据标准化
+        if not hasattr(y, &quot;__len__&quot;):
+            y = [y]
+        n = len(y)
+        if not hasattr(x, &quot;__len__&quot;):
+            x = [x] * n
+            
+        # 初始化数据存储
+        if not self.X:
+            self.X = [[] for _ in range(n)]
+        if not self.Y:
+            self.Y = [[] for _ in range(n)]
+            
+        # 添加数据
+        for i, (a, b) in enumerate(zip(x, y)):
+            if a is not None and b is not None:
+                self.X[i].append(a)
+                self.Y[i].append(b)
+                
+        # 首次绘制
+        if not self.lines:
+            self.lines = []
+            for i in range(n):
+                line, = self.axes[0].plot(
+                    self.X[i], self.Y[i], self.fmts[i])
+                self.lines.append(line)
+            self.config_axes()
+        # 更新已有线条
+        else:
+            for i, line in enumerate(self.lines):
+                line.set_data(self.X[i], self.Y[i])
+                
+        # 调整坐标轴范围
+        self.axes[0].relim()
+        self.axes[0].autoscale_view()
+        
+        # 刷新显示
+        display.display(self.fig)
+        display.clear_output(wait=True)
+        plt.pause(0.1)  # 短暂暂停确保更新
+
+    def close(self):
+        plt.ioff()
+        plt.close(self.fig)
+</code></pre><p>最后定义训练函数，采用随机梯度下降连续训练 100 次</p>
+<pre tabindex=0><code>def train(net, train_iter, test_iter, loss, num_epochs, updater):  
+    animator = Animator(xlabel='epoch', xlim=[1, num_epochs], ylim=[0.3, 0.9],
+                        legend=['train loss', 'train acc', 'test acc'])
+    for epoch in range(num_epochs):
+        train_metrics = train_epoch(net, train_iter, loss, updater)
+        test_acc = evaluate_accuracy(net, test_iter)
+        animator.add(epoch + 1, train_metrics + (test_acc,))
+    animator.close()
+    train_loss, train_acc = train_metrics
+    assert train_loss &lt; 0.5, train_loss
+    assert train_acc &lt;= 1 and train_acc &gt; 0.7, train_acc
+    assert test_acc &lt;= 1 and test_acc &gt; 0.7, test_acc
+
+num_epochs = 100
+lr = 0.1
+
+def sgd(params, lr, batch_size):
+    with torch.no_grad():
+        for param in params:
+            param -= lr * param.grad / batch_size
+            param.grad.zero_()
+
+def updater(batch_size):
+    return sgd([W, b], lr, batch_size)
+
+train_iter, test_iter = load_data_fashion_mnist(32, resize=64)
+train(net, train_iter, test_iter, cross_entropy, num_epochs, updater)
+</code></pre><p>显示的效果如下图，</p>
+<p><img src=/img/2025/07/07.png alt=image-20240309030246676 loading=lazy>
+</p>
+<p>可以通过下面的预测函数查看训练的效果，因为每个 batch 是按照 32 的大小来读的，所以只需要拿出第一批迭代的数据，用这批数据的前六个来进行预测。</p>
+<pre tabindex=0><code>def get_fashion_mnist_labels(labels):  
+    &quot;&quot;&quot;返回Fashion-MNIST数据集的文本标签。&quot;&quot;&quot;
+    text_labels = [
+        't-shirt', 'trouser', 'pullover', 'dress', 'coat', 'sandal', 'shirt',
+        'sneaker', 'bag', 'ankle boot']
+    return [text_labels[int(i)] for i in labels]
+
+def predict(net, test_iter, n=6):  
+    for X, y in test_iter:
+        break
+    trues = get_fashion_mnist_labels(y)
+    preds = get_fashion_mnist_labels(net(X).argmax(axis=1))
+    titles = [true + '\n' + pred for true, pred in zip(trues, preds)]
+    show_images(X[0:n].reshape((n, 28, 28)), 1, n, titles=titles[0:n])
+
+predict(net, test_iter)
+</code></pre><p>从下图中可以看到预测的结果和实际结果都是一致的。</p>
+<p><img src=/img/2025/07/06.png alt=image-20240309030246676 loading=lazy>
+</p>
+<h2 id=softmax的简洁实现><strong>Softmax的简洁实现</strong><a href=#softmax的简洁实现 class=header-anchor arialabel=Anchor> # </a></h2>
+<p>下面主要根据 pytorch 中已有的库来简化线性回归的实现。首先调用框架中现有的API来读取数据，只需要导入 data 的库</p>
+<pre tabindex=0><code>net = nn.Sequential(nn.Flatten(), nn.Linear(784, 10))
+
+def init_weights(m):
+    if type(m) == nn.Linear:
+        nn.init.normal_(m.weight, std=0.01)
+
+net.apply(init_weights);
+
+loss = nn.CrossEntropyLoss()
+trainer = torch.optim.SGD(net.parameters(), lr=0.1)
+
+num_epochs = 10
+train(net, train_iter, test_iter, loss, num_epochs, trainer)
+</code></pre><p>执行结果如下，</p>
+<p><img src=/img/2025/07/08.png alt=image-20240309030246676 loading=lazy>
+</p>
+<p style=color:#777>Last modified on 2025-07-19</p>
+</div>
+<a href=#top><i class="fa fa-chevron-up" style=font-size:30px;color:#000></i></a>
+</main>
+<footer class=footer>
+<script type=text/javascript src="//rf.revolvermaps.com/0/0/6.js?i=5sz67w4rqwe&m=0&c=ff0000&cr1=ffffff&f=times_new_roman&l=1" async></script>
+<ul class=footer-links>
+<li><a href=/en/posts/index.xml type=application/rss+xml title="RSS feed">
+Subscribe </a>
+</li>
+<li>
+<a href=http://creativecommons.org/licenses/by-nc-sa/4.0/ target=_blank>
+License
+<i class="fa fa-cc" aria-hidden=true title="Attribution-NonCommercial-ShareAlike 4.0 International"></i>
+</a>
+</li>
+</ul>
+<span id=busuanzi_container_site_pv> 本站访问量：<span id=busuanzi_value_site_pv></span>次</span>&nbsp;
+<span id=busuanzi_container_site_uv> 您是本站第 <span id=busuanzi_value_site_uv></span> 位访问者</span>
+</footer>

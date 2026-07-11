@@ -1,0 +1,122 @@
+<a name=top></a><!doctype html>
+<html lang=en-us>
+<head>
+<script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<title>Distributed System | 分布式系统 - Albert Wang</title>
+<link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css>
+<link rel=stylesheet href=/css/style.css>
+<link rel=stylesheet href=/css/font.css>
+<link href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css rel=stylesheet>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/vega@5.17.0></script>
+<script src=https://cdn.jsdelivr.net/npm/vega-lite@4.17.0></script>
+<script src=https://cdn.jsdelivr.net/npm/vega-embed@6.12.2></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</head>
+<body>
+<div class=wrapper>
+<header class=header>
+<nav class=nav>
+<a href=/ class=nav-logo>
+<img src=/media/logo.JPG width=50 height=50 alt=Hugo-ht>
+</a>
+<ul class=nav-links>
+<li><a href=/>Home</a></li>
+<li><a href=/en/posts/>Blog</a></li>
+<li><a href=/en/gallery/>Gallery</a></li>
+<li><a href=/en/project/>Project</a></li>
+<li><a href=/en/about/>About</a></li>
+</ul>
+</nav>
+<script type=text/x-mathjax-config>
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\\[','\\]']],
+    processEscapes: false,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+  },
+  TeX: {
+    equationNumbers: { autoNumber: "AMS" },
+    extensions: ["AMSmath.js", "AMSsymbols.js"]
+  },
+  "HTML-CSS": {
+    linebreaks: { automatic: true, width: "container" }
+  }
+});
+</script>
+<script type=text/javascript async src="https://cdn.bootcss.com/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>MathJax.Hub.Queue(function(){for(var b=MathJax.Hub.getAllJax(),a=0;a<b.length;a+=1)b[a].SourceElement().parentNode.className+=' has-jax'})</script>
+<style>code.has-jax{font:inherit;font-size:100%;background:inherit;border:inherit;color:inherit}</style>
+</header>
+<main class=content role=main>
+<div style=text-align:center>
+<h1>Distributed System | 分布式系统</h1>
+<p>Albert Wang
+/ 2026-01-25
+/ 100 Words/has been Read <span id=busuanzi_value_page_pv></span>&nbsp;&nbsp;Times
+</p>
+<hr>
+</div>
+<span class=article-toolbar>
+<a href=https://github.com/root-zren/posts/2026/%e5%88%86%e5%b8%83%e5%bc%8f%e7%b3%bb%e7%bb%9f.md style=font-size:24px;color:#000 target=_blank><i class="fa fa-edit" aria-hidden=true title="Suggest an edit of this page"></i>
+</a>
+</span>
+<aside class=toc>
+Table of Contents:
+<nav id=TableOfContents></nav>
+</aside>
+<div class="body-text list-text">
+<p>分布式系统是一系列计算机通过网络共同完成单台机器难以胜任的复杂任务。它就像一个由多台计算机组成的“数字团队”，它们通过网络协作。</p>
+<p><strong>为什么需要这样的系统？</strong></p>
+<p>如果一件事一台计算机就能轻松搞定，那我们绝不会动用一整个“团队”，因为管理团队的复杂度远超管理单一个体。单机状态非此即彼：要么工作，要么宕机。但在这个“数字团队”里，情况变得微妙：可能一部分成员运转良好，另一部分却发生了故障，而连接它们的网络也不完全可靠，可能会出现延迟甚至丢包。然而，当任务规模庞大到单机无法承载，或者对可靠性与性能有极高要求时，我们就必须组建并管理好这个“团队”。</p>
+<p><strong>核心挑战：不只是人多力量大</strong></p>
+<p>我们自然希望“团队”能实现“1+1>2”的效果，但现实中，让两台机器完美协作以达到双倍性能，往往需要精心的设计。这涉及到对三大核心资源的高效调度：</p>
+<ul>
+<li><strong>存储</strong>：怎么构建可复制容错的，高性能存储系统。如何像保管重要档案一样，将数据复制多份并妥善分布，确保即使个别副本丢失，信息也永不湮灭？</li>
+<li><strong>计算</strong>：如何将一个大任务，像拆分项目模块一样，分配给多台机器并行处理（例如MapReduce模式），再整合结果？</li>
+<li><strong>通信</strong>：如何确保机器之间能够像团队成员一样清晰、可靠地传递信息与状态？</li>
+</ul>
+<p>一个优秀分布式系统的最高目标，是将其内部的复杂性封装起来。它对外呈现出一个如同单机般简单统一的界面。用户无需关心数据存放在哪台机器、计算由谁执行，他们面对的是一个逻辑上单一且强大的整体。</p>
+<p>在实现该抽象时，需要关注以下关键技术：</p>
+<ul>
+<li>远程过程调用（RPC）</li>
+<li>多线程机制</li>
+<li>锁（Lock）与同步</li>
+</ul>
+<p>想象一个起初只为少量用户服务的网站。随着用户量激增，单台服务器很快会成为瓶颈。直观的解决方案是增加服务器，但事情并非简单的数量叠加。如何在上千台服务器已在线的情况下，平滑地加入另外一千台，并让整体处理能力接近翻倍？这极具挑战。系统的瓶颈可能会从计算转移到网络、再到数据存储。良好的可扩展性设计，意味着系统架构能像有机体一样，通过增加“细胞”来增强能力，而非无脑堆砌。</p>
+<p><strong>容错</strong></p>
+<p>一台个人电脑可以稳定运行多年，但一个由成千上万台机器构成的集群中，硬件故障、网络中断几乎每时每刻都在发生。因此，分布式系统必须将容错视为设计的核心前提，主要围绕三个目标构建：</p>
+<ul>
+<li><strong>可用性</strong>：核心目标是服务“尽量不停机”。通常通过<strong>数据冗余备份</strong>来实现，且备份应地理隔离，避免因局部灾害（如断电、地震）导致数据全军覆没。</li>
+<li><strong>可恢复性</strong>：当故障真的发生时，系统必须能恢复到某个一致的状态。这依赖于详尽的<strong>操作日志</strong>、定期的<strong>状态检查点</strong>以及使用磁盘等<strong>非易失性存储</strong>来持久化关键信息。</li>
+<li><strong>一致性</strong>：这是最微妙的挑战。当数据存在多个副本时，如何确保它们看起来总像是“同一份”？例如，一次更新操作在主数据库成功后，若同步至备份时网络中断，就会导致数据不一致。维护强一致性往往意味着性能的权衡。（关于一致性与共识的深入探讨，可参考<a href=https://zrwang.com.cn/en/2025/02/06/consistency-and-consensus-%E4%B8%80%E8%87%B4%E6%80%A7%E5%92%8C%E5%85%B1%E8%AF%86/ target=_blank rel="noreferrer noopener">这篇博客</a>
+。）</li>
+</ul>
+<p>总而言之，分布式系统是一门在不确定性与局部故障中，通过协作、冗余与协议来构建可靠、可扩展服务的工程艺术。它不是为了制造复杂，而是为了用复杂的手段，最终化繁为简，突破单机世界的物理边界。</p>
+<p style=color:#777>Last modified on 2026-01-25</p>
+</div>
+<a href=#top><i class="fa fa-chevron-up" style=font-size:30px;color:#000></i></a>
+</main>
+<footer class=footer>
+<script type=text/javascript src="//rf.revolvermaps.com/0/0/6.js?i=5sz67w4rqwe&m=0&c=ff0000&cr1=ffffff&f=times_new_roman&l=1" async></script>
+<ul class=footer-links>
+<li><a href=/en/posts/index.xml type=application/rss+xml title="RSS feed">
+Subscribe </a>
+</li>
+<li>
+<a href=http://creativecommons.org/licenses/by-nc-sa/4.0/ target=_blank>
+License
+<i class="fa fa-cc" aria-hidden=true title="Attribution-NonCommercial-ShareAlike 4.0 International"></i>
+</a>
+</li>
+</ul>
+<span id=busuanzi_container_site_pv> 本站访问量：<span id=busuanzi_value_site_pv></span>次</span>&nbsp;
+<span id=busuanzi_container_site_uv> 您是本站第 <span id=busuanzi_value_site_uv></span> 位访问者</span>
+</footer>

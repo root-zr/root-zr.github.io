@@ -1,0 +1,148 @@
+<a name=top></a><!doctype html>
+<html lang=en-us>
+<head>
+<script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<title>How to Install and Configure Git on Mac | Mac 安装和配置 git - Albert Wang</title>
+<link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css>
+<link rel=stylesheet href=/css/style.css>
+<link rel=stylesheet href=/css/font.css>
+<link href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css rel=stylesheet>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/vega@5.17.0></script>
+<script src=https://cdn.jsdelivr.net/npm/vega-lite@4.17.0></script>
+<script src=https://cdn.jsdelivr.net/npm/vega-embed@6.12.2></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</head>
+<body>
+<div class=wrapper>
+<header class=header>
+<nav class=nav>
+<a href=/ class=nav-logo>
+<img src=/media/logo.JPG width=50 height=50 alt=Hugo-ht>
+</a>
+<ul class=nav-links>
+<li><a href=/>Home</a></li>
+<li><a href=/en/posts/>Blog</a></li>
+<li><a href=/en/gallery/>Gallery</a></li>
+<li><a href=/en/project/>Project</a></li>
+<li><a href=/en/about/>About</a></li>
+</ul>
+</nav>
+<script type=text/x-mathjax-config>
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\\[','\\]']],
+    processEscapes: false,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+  },
+  TeX: {
+    equationNumbers: { autoNumber: "AMS" },
+    extensions: ["AMSmath.js", "AMSsymbols.js"]
+  },
+  "HTML-CSS": {
+    linebreaks: { automatic: true, width: "container" }
+  }
+});
+</script>
+<script type=text/javascript async src="https://cdn.bootcss.com/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>MathJax.Hub.Queue(function(){for(var b=MathJax.Hub.getAllJax(),a=0;a<b.length;a+=1)b[a].SourceElement().parentNode.className+=' has-jax'})</script>
+<style>code.has-jax{font:inherit;font-size:100%;background:inherit;border:inherit;color:inherit}</style>
+</header>
+<main class=content role=main>
+<div style=text-align:center>
+<h1>How to Install and Configure Git on Mac | Mac 安装和配置 git</h1>
+<p>Albert Wang
+/ 2025-02-23
+/ 200 Words/has been Read <span id=busuanzi_value_page_pv></span>&nbsp;&nbsp;Times
+</p>
+<hr>
+</div>
+<span class=article-toolbar>
+<a href=https://github.com/root-zren/posts/2025/Mac%20%e5%ae%89%e8%a3%85%e5%92%8c%e9%85%8d%e7%bd%ae%20git.md style=font-size:24px;color:#000 target=_blank><i class="fa fa-edit" aria-hidden=true title="Suggest an edit of this page"></i>
+</a>
+</span>
+<aside class=toc>
+Table of Contents:
+<nav id=TableOfContents>
+<ol>
+<li><a href=#安装-git><strong>安装 Git</strong></a></li>
+<li><a href=#验证安装><strong>验证安装</strong></a></li>
+<li><a href=#配置-git><strong>配置 Git</strong></a></li>
+<li><a href=#生成-ssh-密钥><strong>生成 SSH 密钥</strong></a></li>
+</ol>
+</nav>
+</aside>
+<div class="body-text list-text">
+<p>这篇博客介绍在 macbook 上安装和配置 git。</p>
+<h2 id=安装-git><strong>安装 Git</strong><a href=#安装-git class=header-anchor arialabel=Anchor> # </a></h2>
+<p>macOS 通常预装了 Git，但可能不是最新版本。你可以使用 Homebrew 安装或更新 Git：</p>
+<pre tabindex=0><code>brew install git
+</code></pre><p>如果尚未安装 Homebrew，则需要先安装它：</p>
+<pre tabindex=0><code>/bin/bash -c &quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)&quot;
+</code></pre><p>有时 DNS 解析问题会导致无法访问 GitHub。可以通过下面的方式规避。</p>
+<ol>
+<li><strong>尝试修改 hosts 文件：</strong></li>
+</ol>
+<p>打开终端，输入以下命令编辑 hosts 文件：</p>
+<pre tabindex=0><code>sudo vim /etc/hosts
+</code></pre><p>在文件末尾添加以下内容：</p>
+<pre tabindex=0><code>185.199.108.133 raw.githubusercontent.com
+</code></pre><p><img src=/img/2025/02/image-20250223153613098.png alt=image-20250223153613098 loading=lazy>
+</p>
+<p>保存并退出,重新运行安装命令。</p>
+<p>2.<strong>使用镜像源</strong></p>
+<p>如果直接访问 GitHub 有问题，可以使用国内的镜像源安装 Homebrew, 运行以下命令：</p>
+<pre tabindex=0><code>/bin/zsh -c &quot;$(curl -fsSL https://gitee.com/cunkai/HomebrewCN/raw/master/Homebrew.sh)&quot;
+</code></pre><p>按照提示选择镜像源并完成安装。</p>
+<h2 id=验证安装><strong>验证安装</strong><a href=#验证安装 class=header-anchor arialabel=Anchor> # </a></h2>
+<p>打开终端，输入以下命令检查 Git 是否安装成功：</p>
+<pre tabindex=0><code>git --version
+</code></pre><p><img src=/img/2025/02/img-2025-02-22-01.png alt="截屏2025-02-22 23.14.02" loading=lazy>
+</p>
+<h2 id=配置-git><strong>配置 Git</strong><a href=#配置-git class=header-anchor arialabel=Anchor> # </a></h2>
+<p>安装完成后，需要配置用户名和邮箱，这些信息会用于提交记录。</p>
+<p>设置用户名：</p>
+<pre tabindex=0><code>git config --global user.name &quot;你的用户名&quot;
+</code></pre><p>设置邮箱：</p>
+<pre tabindex=0><code>git config --global user.email &quot;你的邮箱&quot;
+</code></pre><p>检查配置：</p>
+<pre tabindex=0><code>git config --list
+</code></pre><h2 id=生成-ssh-密钥><strong>生成 SSH 密钥</strong><a href=#生成-ssh-密钥 class=header-anchor arialabel=Anchor> # </a></h2>
+<p>如果你需要通过 SSH 连接到远程仓库（如 GitHub），可以生成 SSH 密钥：</p>
+<pre tabindex=0><code>ssh-keygen -t ed25519 -C &quot;你的邮箱&quot;
+</code></pre><ul>
+<li>按回车使用默认路径。</li>
+<li>设置密码（可选）。</li>
+</ul>
+<p><img src=/img/2025/02/img-2025-02-22-02.png alt="截屏2025-02-22 23.17.38" loading=lazy>
+</p>
+<p>查看公钥：</p>
+<pre tabindex=0><code>cat ~/.ssh/id_ed25519.pub
+</code></pre><p>将公钥复制到远程仓库的 SSH 设置中（如 GitHub 的 <strong>Settings > SSH and GPG keys</strong>）。</p>
+<p style=color:#777>Last modified on 2025-02-23</p>
+</div>
+<a href=#top><i class="fa fa-chevron-up" style=font-size:30px;color:#000></i></a>
+</main>
+<footer class=footer>
+<script type=text/javascript src="//rf.revolvermaps.com/0/0/6.js?i=5sz67w4rqwe&m=0&c=ff0000&cr1=ffffff&f=times_new_roman&l=1" async></script>
+<ul class=footer-links>
+<li><a href=/en/posts/index.xml type=application/rss+xml title="RSS feed">
+Subscribe </a>
+</li>
+<li>
+<a href=http://creativecommons.org/licenses/by-nc-sa/4.0/ target=_blank>
+License
+<i class="fa fa-cc" aria-hidden=true title="Attribution-NonCommercial-ShareAlike 4.0 International"></i>
+</a>
+</li>
+</ul>
+<span id=busuanzi_container_site_pv> 本站访问量：<span id=busuanzi_value_site_pv></span>次</span>&nbsp;
+<span id=busuanzi_container_site_uv> 您是本站第 <span id=busuanzi_value_site_uv></span> 位访问者</span>
+</footer>

@@ -1,0 +1,1436 @@
+<a name=top></a><!doctype html>
+<html lang=en-us>
+<head>
+<script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<title>Transformer ｜ Transformer - Albert Wang</title>
+<link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css>
+<link rel=stylesheet href=/css/style.css>
+<link rel=stylesheet href=/css/font.css>
+<link href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css rel=stylesheet>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/vega@5.17.0></script>
+<script src=https://cdn.jsdelivr.net/npm/vega-lite@4.17.0></script>
+<script src=https://cdn.jsdelivr.net/npm/vega-embed@6.12.2></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</head>
+<body>
+<div class=wrapper>
+<header class=header>
+<nav class=nav>
+<a href=/ class=nav-logo>
+<img src=/media/logo.JPG width=50 height=50 alt=Hugo-ht>
+</a>
+<ul class=nav-links>
+<li><a href=/>Home</a></li>
+<li><a href=/en/posts/>Blog</a></li>
+<li><a href=/en/gallery/>Gallery</a></li>
+<li><a href=/en/project/>Project</a></li>
+<li><a href=/en/about/>About</a></li>
+</ul>
+</nav>
+<script type=text/x-mathjax-config>
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\\[','\\]']],
+    processEscapes: false,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+  },
+  TeX: {
+    equationNumbers: { autoNumber: "AMS" },
+    extensions: ["AMSmath.js", "AMSsymbols.js"]
+  },
+  "HTML-CSS": {
+    linebreaks: { automatic: true, width: "container" }
+  }
+});
+</script>
+<script type=text/javascript async src="https://cdn.bootcss.com/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>MathJax.Hub.Queue(function(){for(var b=MathJax.Hub.getAllJax(),a=0;a<b.length;a+=1)b[a].SourceElement().parentNode.className+=' has-jax'})</script>
+<style>code.has-jax{font:inherit;font-size:100%;background:inherit;border:inherit;color:inherit}</style>
+</header>
+<main class=content role=main>
+<div style=text-align:center>
+<h1>Transformer ｜ Transformer</h1>
+<p>Albert Wang
+/ 2026-06-30
+/ 4500 Words/has been Read <span id=busuanzi_value_page_pv></span>&nbsp;&nbsp;Times
+</p>
+<hr>
+</div>
+<span class=article-toolbar>
+<a href=https://github.com/root-zren/posts/2026/transformer.md style=font-size:24px;color:#000 target=_blank><i class="fa fa-edit" aria-hidden=true title="Suggest an edit of this page"></i>
+</a>
+</span>
+<aside class=toc>
+Table of Contents:
+<nav id=TableOfContents>
+<ol>
+<li><a href=#背景>背景</a></li>
+<li><a href=#transformer-架构总览>Transformer 架构总览</a></li>
+<li><a href=#self-attention核心机制>Self-Attention：核心机制</a>
+<ol>
+<li><a href=#直观理解>直观理解</a></li>
+<li><a href=#数学定义>数学定义</a></li>
+<li><a href=#一次完整的前向计算以具体数值为例>一次完整的前向计算（以具体数值为例）</a></li>
+<li><a href=#为什么叫-self-attention>为什么叫 Self-Attention</a></li>
+<li><a href=#pytorch-代码实现>PyTorch 代码实现</a></li>
+</ol>
+</li>
+<li><a href=#multi-head-attention多头注意力>Multi-Head Attention：多头注意力</a>
+<ol>
+<li><a href=#动机>动机</a></li>
+<li><a href=#数学定义-1>数学定义</a></li>
+<li><a href=#多头运算的完整展开>多头运算的完整展开</a></li>
+<li><a href=#pytorch-代码实现-1>PyTorch 代码实现</a></li>
+</ol>
+</li>
+<li><a href=#位置编码positional-encoding>位置编码（Positional Encoding）</a>
+<ol>
+<li><a href=#为什么需要>为什么需要</a></li>
+<li><a href=#sinusoidal-位置编码>Sinusoidal 位置编码</a></li>
+<li><a href=#pytorch-代码实现-2>PyTorch 代码实现</a></li>
+</ol>
+</li>
+<li><a href=#前馈神经网络feed-forward-network>前馈神经网络（Feed-Forward Network）</a></li>
+<li><a href=#add--norm残差连接与层归一化>Add & Norm：残差连接与层归一化</a>
+<ol>
+<li><a href=#残差连接residual-connection>残差连接（Residual Connection）</a></li>
+<li><a href=#层归一化layer-normalization>层归一化（Layer Normalization）</a></li>
+</ol>
+</li>
+<li><a href=#完整的编码器层>完整的编码器层</a></li>
+<li><a href=#解码器与掩码注意力>解码器与掩码注意力</a>
+<ol>
+<li><a href=#masked-self-attention掩码自注意力>Masked Self-Attention（掩码自注意力）</a></li>
+<li><a href=#cross-attention交叉注意力>Cross-Attention（交叉注意力）</a></li>
+<li><a href=#解码器矩阵运算完整展开>解码器矩阵运算完整展开</a></li>
+<li><a href=#解码器层代码实现>解码器层代码实现</a></li>
+</ol>
+</li>
+<li><a href=#各阶段维度全景分析>各阶段维度全景分析</a>
+<ol>
+<li><a href=#encoder-维度变化一览>Encoder 维度变化一览</a></li>
+<li><a href=#一个常见的误解词表大小-vs-向量维度>一个常见的误解：词表大小 vs. 向量维度</a></li>
+<li><a href=#self-attention-内部维度拆解>Self-Attention 内部维度拆解</a></li>
+<li><a href=#decoder-维度变化一览>Decoder 维度变化一览</a></li>
+<li><a href=#训练-vs-推理的维度差异>训练 vs 推理的维度差异</a></li>
+</ol>
+</li>
+<li><a href=#kv-cache推理加速的关键技术>KV Cache：推理加速的关键技术</a>
+<ol>
+<li><a href=#问题的提出>问题的提出</a></li>
+<li><a href=#kv-cache-原理>KV Cache 原理</a></li>
+<li><a href=#为什么只缓存-k-和-v而不缓存-q>为什么只缓存 K 和 V，而不缓存 Q？</a></li>
+<li><a href=#带-kv-cache-的多头注意力实现>带 KV Cache 的多头注意力实现</a></li>
+<li><a href=#推理循环示例>推理循环示例</a></li>
+<li><a href=#kv-cache-的内存分析>KV Cache 的内存分析</a></li>
+<li><a href=#kv-cache-与训练的关系>KV Cache 与训练的关系</a></li>
+</ol>
+</li>
+<li><a href=#完整模型>完整模型</a>
+<ol>
+<li><a href=#encoder-和-decoder-的-wqwkwv-是如何更新的>Encoder 和 Decoder 的 W^Q、W^K、W^V 是如何更新的？</a></li>
+</ol>
+</li>
+<li><a href=#transformer-的核心创新总结>Transformer 的核心创新总结</a></li>
+<li><a href=#参考资料>参考资料</a></li>
+</ol>
+</nav>
+</aside>
+<div class="body-text list-text">
+<h2 id=背景>背景<a href=#背景 class=header-anchor arialabel=Anchor> # </a></h2>
+<p>在 Transformer 提出之前，序列建模任务（如机器翻译、文本生成）主要由 RNN（循环神经网络）和 LSTM（长短期记忆网络）主导。RNN 的核心思想是将序列中的每一个时间步依次输入网络，每一步的隐藏状态依赖于前一步的输出：</p>
+<p>$$
+h_t = f(W \cdot x_t + U \cdot h_{t-1} + b)
+$$</p>
+<p>这种递归结构带来了几个关键问题：</p>
+<ol>
+<li><strong>无法并行化</strong>：RNN 的计算是顺序的，必须等前一个时间步算完才能算下一个，训练效率极低。</li>
+<li><strong>长距离依赖困难</strong>：虽然 LSTM 引入了门控机制缓解了梯度消失，但对于非常长的序列（比如几百个词），信息仍然会逐渐衰减。</li>
+<li><strong>内存瓶颈</strong>：反向传播时需要保存所有时间步的中间状态。</li>
+</ol>
+<p>2017 年，Google 在论文 <a href=https://arxiv.org/abs/1706.03762 target=_blank rel="noreferrer noopener">Attention Is All You Need</a>
+中提出了 Transformer 架构。它<strong>完全摒弃了循环结构</strong>，仅依赖注意力机制（Attention）来捕捉序列中任意两个位置之间的依赖关系。这使得模型可以：</p>
+<ul>
+<li><strong>高度并行化</strong>：训练时所有位置同时计算，不再受限于序列顺序。</li>
+<li><strong>直接建模长距离依赖</strong>：任意两个位置之间的距离都是 O(1)，无论它们在序列中相隔多远。</li>
+<li><strong>可扩展性强</strong>：通过堆叠更多层和使用更大的模型，性能持续提升。</li>
+</ul>
+<p>下图展示了 Transformer 的整体架构，左侧为编码器（Encoder），右侧为解码器（Decoder）：</p>
+<p><img src=/img/2026/06/01.png alt="Transformer 架构图" loading=lazy>
+</p>
+<h2 id=transformer-架构总览>Transformer 架构总览<a href=#transformer-架构总览 class=header-anchor arialabel=Anchor> # </a></h2>
+<p>Transformer 由编码器（Encoder）和解码器（Decoder）组成：</p>
+<ul>
+<li><strong>编码器</strong>（左侧，N=6 层）：每一层包含一个多头自注意力子层（Multi-Head Self-Attention）和一个前馈网络子层（Feed-Forward Network），每个子层后都跟有残差连接和层归一化（Add & Norm）。</li>
+<li><strong>解码器</strong>（右侧，N=6 层）：在编码器的基础上，在两个子层之间增加了一个交叉注意力子层（Cross-Attention），用于接收编码器的输出。同时，解码器的自注意力是带掩码的（Masked），保证在预测第 i 个位置时只能看到前 i-1 个位置的信息。</li>
+</ul>
+<p>本文将按以下路线展开：先拆解 Transformer 最核心的发动机——<strong>Self-Attention</strong>，然后扩展到<strong>多头</strong>版本、补充<strong>位置编码</strong>让模型感知词序、加上<strong>前馈网络</strong>和<strong>残差归一化</strong>。有了这些零件，我们组装出完整的<strong>编码器层</strong>，再对称地构建<strong>解码器</strong>（重点理解 Mask 和 Cross-Attention）。之后统一梳理各阶段的<strong>维度变化</strong>，最后讨论推理加速的<strong>KV Cache</strong>。</p>
+<h2 id=self-attention核心机制>Self-Attention：核心机制<a href=#self-attention核心机制 class=header-anchor arialabel=Anchor> # </a></h2>
+<h3 id=直观理解>直观理解<a href=#直观理解 class=header-anchor arialabel=Anchor> # </a></h3>
+<p>Self-Attention 的核心思想是：对于序列中的<strong>每个词</strong>，让它去"关注"序列中的<strong>所有词</strong>（包括自身），并根据关注程度加权聚合信息。</p>
+<p>举个例子，对于句子 &ldquo;The cat sat on the mat&rdquo;，当模型处理单词 &ldquo;sat&rdquo; 时，它应该更多地关注 &ldquo;cat&rdquo;（主语）和 &ldquo;mat&rdquo;（宾语），而不是 &ldquo;the&rdquo; 这样的虚词。</p>
+<h3 id=数学定义>数学定义<a href=#数学定义 class=header-anchor arialabel=Anchor> # </a></h3>
+<p>Self-Attention 通过三个可学习的线性变换，将每个输入向量 $x_i$ 映射为三个向量：</p>
+<ul>
+<li><strong>Query（查询，Q）</strong>：$Q = X W^Q$ — 当前词想要"查询"什么信息</li>
+<li><strong>Key（键，K）</strong>：$K = X W^K$ — 每个词"拥有"什么信息的标签</li>
+<li><strong>Value（值，V）</strong>：$V = X W^V$ — 每个词实际"携带"的信息内容</li>
+</ul>
+<blockquote>
+<p><strong>Q、K、V 到底是矩阵还是向量？</strong> 很多初学者看到 $Q = X W^Q$ 这个公式会困惑：$X$ 和 $W^Q$ 都是矩阵，乘出来的 $Q$ 不也是个矩阵吗？为什么又常说"每个 token 都有一个 query 向量"？</p>
+<p>两个说法都对，它们是同一块硬币的两面。$Q \in \mathbb{R}^{S \times d_k}$ 确实是一个矩阵，但它的<strong>每一行 $q_i \in \mathbb{R}^{d_k}$ 就是第 i 个 token 的 query 向量</strong>。把整条序列的 query 向量摞在一起就构成了 $Q$ 矩阵——这不是什么新的数学对象，只是矩阵化计算的一个惯用表示。用矩阵形式一次前向就能算出所有 token 的结果，这也是 Transformer 能高度并行化的根本原因。</p>
+<p>同理，$K$ 和 $V$ 的每一行也分别是每个 token 的 key 向量和 value 向量。三个权重矩阵 $W^Q$、$W^K$、$W^V$ 对整条序列的<strong>所有 token 是共享的</strong>——即无论 token 出现在句首还是句尾，都经过同一套线性变换得到它的 Q、K、V。参数共享使模型参数量与序列长度解耦，这也是 Transformer 能处理变长输入的关键设计之一。</p>
+</blockquote>
+<p>注意力计算分为以下步骤：</p>
+<p><strong>Step 1：计算注意力分数</strong></p>
+<p>将 Query 与所有 Key 做点积，得到每对词之间的"匹配程度"。点积越大，说明两个词越相关。</p>
+<p>$$
+\text{Scores} = Q K^T
+$$</p>
+<p><strong>Step 2：缩放（Scaling）</strong></p>
+<p>将分数除以 $\sqrt{d_k}$（$d_k$ 是 Key 向量的维度），防止点积过大导致 softmax 梯度消失：</p>
+<p>$$
+\text{Scores}_{\text{scaled}} = \frac{Q K^T}{\sqrt{d_k}}
+$$</p>
+<p><strong>Step 3：Softmax 归一化</strong></p>
+<p>对每一行做 softmax，将分数转化为概率分布（注意力权重）：</p>
+<p>$$
+\alpha_{ij} = \frac{\exp(\text{score}_{\text{ij}})}{\sum_k \exp(\text{score}_{\text{ik}})}
+$$</p>
+<p>其中 $\alpha_{ij}$ 表示第 i 个词应该给予第 j 个词的注意力权重。</p>
+<p><strong>Step 4：加权聚合</strong></p>
+<p>用注意力权重对 Value 加权求和，得到最终的输出：</p>
+<p>$$
+\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{Q K^T}{\sqrt{d_k}}\right) V
+$$</p>
+<p>下图展示了 Scaled Dot-Product Attention 的计算流程：</p>
+<p><img src=/img/2026/06/02.png alt="Scaled Dot-Product Attention" loading=lazy>
+</p>
+<p><strong>Q、K、V 的角色分工</strong>：可以把 Attention 想象成一个数据库检索过程——Query 是搜索关键词，Key 是文章的标题标签，Value 是文章正文，最终输出相当于按匹配度加权的文章摘要：</p>
+<p><img src=/img/2026/06/06.png alt=QKV计算流程 loading=lazy>
+</p>
+<ul>
+<li><strong>Q（Query）</strong>：就像你在搜索引擎里输入的关键词——&ldquo;我想找什么&rdquo;</li>
+<li><strong>K（Key）</strong>：就像每篇文章的标题/标签——&ldquo;我是什么内容&rdquo;</li>
+<li><strong>V（Value）</strong>：就像每篇文章的正文——&ldquo;我实际包含什么信息&rdquo;</li>
+<li><strong>最终输出</strong> = 按搜索匹配度加权后的文章摘要</li>
+</ul>
+<h3 id=一次完整的前向计算以具体数值为例>一次完整的前向计算（以具体数值为例）<a href=#一次完整的前向计算以具体数值为例 class=header-anchor arialabel=Anchor> # </a></h3>
+<p>上面的四步是公式，下面用一组<strong>具体的维度数字</strong>走一遍完整的 Q、K、V 运算流程，把抽象的计算"具象化"。假设输入是一句话 &ldquo;The cat sat on the mat&rdquo;，经过 Embedding + Positional Encoding 后得到输入矩阵 $X$：</p>
+<p>$$
+X \in \mathbb{R}^{B \times S \times d_{model}} = \mathbb{R}^{1 \times 6 \times 512}
+$$</p>
+<p>其中 $B=1$（一次处理一个样本），$S=6$（序列长度 6 个 token），$d_{model}=512$。</p>
+<p><strong>第一步：线性投影得到 Q、K、V</strong></p>
+<p>三个权重矩阵分别将 512 维的输入投影为 64 维（单头视角，$d_k=64$）：</p>
+<p>$$
+\begin{align*}
+W^Q &\in \mathbb{R}^{512 \times 64} \
+W^K &\in \mathbb{R}^{512 \times 64} \
+W^V &\in \mathbb{R}^{512 \times 64}
+\end{align*}
+$$</p>
+<p>执行矩阵乘法：</p>
+<p>$$
+\begin{align*}
+Q &= X W^Q \
+&\Rightarrow [1, 6, 512] \times [512, 64] = [1, 6, 64] \\[6pt]
+K &= X W^K \
+&\Rightarrow [1, 6, 512] \times [512, 64] = [1, 6, 64] \\[6pt]
+V &= X W^V \
+&\Rightarrow [1, 6, 512] \times [512, 64] = [1, 6, 64]
+\end{align*}
+$$</p>
+<p>此时 $Q$、$K$、$V$ 都是 $[1, 6, 64]$ —— 6 个 token，每个 token 现在有了三个角色：Query（我想查什么）、Key（我有什么标签）、Value（我携带什么内容）。</p>
+<p>如果把 $Q$ 的每一行看作高维空间中的一个点，那这一行就是一个 <strong>64 维的向量</strong>，指向某个方向。$K$ 的行也是 64 维向量，决定了"谁更容易被查到"。下面马上用到它们。</p>
+<p><strong>第二步：计算注意力分数矩阵</strong></p>
+<p>$$
+\begin{aligned}
+\text{Scores} &= Q K^T \
+&\Rightarrow [1, 6, 64] \times [64, 6] = [1, 6, 6]
+\end{aligned}
+$$</p>
+<p>$K^T$ 是 $K$ 的转置，形状从 $[1, 6, 64]$ 变成 $[1, 64, 6]$。矩阵乘法 $(6 \times 64) \cdot (64 \times 6) = (6 \times 6)$，结果是 6 行 6 列的方阵——每个位置 $(i, j)$ 代表了<strong>第 i 个词的 Query 和第 j 个词的 Key 的点积</strong>，即两者的"匹配程度"。</p>
+<p>$$
+\text{Scores} = \begin{bmatrix}
+s_{11} & s_{12} & \cdots & s_{16} \
+s_{21} & s_{22} & \cdots & s_{26} \
+\vdots & \vdots & \ddots & \vdots \
+s_{61} & s_{62} & \cdots & s_{66}
+\end{bmatrix}
+$$</p>
+<p>第 2 行、第 3 列的值 $s_{23}$ 就是 &ldquo;cat&rdquo;（第 2 个 token）的 Query 与 &ldquo;sat&rdquo;（第 3 个 token）的 Key 之间的原始相似度分数。</p>
+<p><strong>第三步：缩放</strong></p>
+<p>$$
+\text{Scores}_{\text{scaled}} = \frac{\text{Scores}}{\sqrt{64}} = \frac{\text{Scores}}{8}
+$$</p>
+<p>除以 $\sqrt{d_k} = 8$，防止点积值过大。为什么需要这一步？当 $d_k$ 较大时，点积的方差会增大，导致 softmax 输出趋向于 one-hot（梯度接近零，模型学不动）。除以 $\sqrt{d_k}$ 将方差控制回 1。</p>
+<p><strong>第四步：Softmax（按行归一化）</strong></p>
+<p>对分数矩阵的每一行做 softmax，将原始分数转换为概率分布：</p>
+<p>$$
+\alpha_{ij} = \frac{\exp(s_{ij} / 8)}{\sum_{k=1}^{6} \exp(s_{ik} / 8)}
+$$</p>
+<p>结果是一个<strong>行和为 1</strong> 的权重矩阵：$\alpha \in [1, 6, 6]$。第 i 行的 6 个权重代表了"生成第 i 个词的输出时，应该分别从第 1, 2, &mldr;, 6 个词取多少信息"。</p>
+<p><strong>第五步：加权聚合 Value</strong></p>
+<p>$$
+\begin{aligned}
+\text{Output} &= \alpha \cdot V \
+&\Rightarrow [1, 6, 6] \times [1, 6, 64] = [1, 6, 64]
+\end{aligned}
+$$</p>
+<p>用注意力权重矩阵 $\alpha$ 对 $V$ 做加权求和。输出形状回到 $[1, 6, 64]$ —— 每个 token 的新表示，是<strong>全体 token 的 Value 向量的加权组合</strong>。</p>
+<p>举个具体的例子：对于 &ldquo;sat&rdquo; 这个 token（第 3 个位置），它的注意力权重可能是：</p>
+<table>
+<thead>
+<tr>
+<th style=text-align:left>位置</th>
+<th style=text-align:left>Token</th>
+<th style=text-align:left>权重</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style=text-align:left>1</td>
+<td style=text-align:left>The</td>
+<td style=text-align:left>0.05</td>
+</tr>
+<tr>
+<td style=text-align:left>2</td>
+<td style=text-align:left>cat</td>
+<td style=text-align:left>0.45</td>
+</tr>
+<tr>
+<td style=text-align:left>3</td>
+<td style=text-align:left>sat</td>
+<td style=text-align:left>0.10</td>
+</tr>
+<tr>
+<td style=text-align:left>4</td>
+<td style=text-align:left>on</td>
+<td style=text-align:left>0.05</td>
+</tr>
+<tr>
+<td style=text-align:left>5</td>
+<td style=text-align:left>the</td>
+<td style=text-align:left>0.05</td>
+</tr>
+<tr>
+<td style=text-align:left>6</td>
+<td style=text-align:left>mat</td>
+<td style=text-align:left>0.30</td>
+</tr>
+</tbody>
+</table>
+<p>这意味着 &ldquo;sat&rdquo; 的输出向量 ≈ 45% 来自 &ldquo;cat&rdquo; 的 Value + 30% 来自 &ldquo;mat&rdquo; 的 Value + 10% 来自自己的 Value + 少量来自其他词。模型通过这种方式，让每个词的输出都"知晓"了整个句子的上下文。</p>
+<h3 id=为什么叫-self-attention>为什么叫 Self-Attention<a href=#为什么叫-self-attention class=header-anchor arialabel=Anchor> # </a></h3>
+<p>注意这里的 Q、K、V 都来自<strong>同一个输入序列</strong> X（只是乘以不同的权重矩阵），所以叫 <strong>Self</strong>-Attention。每个词都在"自己和自己"算注意力——用自己的 Query 去查所有人的 Key，再按权重取所有人的 Value。</p>
+<h3 id=pytorch-代码实现>PyTorch 代码实现<a href=#pytorch-代码实现 class=header-anchor arialabel=Anchor> # </a></h3>
+<p>下面是 Scaled Dot-Product Attention 的 PyTorch 实现：</p>
+<pre tabindex=0><code>import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import math
+
+def scaled_dot_product_attention(Q, K, V, mask=None):
+    &quot;&quot;&quot;
+    Q: [batch_size, num_heads, seq_len, d_k]
+    K: [batch_size, num_heads, seq_len, d_k]
+    V: [batch_size, num_heads, seq_len, d_v]
+    mask: [batch_size, 1, seq_len, seq_len] or None
+    &quot;&quot;&quot;
+    d_k = Q.size(-1)
+
+    # Step 1 &amp; 2: Q * K^T / sqrt(d_k)
+    scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(d_k)
+
+    # Step 3: 如果有 mask，把未来位置设为 -inf（解码器用到）
+    if mask is not None:
+        scores = scores.masked_fill(mask == 0, float('-inf'))
+
+    # Softmax 归一化
+    attn_weights = F.softmax(scores, dim=-1)
+
+    # Step 4: 加权聚合 Value
+    output = torch.matmul(attn_weights, V)
+
+    return output, attn_weights
+</code></pre><p>下面用一个例子来可视化注意力权重的分布。假设我们有一句话 &ldquo;The cat sat on the mat&rdquo;，下图展示了每个词对其他词的注意力权重（热力图）：</p>
+<p><img src=/img/2026/06/05.png alt=注意力权重热力图 loading=lazy>
+</p>
+<p>可以看到，&ldquo;sat&rdquo; 对 &ldquo;cat&rdquo; 和 &ldquo;mat&rdquo; 分配了较高的注意力权重。</p>
+<blockquote>
+<p><strong>至此我们完成了第一个组件。</strong> Self-Attention 让每个 token 都能看到整个序列并加权聚合信息，但单头注意力只有一种"关注模式"——这就像看一张照片只能从一个角度观察，显然不够。下面我们就让模型同时从多个角度去看。</p>
+</blockquote>
+<h2 id=multi-head-attention多头注意力>Multi-Head Attention：多头注意力<a href=#multi-head-attention多头注意力 class=header-anchor arialabel=Anchor> # </a></h2>
+<h3 id=动机>动机<a href=#动机 class=header-anchor arialabel=Anchor> # </a></h3>
+<p>单头注意力的表达能力有限——它只能学习一种"关注模式"。如果让模型同时从多个不同的"视角"去关注信息，就可以捕捉到更丰富的语义关系。</p>
+<p>例如，在处理 &ldquo;I gave her a book&rdquo; 时：</p>
+<ul>
+<li>某个头可能关注<strong>语法关系</strong>（主语-动词）</li>
+<li>另一个头可能关注<strong>指代关系</strong>（her 指代谁）</li>
+<li>还有一个头可能关注<strong>位置邻近关系</strong></li>
+</ul>
+<h3 id=数学定义-1>数学定义<a href=#数学定义-1 class=header-anchor arialabel=Anchor> # </a></h3>
+<p>Multi-Head Attention 将 Q、K、V 分别投影到 h 个不同的低维子空间，在每个子空间内独立计算注意力，最后将 h 个头的结果拼接起来再做一次线性变换：</p>
+<p>$$
+\text{MultiHead}(Q, K, V) = \text{Concat}(\text{head}_1, \text{head}_2, &mldr;, \text{head}_h)W^O
+$$</p>
+<p>$$
+\text{head}_i = \text{Attention}(Q W_i^Q, K W_i^K, V W_i^V)
+$$</p>
+<p>其中 $W_i^Q \in \mathbb{R}^{d_{model} \times d_k}$，$W_i^K \in \mathbb{R}^{d_{model} \times d_k}$，$W_i^V \in \mathbb{R}^{d_{model} \times d_v}$，$W^O \in \mathbb{R}^{h d_v \times d_{model}}$。</p>
+<p>论文中设置 h = 8，$d_k = d_v = d_{model} / h = 64$（$d_{model} = 512$）。这样做的好处是总计算量与单头注意力相当（因为每个头的维度更小），但表达能力大大增强。</p>
+<p>下图形象地展示了 Multi-Head Attention 的结构：</p>
+<p><img src=/img/2026/06/03.png alt="Multi-Head Attention" loading=lazy>
+</p>
+<h3 id=多头运算的完整展开>多头运算的完整展开<a href=#多头运算的完整展开 class=header-anchor arialabel=Anchor> # </a></h3>
+<p>光看公式可能还是抽象，下面把 8 个头的投影和运算过程<strong>全部展开</strong>，一步一步追踪数据的 shape 变化。沿用上节的输入：$X \in [1, 6, 512]$。</p>
+<p><strong>Step 1: 各头独立投影</strong></p>
+<p>对于第 $i$ 个头（$i = 1, 2, &mldr;, 8$），有三套独立的投影矩阵：</p>
+<p>$$
+W_i^Q \in \mathbb{R}^{512 \times 64},\quad
+W_i^K \in \mathbb{R}^{512 \times 64},\quad
+W_i^V \in \mathbb{R}^{512 \times 64}
+$$</p>
+<p>注意：8 个头各有自己的 $W_i^Q$、$W_i^K$、$W_i^V$——它们不共享参数。总参数量是 $8 \times 3 \times (512 \times 64) = 786432$，恰好等于一个 $512 \times 512$ 的大矩阵 $W^Q$、$W^K$、$W^V$（这就是代码实现里把 8 个头的投影矩阵"拼"成一个 <code>nn.Linear(512, 512)</code> 的原因，算完再拆开，效率更高）。</p>
+<p>对每个头独立做线性投影，Shape 变化完全一致：</p>
+<p>$$
+\begin{align*}
+Q_i &= X W_i^Q \
+&\Rightarrow [1, 6, 512] \times [512, 64] = [1, 6, 64] \\[6pt]
+K_i &= X W_i^K \
+&\Rightarrow [1, 6, 512] \times [512, 64] = [1, 6, 64] \\[6pt]
+V_i &= X W_i^V \
+&\Rightarrow [1, 6, 512] \times [512, 64] = [1, 6, 64]
+\end{align*}
+$$</p>
+<p>此时 8 个头各自持有自己的一份 $Q_i$、$K_i$、$V_i$，每个都是 $[1, 6, 64]$。可以用一个统一的 shape 来描述全部 8 个头：</p>
+<p>$$
+Q_{\text{all}},,K_{\text{all}},,V_{\text{all}} \in \mathbb{R}^{1 \times \mathbf{8} \times 6 \times 64}
+$$</p>
+<p>新增的维度 $8$ 就是 head 数量，后续 8 个头在这个维度上<strong>完全并行</strong>计算，互不干扰。</p>
+<p><strong>Step 2: 各头独立计算 Scaled Dot-Product Attention</strong></p>
+<p>对第 $i$ 个头，计算过程与单头完全一样：</p>
+<p>$$
+\text{Scores}_i = \frac{Q_i K_i^T}{\sqrt{64}} ;\Rightarrow; [1, 6, 6]
+$$</p>
+<p>$$
+\alpha_i = \text{softmax}(\text{Scores}_i) ;\Rightarrow; [1, 6, 6]
+$$</p>
+<p>$$
+\text{head}_i = \alpha_i \cdot V_i ;\Rightarrow; [1, 6, 64]
+$$</p>
+<p>8 个头同时做，得到 8 个独立的输出 $\text{head}_1, \text{head}_2, &mldr;, \text{head}_8$。</p>
+<p><strong>Step 3: 拼接（Concat）</strong></p>
+<p>把 8 个头的结果在最后一个维度上拼接起来：</p>
+<p>$$
+\text{Concat}(\text{head}_1, &mldr;, \text{head}_8) ;\Rightarrow; \text{沿着 dim=-1 拼接 8 个 } [1, 6, 64] = [1, 6, \mathbf{512}]
+$$</p>
+<p>8 × 64 = 512，又回到了 $d_{model}$ 的维度。从 shape 的角度看，这一步是"投影-拆分"的逆操作——之前把 512 拆成 8 份 × 64，现在把 8 份 × 64 拼回 512。</p>
+<p><strong>Step 4: 最终线性投影（$W^O$）</strong></p>
+<p>拼接后的向量再经过一个线性变换 $W^O \in \mathbb{R}^{512 \times 512}$：</p>
+<p>$$
+\begin{aligned}
+\text{Output} &= \text{Concat} \cdot W^O \
+&\Rightarrow [1, 6, 512] \times [512, 512] = [1, 6, 512]
+\end{aligned}
+$$</p>
+<p>$W^O$ 的作用不是恢复维度（维度在拼接时已经恢复了），而是让 8 个头的输出<strong>互相交互、融合</strong>。每个头学到的不同"关注模式"通过 $W^O$ 的混合，产生最终的、统一的语义表示。</p>
+<p><strong>完整 Shape 流转一览</strong></p>
+<pre tabindex=0><code>输入 X:                        [1, 6, 512]
+                                 │
+    ┌──────────── 8 个头并行投影 ────────────┐
+    │ Q_i = X @ W_i^Q    →  [1, 6, 64]  ×8  │
+    │ K_i = X @ W_i^K    →  [1, 6, 64]  ×8  │
+    │ V_i = X @ W_i^V    →  [1, 6, 64]  ×8  │
+    └────────────────────────────────────────┘
+                                 │
+    ┌──────── 8 个头并行 Attention ──────────┐
+    │ Scores_i = Q_i @ K_i^T / 8  →  [1, 6, 6]  │
+    │ α_i = softmax(Scores_i)      →  [1, 6, 6]  │
+    │ head_i = α_i @ V_i           →  [1, 6, 64] │  ×8
+    └────────────────────────────────────────┘
+                                 │
+    Concat([head_1..head_8], dim=-1)  →  [1, 6, 512]
+                                 │
+    Output = Concat @ W^O             →  [1, 6, 512]
+</code></pre><p>最终的 $[1, 6, 512]$ 和输入 shape 完全一致——这保证了残差连接 $x + \text{MultiHead}(x)$ 可以直接相加，也使得多层堆叠成为可能。</p>
+<p><strong>关于 $W_i^Q$ 的实际尺寸</strong>：上面为了便于理解，每个头用了独立的小矩阵 $W_i^Q \in \mathbb{R}^{512 \times 64}$。但实际实现中通常把所有头的投影拼成一个大矩阵 $W^Q \in \mathbb{R}^{512 \times 512}$，一次性完成 8 个头的投影（$[1, 6, 512] \times [512, 512] = [1, 6, 512]$），然后通过 <code>reshape</code> + <code>transpose</code> 拆成 $[1, 8, 6, 64]$。两种方式数学上等价，后者矩阵乘法次数更少，GPU 更友好。</p>
+<h3 id=pytorch-代码实现-1>PyTorch 代码实现<a href=#pytorch-代码实现-1 class=header-anchor arialabel=Anchor> # </a></h3>
+<pre tabindex=0><code>class MultiHeadAttention(nn.Module):
+    def __init__(self, d_model=512, num_heads=8):
+        super().__init__()
+        assert d_model % num_heads == 0
+
+        self.d_model = d_model
+        self.num_heads = num_heads
+        self.d_k = d_model // num_heads
+
+        # 将 Q、K、V 的投影矩阵合并为一个大的线性层，提升效率
+        self.W_q = nn.Linear(d_model, d_model)
+        self.W_k = nn.Linear(d_model, d_model)
+        self.W_v = nn.Linear(d_model, d_model)
+        self.W_o = nn.Linear(d_model, d_model)
+
+    def split_heads(self, x):
+        &quot;&quot;&quot;将 [batch, seq_len, d_model] 重塑为 [batch, heads, seq_len, d_k]&quot;&quot;&quot;
+        batch_size, seq_len, _ = x.size()
+        x = x.view(batch_size, seq_len, self.num_heads, self.d_k)
+        return x.transpose(1, 2)
+
+    def combine_heads(self, x):
+        &quot;&quot;&quot;将 [batch, heads, seq_len, d_k] 还原为 [batch, seq_len, d_model]&quot;&quot;&quot;
+        batch_size, _, seq_len, _ = x.size()
+        x = x.transpose(1, 2).contiguous()
+        return x.view(batch_size, seq_len, self.d_model)
+
+    def forward(self, Q, K, V, mask=None):
+        # 线性投影 + 拆分为多头
+        Q = self.split_heads(self.W_q(Q))  # [B, h, L, d_k]
+        K = self.split_heads(self.W_k(K))
+        V = self.split_heads(self.W_v(V))
+
+        # Scaled Dot-Product Attention
+        attn_output, attn_weights = scaled_dot_product_attention(Q, K, V, mask)
+
+        # 合并多头 + 最终线性投影
+        output = self.W_o(self.combine_heads(attn_output))
+
+        return output, attn_weights
+</code></pre><blockquote>
+<p><strong>Attention 已经就绪——但它有一个盲点。</strong> 无论是单头还是多头，Self-Attention 的计算都是对 token 的"集合"操作：它看所有 token，但完全不知道谁在前、谁在后。把句子 &ldquo;A 打 B&rdquo; 和 &ldquo;B 打 A&rdquo; 扔进去，注意力机制看到的是完全对称的两组 token。所以我们需要一个额外的机制来注入位置信息。</p>
+</blockquote>
+<h2 id=位置编码positional-encoding>位置编码（Positional Encoding）<a href=#位置编码positional-encoding class=header-anchor arialabel=Anchor> # </a></h2>
+<h3 id=为什么需要>为什么需要<a href=#为什么需要 class=header-anchor arialabel=Anchor> # </a></h3>
+<p>与 RNN 不同，Transformer 并行处理整个序列，没有内置的顺序概念。对于 Self-Attention 而言，&ldquo;A 打 B"和"B 打 A"在向量表示上是完全等价的——模型无法区分词的先后顺序。因此需要显式地给每个位置注入位置信息。</p>
+<h3 id=sinusoidal-位置编码>Sinusoidal 位置编码<a href=#sinusoidal-位置编码 class=header-anchor arialabel=Anchor> # </a></h3>
+<p>Transformer 论文使用正弦和余弦函数来生成位置编码：</p>
+<p>$$
+\begin{align*}
+PE_{(pos, 2i)} &= \sin\left(\frac{pos}{10000^{2i/d_{model}}}\right) \
+PE_{(pos, 2i+1)} &= \cos\left(\frac{pos}{10000^{2i/d_{model}}}\right)
+\end{align*}
+$$</p>
+<p>其中 $pos$ 是词在序列中的位置，$i$ 是维度的索引。</p>
+<p>这种编码方式有几个精妙之处：</p>
+<ul>
+<li><strong>值域有界</strong>：正弦和余弦都在 [-1, 1] 之间，不会因序列过长而数值爆炸。</li>
+<li><strong>相对位置可学习</strong>：对于任意固定的偏移 k，$PE_{pos+k}$ 可以表示为 $PE_{pos}$ 的线性函数，使模型更容易学到相对位置关系。</li>
+<li><strong>多频率成分</strong>：不同维度对应不同频率的波形，低维捕捉大范围的位置关系（低频），高维捕捉小范围的局部关系（高频）。</li>
+</ul>
+<p>下图可视化了位置编码矩阵（行是位置，列是维度），可以看到不同维度呈现出不同频率的波形：</p>
+<p><img src=/img/2026/06/04.png alt="Positional Encoding 可视化" loading=lazy>
+</p>
+<h3 id=pytorch-代码实现-2>PyTorch 代码实现<a href=#pytorch-代码实现-2 class=header-anchor arialabel=Anchor> # </a></h3>
+<pre tabindex=0><code>class PositionalEncoding(nn.Module):
+    def __init__(self, d_model=512, max_len=5000):
+        super().__init__()
+
+        # 创建位置编码矩阵 [max_len, d_model]
+        pe = torch.zeros(max_len, d_model)
+        position = torch.arange(0, max_len).unsqueeze(1).float()  # [max_len, 1]
+        
+        # 计算分母中的 10000^(2i/d_model)
+        div_term = torch.exp(
+            torch.arange(0, d_model, 2).float() * 
+            (-math.log(10000.0) / d_model)
+        )
+
+        # 偶数维度用 sin，奇数维度用 cos
+        pe[:, 0::2] = torch.sin(position * div_term)
+        pe[:, 1::2] = torch.cos(position * div_term)
+
+        # 增加 batch 维度：[1, max_len, d_model]
+        pe = pe.unsqueeze(0)
+
+        # 注册为 buffer（不是参数，但需要随模型保存和移动设备）
+        self.register_buffer('pe', pe)
+
+    def forward(self, x):
+        &quot;&quot;&quot;
+        x: [batch_size, seq_len, d_model]
+        &quot;&quot;&quot;
+        seq_len = x.size(1)
+        x = x + self.pe[:, :seq_len, :]
+        return x
+</code></pre><p>位置编码直接加到词嵌入（Word Embedding）上，然后送入编码器。</p>
+<blockquote>
+<p><strong>Attention 解决了"token 之间怎么交互&rdquo;，但每个 token 自身还需要做非线性变换来提炼特征。</strong> 就像 CNN 里卷积做完后会接一个激活函数一样，Transformer 在每个注意力子层之后接了一个全连接的前馈网络。</p>
+</blockquote>
+<h2 id=前馈神经网络feed-forward-network>前馈神经网络（Feed-Forward Network）<a href=#前馈神经网络feed-forward-network class=header-anchor arialabel=Anchor> # </a></h2>
+<p>Transformer 的每个编码器和解码器层都包含一个相同的前馈网络，它对每个位置独立施加（position-wise），由两个线性变换和一个 ReLU 激活函数组成：</p>
+<p>$$
+\text{FFN}(x) = \max(0, x W_1 + b_1) W_2 + b_2
+$$</p>
+<p>第一层将维度从 $d_{model}$（512）扩展到 $d_{ff}$（2048），第二层再降回 $d_{model}$。这种"先升维再降维"的设计类似于 CNN 中增加通道数的思路，给模型更大的容量去学习和组合特征。</p>
+<pre tabindex=0><code>class FeedForward(nn.Module):
+    def __init__(self, d_model=512, d_ff=2048, dropout=0.1):
+        super().__init__()
+        self.linear1 = nn.Linear(d_model, d_ff)
+        self.linear2 = nn.Linear(d_ff, d_model)
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self, x):
+        return self.linear2(self.dropout(F.relu(self.linear1(x))))
+</code></pre><h2 id=add--norm残差连接与层归一化>Add & Norm：残差连接与层归一化<a href=#add--norm残差连接与层归一化 class=header-anchor arialabel=Anchor> # </a></h2>
+<h3 id=残差连接residual-connection>残差连接（Residual Connection）<a href=#残差连接residual-connection class=header-anchor arialabel=Anchor> # </a></h3>
+<p>Transformer 在每个子层后面加上残差连接：</p>
+<p>$$
+\text{Output} = \text{LayerNorm}(x + \text{Sublayer}(x))
+$$</p>
+<p>残差连接让梯度可以直接流向前层，缓解深层网络的梯度消失问题。这与 ResNet 的思想一脉相承。</p>
+<h3 id=层归一化layer-normalization>层归一化（Layer Normalization）<a href=#层归一化layer-normalization class=header-anchor arialabel=Anchor> # </a></h3>
+<p>与 Batch Normalization 不同，Layer Normalization 在<strong>特征维度</strong>上做归一化（对一个样本的所有特征计算均值和方差），不依赖于 batch 中其他样本。这对于 NLP 任务尤为重要，因为不同句子的长度不同，batch 统计量不稳定。</p>
+<p>$$
+\text{LayerNorm}(x) = \gamma \cdot \frac{x - \mu}{\sqrt{\sigma^2 + \epsilon}} + \beta
+$$</p>
+<p>其中 $\mu$ 和 $\sigma^2$ 是在最后一个维度（特征维度）上计算的，$\gamma$ 和 $\beta$ 是可学习的缩放和偏移参数。</p>
+<blockquote>
+<p><strong>现在所有零件都齐了。</strong> 回顾一下：Self-Attention 让 token 之间交互、Multi-Head 提供了多个视角、Positional Encoding 注入了顺序、FFN 做逐 token 的特征变换、残差连接和 LayerNorm 保证训练稳定。把这些组件按顺序串起来，就是一个完整的 Encoder 层。</p>
+</blockquote>
+<h2 id=完整的编码器层>完整的编码器层<a href=#完整的编码器层 class=header-anchor arialabel=Anchor> # </a></h2>
+<p>把以上组件组装起来，一个完整的 Transformer 编码器层如下：</p>
+<pre tabindex=0><code>class EncoderLayer(nn.Module):
+    def __init__(self, d_model=512, num_heads=8, d_ff=2048, dropout=0.1):
+        super().__init__()
+        self.self_attn = MultiHeadAttention(d_model, num_heads)
+        self.ffn = FeedForward(d_model, d_ff, dropout)
+        self.norm1 = nn.LayerNorm(d_model)
+        self.norm2 = nn.LayerNorm(d_model)
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self, x, mask=None):
+        # 1. 多头自注意力 + Add &amp; Norm
+        attn_output, _ = self.self_attn(x, x, x, mask)
+        x = self.norm1(x + self.dropout(attn_output))
+
+        # 2. 前馈网络 + Add &amp; Norm
+        ffn_output = self.ffn(x)
+        x = self.norm2(x + self.dropout(ffn_output))
+
+        return x
+</code></pre><p>6 个这样的编码器层堆叠起来:</p>
+<pre tabindex=0><code>class Encoder(nn.Module):
+    def __init__(self, vocab_size, d_model=512, num_heads=8, 
+                 num_layers=6, d_ff=2048, max_len=5000, dropout=0.1):
+        super().__init__()
+        self.embedding = nn.Embedding(vocab_size, d_model)
+        self.pos_encoding = PositionalEncoding(d_model, max_len)
+        self.layers = nn.ModuleList([
+            EncoderLayer(d_model, num_heads, d_ff, dropout)
+            for _ in range(num_layers)
+        ])
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self, x, mask=None):
+        x = self.dropout(self.pos_encoding(self.embedding(x)))
+        for layer in self.layers:
+            x = layer(x, mask)
+        return x
+</code></pre><p><strong>一层 Encoder 的数据流动全景</strong>：下面把所有零件串起来，看一个 batch 的数据经过一层 Encoder 时到底发生了什么：</p>
+<p><img src=/img/2026/06/07.png alt=Encoder数据流动 loading=lazy>
+</p>
+<p>关键观察：<strong>输入和输出的 shape 始终是 $[B, S, 512]$</strong>。正是这个"shape 不变"的性质，让 6 层 Encoder 可以像乐高积木一样直接堆叠——每一层的输出就是下一层的输入，无需任何适配。</p>
+<h2 id=解码器与掩码注意力>解码器与掩码注意力<a href=#解码器与掩码注意力 class=header-anchor arialabel=Anchor> # </a></h2>
+<p>解码器的结构与编码器高度对称——Self-Attention、FFN、Add & Norm 这些组件完全复用——但多了两个关键区别：<strong>Masked Self-Attention</strong>（不能偷看未来）和 <strong>Cross-Attention</strong>（桥接编码器的输出）。</p>
+<h3 id=masked-self-attention掩码自注意力>Masked Self-Attention（掩码自注意力）<a href=#masked-self-attention掩码自注意力 class=header-anchor arialabel=Anchor> # </a></h3>
+<p>解码器在生成序列时是自回归的（autoregressive）——每次预测下一个词时，只能看到已经生成的词，不能偷看未来的词。因此需要对注意力分数矩阵施加一个<strong>上三角掩码</strong>，将未来位置设为 $-\infty$：</p>
+<pre tabindex=0><code>def generate_square_subsequent_mask(sz):
+    &quot;&quot;&quot;生成一个上三角掩码，禁止关注未来的位置&quot;&quot;&quot;
+    mask = torch.triu(torch.ones(sz, sz), diagonal=1).bool()
+    # mask[i, j] = True 表示位置 i 不能看到位置 j
+    return mask
+</code></pre><p>例如，当序列长度为 4 时，掩码矩阵如下（True 表示被遮掩的位置）：</p>
+<p>$$
+\begin{bmatrix}
+\text{False} & \text{True} & \text{True} & \text{True} \
+\text{False} & \text{False} & \text{True} & \text{True} \
+\text{False} & \text{False} & \text{False} & \text{True} \
+\text{False} & \text{False} & \text{False} & \text{False}
+\end{bmatrix}
+$$</p>
+<h3 id=cross-attention交叉注意力>Cross-Attention（交叉注意力）<a href=#cross-attention交叉注意力 class=header-anchor arialabel=Anchor> # </a></h3>
+<p>解码器的第二个注意力子层是 Cross-Attention。它与 Self-Attention 的区别在于：</p>
+<ul>
+<li><strong>Query（Q）</strong> 来自解码器自身的上一层的输出</li>
+<li><strong>Key（K）和 Value（V）</strong> 来自编码器的最终输出</li>
+</ul>
+<p>这意味着解码器的每个位置都可以"查阅"整个编码后的源序列，从而将源语言信息融入到目标语言的生成中。</p>
+<blockquote>
+<p>以上是两个关键区别的概要。下面把 Masked Self-Attention 和 Cross-Attention 连同 FFN 一起串起来，用一个翻译例子完整走一遍 Decoder 层的矩阵运算——你会看到三个子层是如何接力完成"理解源句 → 生成译文"的。</p>
+</blockquote>
+<h3 id=解码器矩阵运算完整展开>解码器矩阵运算完整展开<a href=#解码器矩阵运算完整展开 class=header-anchor arialabel=Anchor> # </a></h3>
+<p>下面用一个翻译任务的具体例子，把解码器的一层完整前向计算走一遍。假设源句（编码器输入）为 &ldquo;I love you&rdquo;，目标句（解码器输入，训练时使用 Teacher Forcing）为 &ldquo;我 爱 你&rdquo;，已经过 Embedding + PE，得到：</p>
+<p>$$
+\begin{aligned}
+\text{Encoder Output: } E_{out} &\in \mathbb{R}^{B \times S \times 512}
+= \mathbb{R}^{1 \times 3 \times 512} \\[4pt]
+\text{Decoder Input: } Y &\in \mathbb{R}^{B \times T \times 512}
+= \mathbb{R}^{1 \times 3 \times 512}
+\end{aligned}
+$$</p>
+<p>其中 $S$=3（源句 token 数），$T$=3（目标句 token 数）。训练时 $Y$ 是整个目标序列一次输入，推理时则逐 token 生成。</p>
+<p><strong>阶段一：Masked Self-Attention（Q、K、V 都来自 Decoder）</strong></p>
+<p>第一步与 Encoder 的 Self-Attention 完全一样，只是多了一个上三角 mask。Q、K、V 都从 Decoder 输入 $Y$ 投影得到：</p>
+<p>$$
+\begin{aligned}
+Q_{dec} &= Y W^Q_{dec} &&\Rightarrow; [1, 3, 512] \times [512, 512] = [1, 3, 512] \
+K_{dec} &= Y W^K_{dec} &&\Rightarrow; [1, 3, 512] \times [512, 512] = [1, 3, 512] \
+V_{dec} &= Y W^V_{dec} &&\Rightarrow; [1, 3, 512] \times [512, 512] = [1, 3, 512]
+\end{aligned}
+$$</p>
+<blockquote>
+<p>注意：Decoder 的 Self-Attention 有自己的权重矩阵 $W^Q_{dec}$、$W^K_{dec}$、$W^V_{dec}$，和 Encoder 的 $W^Q$、$W^K$、$W^V$ <strong>不是同一套参数</strong>。但运算逻辑完全相同。</p>
+</blockquote>
+<p>拆分多头（h=8, d_k=64）：$Q_{dec}, K_{dec}, V_{dec}$ 均变为 $[1, 8, 3, 64]$。</p>
+<p>计算 Scaled Dot-Product Attention，加上 mask 禁止看到未来：</p>
+<p>$$
+\begin{aligned}
+\text{Scores}_{\text{dec}}
+&= \frac{Q_{dec} K_{dec}^T}{\sqrt{64}} \\[2pt]
+&\Rightarrow [1, 8, 3, 3] \\[4pt]
+\text{Scores}_{\text{dec}}
+&= \text{Scores}_{\text{dec}} + \text{mask}_{\text{tgt}} \\[4pt]
+\alpha_{dec}
+&= \text{softmax}(\text{Scores}_{\text{dec}}) \\[2pt]
+&\Rightarrow [1, 8, 3, 3] \\[4pt]
+\text{SelfAttn}_{\text{out}}
+&= \alpha_{dec} \cdot V_{dec} \\[2pt]
+&\Rightarrow [1, 8, 3, 64]
+\end{aligned}
+$$</p>
+<p>$\text{mask}_{\text{tgt}}$ 是一个上三角矩阵，将位置 i 对位置 j（j > i）的注意力分数设为 $-\infty$，softmax 后这些位置的权重变为 0。例如 &ldquo;爱&rdquo;（第 2 个 token）只能看到 &ldquo;我&rdquo;（第 1 个）和自己，看不到 &ldquo;你&rdquo;（第 3 个）。</p>
+<p>合并多头 + $W^O_{dec}$ 投影：$\text{SelfAttn}_{\text{out}} \in [1, 3, 512]$。然后做第一次残差连接 + LayerNorm：$Y_1 = \text{LayerNorm}(Y + \text{SelfAttn}_{\text{out}})$，shape 仍为 $[1, 3, 512]$。</p>
+<p><strong>阶段二：Cross-Attention（Q 来自 Decoder，K、V 来自 Encoder）</strong></p>
+<p>这是解码器独有的操作，也是连接编码器和解码器的桥梁。这里需要区分清楚<strong>两套不同的 W^K / W^V</strong>，很多初学者会混淆：</p>
+<ul>
+<li>Encoder 内部 Self-Attention 用的是 $W^K_{enc}$、$W^V_{enc}$，作用于 Encoder 自己的输入 X</li>
+<li>Cross-Attention 用的是 $W^K_{cross}$、$W^V_{cross}$，作用于 <strong>Encoder 的最终输出 $E_{out}$</strong></li>
+</ul>
+<p>两者是完全独立的参数矩阵，互不共享。<strong>$E_{out}$（也就是 Encoder 的输出）并没有被丢弃</strong>——它作为 Cross-Attention 的 K 和 V 的"原材料"，分别经过 $W^K_{cross}$ 和 $W^V_{cross}$ 投影后，让 Decoder 的每个位置都能"查阅"整个源句的语义信息。Encoder 自己的 $W^Q_{enc}$ 只在 Encoder 内部生效，和 Cross-Attention 完全无关——Cross-Attention 的 Q 永远来自 Decoder。</p>
+<p>$$
+\begin{aligned}
+Q_{cross} &= Y_1 W^Q_{cross} \
+&\Rightarrow [1, 3, 512] \times [512, 512] = [1, 3, 512] \\[4pt]
+K_{cross} &= E_{out} W^K_{cross} \
+&\Rightarrow [1, 3, 512] \times [512, 512] = [1, 3, 512] \\[4pt]
+V_{cross} &= E_{out} W^V_{cross} \
+&\Rightarrow [1, 3, 512] \times [512, 512] = [1, 3, 512]
+\end{aligned}
+$$</p>
+<p>关键区别：$Q_{cross}$ 从 Decoder 的中间表示 $Y_1$ 投影而来，而 $K_{cross}$ 和 $V_{cross}$ 则从 Encoder 的输出 $E_{out}$ 投影而来。然后拆分多头：</p>
+<p>$$
+Q_{cross},,K_{cross},,V_{cross} ;\in; [1, 8, 3, 64]
+$$</p>
+<p>计算 Cross-Attention：</p>
+<p>$$
+\begin{aligned}
+\text{Scores}_{\text{cross}}
+&= \frac{Q_{cross} K_{cross}^T}{\sqrt{64}} \\[2pt]
+&\Rightarrow [1, 8, 3, 3] \\[4pt]
+\alpha_{cross}
+&= \text{softmax}(\text{Scores}_{\text{cross}}) \\[2pt]
+&\Rightarrow [1, 8, 3, 3] \\[4pt]
+\text{CrossAttn}_{\text{out}}
+&= \alpha_{cross} \cdot V_{cross} \\[2pt]
+&\Rightarrow [1, 8, 3, 64]
+\end{aligned}
+$$</p>
+<p>注意这里 <strong>没有 mask</strong>——Decoder 的每个位置可以看到 Encoder 的所有位置，因为翻译时源句是完整已知的。并且 $\text{Scores}_{\text{cross}}$ 是 $3 \times 3$ 的方阵正好因为 $S = T = 3$，实际中 $S$ 和 $T$ 往往不同，分数矩阵就是 $[T, S]$ 的长方形。</p>
+<p>合并多头 + $W^O_{cross}$ 投影：$\text{CrossAttn}_{\text{out}} \in [1, 3, 512]$。然后第二次残差连接 + LayerNorm：$Y_2 = \text{LayerNorm}(Y_1 + \text{CrossAttn}_{\text{out}})$。</p>
+<p><strong>阶段三：Feed-Forward Network</strong></p>
+<p>与编码器完全一样的 FFN：$[1, 3, 512] \to [1, 3, 2048] \to [1, 3, 512]$，然后第三次残差连接 + LayerNorm：$Y_3 = \text{LayerNorm}(Y_2 + \text{FFN}(Y_2))$。$Y_3$ 即该解码器层的最终输出，shape $[1, 3, 512]$，和输入完全一致。</p>
+<p><strong>两个 Self-Attention 的直观对比</strong></p>
+<table>
+<thead>
+<tr>
+<th style=text-align:left>维度</th>
+<th style=text-align:left>Encoder Self-Attn</th>
+<th style=text-align:left>Decoder Masked Self-Attn</th>
+<th style=text-align:left>Decoder Cross-Attn</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style=text-align:left>Q 来源</td>
+<td style=text-align:left>Encoder 输入 $X$</td>
+<td style=text-align:left>Decoder 输入 $Y$</td>
+<td style=text-align:left>Decoder 中间输出 $Y_1$</td>
+</tr>
+<tr>
+<td style=text-align:left>K, V 来源</td>
+<td style=text-align:left>Encoder 输入 $X$</td>
+<td style=text-align:left>Decoder 输入 $Y$</td>
+<td style=text-align:left><strong>Encoder 输出</strong> $E_{out}$</td>
+</tr>
+<tr>
+<td style=text-align:left>Mask</td>
+<td style=text-align:left>无（可看到全部）</td>
+<td style=text-align:left>上三角 mask</td>
+<td style=text-align:left>无（可看到全部）</td>
+</tr>
+<tr>
+<td style=text-align:left>作用</td>
+<td style=text-align:left>捕获源句内部依赖</td>
+<td style=text-align:left>捕获目标句已生成部分的依赖</td>
+<td style=text-align:left>将源句信息融入目标句生成</td>
+</tr>
+</tbody>
+</table>
+<p>可以看到，Decoder 的 Cross-Attention 是翻译质量的真正保障——它让模型在生成每个目标词时都能"回看"整个源句，确保翻译不跑偏。</p>
+<p><strong>一层 Decoder 的数据流动全景与三种 Attention 对比</strong>：</p>
+<p><img src=/img/2026/06/08.png alt=Decoder数据流动与Attention对比 loading=lazy>
+</p>
+<h3 id=解码器层代码实现>解码器层代码实现<a href=#解码器层代码实现 class=header-anchor arialabel=Anchor> # </a></h3>
+<pre tabindex=0><code>class DecoderLayer(nn.Module):
+    def __init__(self, d_model=512, num_heads=8, d_ff=2048, dropout=0.1):
+        super().__init__()
+        self.self_attn = MultiHeadAttention(d_model, num_heads)
+        self.cross_attn = MultiHeadAttention(d_model, num_heads)
+        self.ffn = FeedForward(d_model, d_ff, dropout)
+        self.norm1 = nn.LayerNorm(d_model)
+        self.norm2 = nn.LayerNorm(d_model)
+        self.norm3 = nn.LayerNorm(d_model)
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self, x, encoder_output, src_mask=None, tgt_mask=None):
+        # 1. 掩码自注意力 + Add &amp; Norm
+        attn_output, _ = self.self_attn(x, x, x, tgt_mask)
+        x = self.norm1(x + self.dropout(attn_output))
+
+        # 2. 交叉注意力 + Add &amp; Norm (Q from decoder, K&amp;V from encoder)
+        cross_output, _ = self.cross_attn(x, encoder_output, encoder_output, src_mask)
+        x = self.norm2(x + self.dropout(cross_output))
+
+        # 3. 前馈网络 + Add &amp; Norm
+        ffn_output = self.ffn(x)
+        x = self.norm3(x + self.dropout(ffn_output))
+
+        return x
+</code></pre><blockquote>
+<p><strong>至此，Encoder 和 Decoder 的每个子模块都已经讲完。</strong> 但理解各个模块只是第一步——实际编码或调试 Transformer 时，最常遇到的困惑是：&ldquo;这层的输入是什么 shape？输出又变成什么样了？&rdquo; 下面我们从整体视角统一梳理数据在编码器和解码器中流动时的维度变化，把零散的知识串成一张完整的地图。</p>
+</blockquote>
+<h2 id=各阶段维度全景分析>各阶段维度全景分析<a href=#各阶段维度全景分析 class=header-anchor arialabel=Anchor> # </a></h2>
+<p>理解 Transformer 每一层输入输出的维度变化，是彻底吃透这个模型的关键。下面以论文默认配置为例，系统梳理数据在各组件之间的流动。</p>
+<p><strong>论文默认超参</strong>：$d_{model}=512$，$h=8$，$d_k = d_v = 64$，$d_{ff}=2048$，$N=6$。</p>
+<p>为方便表述，用以下符号约定：</p>
+<ul>
+<li>$B$：batch size（一批样本数）</li>
+<li>$S$：source 序列长度（编码器输入）</li>
+<li>$T$：target 序列长度（解码器输入）</li>
+<li>$V_{src}$ / $V_{tgt}$：源 / 目标语言词表大小</li>
+</ul>
+<h3 id=encoder-维度变化一览>Encoder 维度变化一览<a href=#encoder-维度变化一览 class=header-anchor arialabel=Anchor> # </a></h3>
+<p>下表从左到右追踪一个 batch 经过编码器时每一步的 tensor shape：</p>
+<table>
+<thead>
+<tr>
+<th style=text-align:left>步骤</th>
+<th style=text-align:left>操作</th>
+<th style=text-align:left>输入 shape</th>
+<th style=text-align:left>输出 shape</th>
+<th style=text-align:left>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style=text-align:left>①</td>
+<td style=text-align:left>Tokenization</td>
+<td style=text-align:left>—</td>
+<td style=text-align:left>$[B, S]$</td>
+<td style=text-align:left>整数 token ID</td>
+</tr>
+<tr>
+<td style=text-align:left>②</td>
+<td style=text-align:left>Embedding</td>
+<td style=text-align:left>$[B, S]$</td>
+<td style=text-align:left>$[B, S, 512]$</td>
+<td style=text-align:left>查表，每个 ID → 512 维向量</td>
+</tr>
+<tr>
+<td style=text-align:left>③</td>
+<td style=text-align:left>+ Positional Encoding</td>
+<td style=text-align:left>$[B, S, 512]$</td>
+<td style=text-align:left>$[B, S, 512]$</td>
+<td style=text-align:left>逐元素相加，shape 不变</td>
+</tr>
+<tr>
+<td style=text-align:left>④</td>
+<td style=text-align:left>Multi-Head Self-Attn</td>
+<td style=text-align:left>$[B, S, 512]$</td>
+<td style=text-align:left>$[B, S, 512]$</td>
+<td style=text-align:left>详见下文拆解</td>
+</tr>
+<tr>
+<td style=text-align:left>⑤</td>
+<td style=text-align:left>Add & Norm</td>
+<td style=text-align:left>$[B, S, 512]$</td>
+<td style=text-align:left>$[B, S, 512]$</td>
+<td style=text-align:left>残差 + LayerNorm</td>
+</tr>
+<tr>
+<td style=text-align:left>⑥</td>
+<td style=text-align:left>FFN</td>
+<td style=text-align:left>$[B, S, 512]$</td>
+<td style=text-align:left>$[B, S, 512]$</td>
+<td style=text-align:left>512→2048→512，shape 不变</td>
+</tr>
+<tr>
+<td style=text-align:left>⑦</td>
+<td style=text-align:left>Add & Norm</td>
+<td style=text-align:left>$[B, S, 512]$</td>
+<td style=text-align:left>$[B, S, 512]$</td>
+<td style=text-align:left>残差 + LayerNorm</td>
+</tr>
+<tr>
+<td style=text-align:left>🔁</td>
+<td style=text-align:left>重复④~⑦ × N=6</td>
+<td style=text-align:left>$[B, S, 512]$</td>
+<td style=text-align:left>$[B, S, 512]$</td>
+<td style=text-align:left>每层输出 shape 不变</td>
+</tr>
+<tr>
+<td style=text-align:left>⑧</td>
+<td style=text-align:left>编码器最终输出</td>
+<td style=text-align:left>$[B, S, 512]$</td>
+<td style=text-align:left>$[B, S, 512]$</td>
+<td style=text-align:left>将送入解码器的 Cross-Attn</td>
+</tr>
+</tbody>
+</table>
+<h3 id=一个常见的误解词表大小-vs-向量维度>一个常见的误解：词表大小 vs. 向量维度<a href=#一个常见的误解词表大小-vs-向量维度 class=header-anchor arialabel=Anchor> # </a></h3>
+<p>观察上表的第②步，你会发现 Encoder 的输出是 $[B, S, \mathbf{512}]$——不管输入序列里包含多少个词，每个 token 最终都变成了一个 <strong>512 维的向量</strong>。很多初学者会困惑：英文单词不是有上万个吗？中文词也成千上万，为什么向量维度只有 512？这够用吗？</p>
+<p>这里需要区分两个完全不同、但经常被混淆的概念：</p>
+<ul>
+<li>
+<p><strong>词表大小（Vocabulary Size，$V$）</strong>：模型认识多少个"词"。Transformer 论文使用了 BPE（Byte-Pair Encoding）子词切分，将英/德文语料切成了约 <strong>37000 个</strong>子词——不是完整的单词，而是更细粒度的文本单元（比如 &ldquo;running&rdquo; 可能被切成 &ldquo;runn&rdquo; + &ldquo;ing&rdquo;）。这 37000 就是词表的大小。</p>
+</li>
+<li>
+<p><strong>向量维度（$d_{model}$）</strong>：每个 token 被表示成一个多长的向量。这个维度决定了模型能给每个词赋予多少"描述标签"来捕捉其语义。512 意味着用 512 个数字来刻画一个词。</p>
+</li>
+</ul>
+<p>打个比方：一个图书馆有 <strong>37000 本书</strong>（词表大小），每本书用 <strong>512 个标签</strong>（向量维度）来描述它的内容。书的数量和标签的数量是两个独立的维度——不管你有 1 万本还是 100 万本书，每本书贴 512 个标签在技术上都完全可行。</p>
+<p>真正的关系在于 <strong>Embedding 矩阵</strong>：</p>
+<p>$$
+E \in \mathbb{R}^{V \times d_{model}} = \mathbb{R}^{37000 \times 512}
+$$</p>
+<p>这是一个 37000 行、512 列的矩阵。当 token ID 为 284 时，Embedding 层的操作就是从矩阵中"查表"取出第 284 行——一个 512 维的向量。<strong>这个过程与词表大小无关，它只是查一次表</strong>。</p>
+<p>既然能选更大的值，那为什么论文偏偏选了 512？这纯粹是 2017 年的工程权衡：</p>
+<table>
+<thead>
+<tr>
+<th style=text-align:left>因素</th>
+<th style=text-align:left>$d_{model}$ 太小</th>
+<th style=text-align:left>$d_{model}$ 太大</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style=text-align:left>表达能力</td>
+<td style=text-align:left>一个向量塞不下足够的语义信息</td>
+<td style=text-align:left>冗余，容易过拟合</td>
+</tr>
+<tr>
+<td style=text-align:left>计算量</td>
+<td style=text-align:left>计算很快</td>
+<td style=text-align:left>Self-Attention 复杂度 $O(n^2 \cdot d)$，FFN 复杂度 $O(n \cdot d^2)$</td>
+</tr>
+<tr>
+<td style=text-align:left>多头拆分</td>
+<td style=text-align:left>$h=8$ 时每头只有几十维，太窄</td>
+<td style=text-align:left>单头已经足够宽，多头的收益递减</td>
+</tr>
+</tbody>
+</table>
+<p>$d_{model}=512$ 配合 $h=8$ 个头，恰好让每个注意力头分到 $d_k = 64$ 维——这在当时 8 块 P100 GPU 的算力条件下，跑得动、效果好，是一个甜点值。后来的模型也确实验证了"越大越好"：GPT-2 的 $d_{model}$ 涨到 768，GPT-3 涨到 12288，算力提升是背后主要的推动力。</p>
+<p>看到这里你可能会追问：既然只有 512 维，而词表里有 37000 个 token，那会不会有两个不同的词恰好分到了同一个向量？</p>
+<p>答案是：<strong>不会，而且表达空间完全够用。</strong> 就算只用 10 维，每维取 0 或 1，也有 $2^{10}=1024$ 种组合；512 维连续空间的可能性是天文数字——$2^{512} \gg 37000$，远不到"不够用"的地步。更重要的是，Embedding 矩阵的每一行都是<strong>随机初始化</strong>的（比如 Xavier 初始化），训练刚开始时所有行的向量就已经各不相同了。之后每次反向传播，梯度会沿着"让当前词的预测更准"的方向单独更新对应那一行的参数，语义相近的词向量会自然靠近（比如"猫"和"狗"），语义无关的则自然远离。两块磁铁扔进水里不会自动吸在一起，两个随机初始化的高维向量也几乎不可能恰好塌缩成同一个点。</p>
+<p>你甚至可以反过来想：37000 个 token 塞进 512 维空间，<strong>平均只用了这个空间容量的零头</strong>，大量维度都处于"半闲置"状态——这才是模型能学到丰富语义的前提，也是为什么后来的工作敢于把词表扩到 5 万、10 万而不必等比放大 $d_{model}$。</p>
+<h3 id=self-attention-内部维度拆解>Self-Attention 内部维度拆解<a href=#self-attention-内部维度拆解 class=header-anchor arialabel=Anchor> # </a></h3>
+<p>这是整个 Transformer 最核心也最容易混淆的地方。以编码器的 Self-Attention 为例，输入 $X$ 的 shape 为 $[B, S, 512]$：</p>
+<pre tabindex=0><code>输入 X:                           [B, S, 512]
+                                    │
+    ┌───────────────────────────────┼───────────────────────────────┐
+    │ W_Q (512×512)                │ W_K (512×512)                │ W_V (512×512)
+    ▼                              ▼                              ▼
+Q: [B, S, 512]               K: [B, S, 512]               V: [B, S, 512]
+    │                              │                              │
+    └──────────  split into h=8 heads ────────────────────────────┘
+                                    │
+    Q: [B, 8, S, 64]          K: [B, 8, S, 64]          V: [B, 8, S, 64]
+    │                              │                              │
+    └──  Scores = Q·Kᵀ / √64  ────┘                              │
+                  │                                                 │
+       Scores: [B, 8, S, S]  ← 每对位置的相关性分数                 │
+                  │                                                 │
+          softmax(dim=-1)                                           │
+                  │                                                 │
+     Weights: [B, 8, S, S]  ← 行归一化的注意力权重                  │
+                  │                                                 │
+                  └──────  Output = Weights · V  ───────────────────┘
+                                    │
+                  Output: [B, 8, S, 64]  ← 每个头的加权聚合结果
+                                    │
+                          combine_heads (transpose + view)
+                                    │
+                         [B, S, 512]  ← 8×64 拼接回 512
+                                    │
+                               W_O (512×512)
+                                    │
+                          Output: [B, S, 512]
+</code></pre><p><strong>关键点</strong>：</p>
+<ul>
+<li>线性投影 $W^Q, W^K, W^V$ 并不改变维度（512 → 512），真正"降维"发生在 split heads 时——将 512 拆成 8 份，每份 64。</li>
+<li>注意力分数矩阵 $[B, 8, S, S]$ 是 $O(S^2)$ 的内存开销，这是长序列（如 100k tokens）时的主要瓶颈。</li>
+<li>经过 W_O 投影后，输出恢复为 $[B, S, 512]$，与输入 shape 完全一致——这是残差连接能够直接相加的前提。</li>
+</ul>
+<h3 id=decoder-维度变化一览>Decoder 维度变化一览<a href=#decoder-维度变化一览 class=header-anchor arialabel=Anchor> # </a></h3>
+<p>解码器的输入输出 shape 与编码器类似，但额外接收编码器的输出做 Cross-Attention：</p>
+<table>
+<thead>
+<tr>
+<th style=text-align:left>步骤</th>
+<th style=text-align:left>操作</th>
+<th style=text-align:left>关键输入</th>
+<th style=text-align:left>输出 shape</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style=text-align:left>①</td>
+<td style=text-align:left>Output Embedding + PE</td>
+<td style=text-align:left>$[B, T]$ token IDs</td>
+<td style=text-align:left>$[B, T, 512]$</td>
+</tr>
+<tr>
+<td style=text-align:left>②</td>
+<td style=text-align:left>Masked Self-Attn</td>
+<td style=text-align:left>Q=K=V ← decoder</td>
+<td style=text-align:left>$[B, T, 512]$</td>
+</tr>
+<tr>
+<td style=text-align:left>③</td>
+<td style=text-align:left>Add & Norm</td>
+<td style=text-align:left>—</td>
+<td style=text-align:left>$[B, T, 512]$</td>
+</tr>
+<tr>
+<td style=text-align:left>④</td>
+<td style=text-align:left><strong>Cross-Attention</strong></td>
+<td style=text-align:left>Q ← $[B, T, 512]$ (decoder)</td>
+<td style=text-align:left>$[B, T, 512]$</td>
+</tr>
+<tr>
+<td style=text-align:left></td>
+<td style=text-align:left></td>
+<td style=text-align:left>K,V ← $[B, S, 512]$ (encoder)</td>
+<td style=text-align:left></td>
+</tr>
+<tr>
+<td style=text-align:left>⑤</td>
+<td style=text-align:left>Add & Norm</td>
+<td style=text-align:left>—</td>
+<td style=text-align:left>$[B, T, 512]$</td>
+</tr>
+<tr>
+<td style=text-align:left>⑥</td>
+<td style=text-align:left>FFN + Add & Norm</td>
+<td style=text-align:left>—</td>
+<td style=text-align:left>$[B, T, 512]$</td>
+</tr>
+<tr>
+<td style=text-align:left>🔁</td>
+<td style=text-align:left>重复②~⑥ × N=6</td>
+<td style=text-align:left>—</td>
+<td style=text-align:left>$[B, T, 512]$</td>
+</tr>
+<tr>
+<td style=text-align:left>⑦</td>
+<td style=text-align:left>Linear + Softmax</td>
+<td style=text-align:left>$[B, T, 512]$</td>
+<td style=text-align:left>$[B, T, V_{tgt}]$</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Cross-Attention 的 shape 运算是理解解码器的关键</strong>：</p>
+<p>Q 来自解码器（shape $[B, T, 512]$），K、V 来自编码器（shape $[B, S, 512]$）。经过多头拆分和线性投影后：</p>
+<p>$$
+\text{Scores} = Q_{dec} \cdot K_{enc}^T \quad\Rightarrow\quad [B, 8, T, S]
+$$</p>
+<p>$$
+\text{Output} = \text{softmax}(\text{Scores}) \cdot V_{enc} \quad\Rightarrow\quad [B, 8, T, 64]
+$$</p>
+<p>注意这里的 Scores 矩阵是 <strong>$T \times S$</strong>（不是方阵！）——每个目标语言的词去关注所有源语言的词。合并多头后恢复到 $[B, T, 512]$。</p>
+<h3 id=训练-vs-推理的维度差异>训练 vs 推理的维度差异<a href=#训练-vs-推理的维度差异 class=header-anchor arialabel=Anchor> # </a></h3>
+<table>
+<thead>
+<tr>
+<th style=text-align:left>场景</th>
+<th style=text-align:left>编码器输入</th>
+<th style=text-align:left>解码器输入</th>
+<th style=text-align:left>解码方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style=text-align:left><strong>训练</strong></td>
+<td style=text-align:left>$[B, S]$ 完整源句</td>
+<td style=text-align:left>$[B, T]$ 完整目标句（Teacher Forcing）</td>
+<td style=text-align:left>并行，一次前向</td>
+</tr>
+<tr>
+<td style=text-align:left><strong>推理</strong></td>
+<td style=text-align:left>$[B, S]$ 完整源句</td>
+<td style=text-align:left>逐个 token 生成</td>
+<td style=text-align:left>自回归，T 步串行</td>
+</tr>
+</tbody>
+</table>
+<p>训练时解码器一次拿到完整的目标序列，通过上三角 mask 保证位置 i 只能看到 0..i-1。推理时则每次只输入已生成的前缀，逐步扩展。这正是下一节 KV Cache 要优化的核心矛盾。</p>
+<h2 id=kv-cache推理加速的关键技术>KV Cache：推理加速的关键技术<a href=#kv-cache推理加速的关键技术 class=header-anchor arialabel=Anchor> # </a></h2>
+<blockquote>
+<p><strong>为什么只有 Decoder 需要 KV Cache？</strong> Encoder 输入是完整源句，&ldquo;I love you&rdquo; 三个词一次性进，<code>K = X @ W_K</code> 一次矩阵乘就拿到了所有 token 的 Key 和 Value。Decoder 推理时是自回归的——先生成"我"，再生"爱"，再生"你"——每次手里只有一个新 token 的向量 <code>[1, d_model]</code>，未来的词还没影。不缓存的话，每一步都得把整个前缀重新乘一遍 <code>W_K</code>、<code>W_V</code>，O(T²) 的计算量就是纯浪费。</p>
+</blockquote>
+<h3 id=问题的提出>问题的提出<a href=#问题的提出 class=header-anchor arialabel=Anchor> # </a></h3>
+<p>在上一节中提到，训练时解码器是<strong>并行</strong>拿到完整的目标序列，Teacher Forcing + 上三角 mask 一步到位。但推理时是<strong>自回归</strong>的——逐个 token 生成，每生成一个新 token 都要把整个已生成的前缀重新输入一遍。</p>
+<p>假设我们要生成一个长度为 $T$ 的序列，第 $t$ 步时前缀长度为 $t$。来看每一步 Self-Attention 重复计算了什么：</p>
+<pre tabindex=0><code>Step 1: 输入 [x₁]           → 计算 K₁,V₁ (1个token)    → 生成 x₂
+Step 2: 输入 [x₁,x₂]        → 计算 K₁,K₂,V₁,V₂            → 生成 x₃
+Step 3: 输入 [x₁,x₂,x₃]     → 计算 K₁,K₂,K₃,V₁,V₂,V₃     → 生成 x₄
+...
+Step T: 输入 [x₁,...,x_T]   → 计算全部 K,V                → 生成 x_{T+1}
+</code></pre><p><strong>问题很明显</strong>：$K_1, V_1$ 在 Step 1 算过一次，Step 2 又算一次，Step 3 再算一次……一共算了 $T$ 次。同样 $K_2, V_2$ 算了 $T-1$ 次……总计算量 $O(T^2)$ 的重复计算完全是在浪费算力。</p>
+<h3 id=kv-cache-原理>KV Cache 原理<a href=#kv-cache-原理 class=header-anchor arialabel=Anchor> # </a></h3>
+<p>KV Cache 的思路极其简单：把前面步骤算出来的 K 和 V <strong>缓存起来</strong>，下一步只算新 token 的 K、V，然后拼接到缓存后面。</p>
+<pre tabindex=0><code>Step 1: K_cache = K₁       V_cache = V₁        (计算 1 个 token)
+Step 2: K_new = K₂          V_new = V₂          (只算 1 个 token)
+        K_cache = [K₁, K₂]   V_cache = [V₁, V₂]  (拼接)
+Step 3: K_new = K₃          V_new = V₃          (只算 1 个 token)
+        K_cache = [K₁, K₂, K₃]  V_cache = [V₁, V₂, V₃]
+...
+</code></pre><p>每一步只计算 1 个新 token 的 K 和 V，复杂度从 $O(T^2)$ 降到 $O(T)$。</p>
+<h3 id=为什么只缓存-k-和-v而不缓存-q>为什么只缓存 K 和 V，而不缓存 Q？<a href=#为什么只缓存-k-和-v而不缓存-q class=header-anchor arialabel=Anchor> # </a></h3>
+<p>回顾注意力公式：</p>
+<p>$$
+\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{Q K^T}{\sqrt{d_k}}\right) V
+$$</p>
+<ul>
+<li><strong>Q（Query）</strong>：代表"当前 token 想去查询谁"。新 token 的 Q 只需要和<strong>所有</strong> K 做匹配。旧 token 的 Q 在生成下一个 token 时<strong>不再需要</strong>——因为每个位置的输出只在当时用一次。</li>
+<li><strong>K（Key）</strong>：代表"我有哪些信息可以被查询"。新 token 要和<strong>所有历史 token</strong> 算注意力，所以历史 token 的 K 必须保留。</li>
+<li><strong>V（Value）</strong>：代表"我实际携带的信息"。Softmax 权重要对所有 V 加权求和，所以历史的 V 也必须保留。</li>
+</ul>
+<p>因此 K 和 V 需要缓存，Q 不需要。</p>
+<blockquote>
+<p><strong>两种 Cache，两种增长方式</strong>：Decoder 里有两个注意力子层，它们的缓存策略完全不同——</p>
+<table>
+<thead>
+<tr>
+<th style=text-align:left></th>
+<th style=text-align:left>Self-Attention Cache</th>
+<th style=text-align:left>Cross-Attention Cache</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style=text-align:left><strong>缓存的 K/V 来自</strong></td>
+<td style=text-align:left>Decoder 自己的输入</td>
+<td style=text-align:left>Encoder 的输出</td>
+</tr>
+<tr>
+<td style=text-align:left><strong>每步变化</strong></td>
+<td style=text-align:left>新 token 的 K/V <strong>追加</strong>到缓存后面，缓存逐步<strong>增长</strong></td>
+<td style=text-align:left>不变。Encoder 输出是<strong>固定的</strong>，算一次存下来，每一步<strong>复用</strong></td>
+</tr>
+<tr>
+<td style=text-align:left><strong>类比</strong></td>
+<td style=text-align:left>写日记，每天加一页</td>
+<td style=text-align:left>查字典，字典不会变</td>
+</tr>
+</tbody>
+</table>
+<p>Cross-Attention 的 K、V 不需要每步重算，因为源句是完整已知的——Encoder 前向一次，<code>K_enc</code> 和 <code>V_enc</code> 就确定了。真正需要"逐步增长"缓存的，只有 Self-Attention。</p>
+</blockquote>
+<blockquote>
+<p><strong>Step 1 的 K₁、V₁ 是向量还是矩阵？</strong> 很多读者看到"缓存 K₁、V₁"会困惑：只有一个 token 的时候，K₁ 不应该是一个向量吗？为什么要用矩阵来称呼？</p>
+<p>这取决于从哪个视角看。以多头注意力为例（h=8, dₖ=64），单个 token x₁ 经过 W^K 和 split heads 后得到：</p>
+<pre tabindex=0><code>K₁ 的 shape = [1, 8, 1, 64]
+              ↑  ↑  ↑  ↑
+              B  h  L  dₖ
+</code></pre><ul>
+<li><strong>对单个头的注意力计算而言</strong>，K₁ 确实是向量——64 维的一个行向量。第 i 个头拿到的就是 <code>[64]</code> 这么一截。</li>
+<li><strong>对整个模型而言</strong>，8 个头拼在一起则是 <code>[8, 64]</code>，已经是一个小矩阵了。</li>
+<li><strong>代码实现中</strong>为了统一 batch 和多头的维度，甚至保留了 batch 和 seq_len 维度，变成了 <code>[1, 8, 1, 64]</code> 的四维张量。</li>
+</ul>
+<p>所以叫它"向量"或"矩阵"都对，关键在于你站在哪个抽象层次看。<strong>KV Cache 本质上就是在序列维度（dim=2）上不断追加新的 K/V 切片</strong>——每个新 token 贡献一个 <code>[1, 8, 1, 64]</code> 的薄片，拼接后 cache 的 seq_len 维度从 t 增长到 t+1。代码里的 <code>torch.cat([K_cache, K], dim=2)</code> 做的正是这件事。</p>
+</blockquote>
+<h3 id=带-kv-cache-的多头注意力实现>带 KV Cache 的多头注意力实现<a href=#带-kv-cache-的多头注意力实现 class=header-anchor arialabel=Anchor> # </a></h3>
+<pre tabindex=0><code>def scaled_dot_product_attention_with_cache(Q, K, V, K_cache=None, V_cache=None, mask=None):
+    &quot;&quot;&quot;
+    推理时使用 KV Cache 的单步注意力计算。
+
+    Q: [B, h, 1, d_k]         ← 只有当前这 1 个 token 的 Query
+    K: [B, h, 1, d_k]         ← 只有当前这 1 个 token 的 Key
+    V: [B, h, 1, d_k]         ← 只有当前这 1 个 token 的 Value
+    K_cache: [B, h, prev_len, d_k] or None
+    V_cache: [B, h, prev_len, d_k] or None
+    &quot;&quot;&quot;
+    d_k = Q.size(-1)
+
+    # 如果已有缓存，拼接历史 K, V（这一步是关键）
+    if K_cache is not None:
+        K = torch.cat([K_cache, K], dim=2)   # [B, h, prev_len+1, d_k]
+    if V_cache is not None:
+        V = torch.cat([V_cache, V], dim=2)
+
+    # 之后和标准 attention 完全一样
+    scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(d_k)  # [B, h, 1, L]
+
+    if mask is not None:
+        scores = scores.masked_fill(mask == 0, float('-inf'))
+
+    attn_weights = F.softmax(scores, dim=-1)
+    output = torch.matmul(attn_weights, V)  # [B, h, 1, d_k]
+
+    # 返回输出 + 更新后的缓存
+    return output, K, V
+</code></pre><h3 id=推理循环示例>推理循环示例<a href=#推理循环示例 class=header-anchor arialabel=Anchor> # </a></h3>
+<p>下面展示一个完整的自回归生成循环，展示 KV Cache 在整个流程中如何被使用：</p>
+<pre tabindex=0><code>@torch.no_grad()
+def generate(model, src, max_len=100, start_token=2, end_token=3):
+    &quot;&quot;&quot;
+    使用 KV Cache 的自回归生成。
+    src: [1, S] 源语言 token IDs
+    &quot;&quot;&quot;
+    model.eval()
+
+    # 编码器只跑一次 —— 源序列是完整的
+    encoder_output = model.encoder(src)  # [1, S, 512]
+
+    # 解码器初始输入：只放一个 &lt;start&gt; token
+    generated = [start_token]
+    tgt = torch.tensor([[start_token]])  # [1, 1]
+
+    # 为每一层解码器维护独立的 KV Cache
+    num_layers = len(model.decoder.layers)
+    kv_caches = [{'self': (None, None), 'cross': (None, None)} 
+                 for _ in range(num_layers)]
+
+    for step in range(max_len):
+        # 解码器前向，逐层更新 cache
+        x = model.decoder.embedding(tgt)           # [1, 1, 512]
+        x = model.decoder.pos_encoding(x)
+
+        for i, layer in enumerate(model.decoder.layers):
+            # ── Self-Attention（带 cache）──
+            Q = layer.self_attn.W_q(x)             # [1, 1, 512]
+            K = layer.self_attn.W_k(x)             # [1, 1, 512]
+            V = layer.self_attn.W_v(x)             # [1, 1, 512]
+            
+            Q = layer.self_attn.split_heads(Q)     # [1, 8, 1, 64]
+            K = layer.self_attn.split_heads(K)     # [1, 8, 1, 64]
+            V = layer.self_attn.split_heads(V)     # [1, 8, 1, 64]
+
+            K_cache, V_cache = kv_caches[i]['self']
+            attn_out, new_K, new_V = scaled_dot_product_attention_with_cache(
+                Q, K, V, K_cache, V_cache)
+            kv_caches[i]['self'] = (new_K, new_V)  # 更新 self-attn cache
+
+            attn_out = layer.self_attn.W_o(
+                layer.self_attn.combine_heads(attn_out))  # [1, 1, 512]
+            x = layer.norm1(x + layer.dropout(attn_out))
+
+            # ── Cross-Attention（encoder K,V 不变，可直接复用）──
+            Q = layer.cross_attn.W_q(x)
+            # Cross-attn 的 K,V 来自 encoder，每次完全一样
+            # 第一次算完后缓存，后续步骤直接取缓存
+            K_cross_cache, V_cross_cache = kv_caches[i]['cross']
+            if K_cross_cache is None:
+                # 第一次：计算并缓存 encoder 的 K, V
+                K_enc = layer.cross_attn.split_heads(
+                    layer.cross_attn.W_k(encoder_output))  # [1, 8, S, 64]
+                V_enc = layer.cross_attn.split_heads(
+                    layer.cross_attn.W_v(encoder_output))
+                kv_caches[i]['cross'] = (K_enc, V_enc)
+            else:
+                K_enc, V_enc = K_cross_cache, V_cross_cache
+
+            Q = layer.cross_attn.split_heads(Q)  # [1, 8, 1, 64]
+            scores = torch.matmul(Q, K_enc.transpose(-2, -1)) / math.sqrt(64)
+            attn_weights = F.softmax(scores, dim=-1)
+            cross_out = torch.matmul(attn_weights, V_enc)  # [1, 8, 1, 64]
+            
+            cross_out = layer.cross_attn.W_o(
+                layer.cross_attn.combine_heads(cross_out))
+            x = layer.norm2(x + layer.dropout(cross_out))
+
+            # ── FFN ──
+            ffn_out = layer.ffn(x)
+            x = layer.norm3(x + layer.dropout(ffn_out))
+
+        # 预测下一个 token
+        logits = model.output_linear(x[:, -1:, :])  # [1, 1, vocab_size]
+        next_token = logits.argmax(dim=-1).item()
+        generated.append(next_token)
+
+        if next_token == end_token:
+            break
+
+        # 下一轮只把新 token 作为输入（不是整个前缀！）
+        tgt = torch.tensor([[next_token]])
+
+    return generated
+</code></pre><p><strong>关键设计要点</strong>：</p>
+<ol>
+<li><strong>编码器只前向一次</strong>：源序列是完整的，encoder_output 在整个生成过程中不变。Cross-Attention 的 K、V 第一次算完后直接缓存复用。</li>
+<li><strong>解码器每次只输入 1 个 token</strong>：不是整个前缀。这也是为什么 KV Cache 如此重要——没有它，解码器每次都得重算所有前文的 K、V。</li>
+<li><strong>每层有独立的 Cache</strong>：每一层的 Self-Attention 和 Cross-Attention 各自维护缓存，因为不同层学到的表示不同。</li>
+<li><strong>Cross-Attention 的 KV Cache 不同</strong>：Self-Attn 的 cache 会逐步增长（每步拼接新的 K,V），而 Cross-Attn 的 cache 是固定的（encoder 输出不变）。</li>
+</ol>
+<h3 id=kv-cache-的内存分析>KV Cache 的内存分析<a href=#kv-cache-的内存分析 class=header-anchor arialabel=Anchor> # </a></h3>
+<p>以 LLaMA-7B 为例（32 层，32 头，$d_{model}=4096$，$d_k=128$，fp16）：</p>
+<ul>
+<li>每层 K/V 各占：$B \cdot h \cdot T \cdot d_k \cdot 2\text{ bytes} = 1 \times 32 \times T \times 128 \times 2 = 8{,}192,T$ bytes</li>
+<li>单层 K+V：$;2 \times 8{,}192,T = 16{,}384,T$ bytes</li>
+<li>32 层，$T{=}2048$：$;32 \times 16{,}384 \times 2048 \approx \mathbf{1\ GB}$</li>
+</ul>
+<p>当 batch size 增大或序列变长时，KV Cache 的内存消耗会快速膨胀——这就是大模型推理中著名的 <strong>&ldquo;KV Cache 内存墙&rdquo;</strong> 问题，也是 GQA（Grouped Query Attention）、MQA（Multi-Query Attention）、PagedAttention 等优化技术的直接驱动力。</p>
+<h3 id=kv-cache-与训练的关系>KV Cache 与训练的关系<a href=#kv-cache-与训练的关系 class=header-anchor arialabel=Anchor> # </a></h3>
+<p>严格来说，KV Cache 是<strong>推理优化</strong>而不是训练技术。训练时完整的 $[B, T]$ 目标序列一次性输入，Self-Attention 并行计算所有位置的注意力，无需缓存。但理解 KV Cache 对训练同样重要：</p>
+<ul>
+<li><strong>训练时 Teacher Forcing + 上三角 mask，本质上等价于在 parallel 做 decode</strong>——每个位置的感受野和推理时一致（只能看到自己和之前的位置）。</li>
+<li><strong>在训练代码中预留 cache 接口</strong>（如上面的 <code>K_cache</code>、<code>V_cache</code> 参数），可以让同一份代码同时服务于训练和推理，避免 train / deploy 不一致。</li>
+<li><strong>增量解码（Incremental Decoding）</strong> 是 Transformer 推理的本质，它是 KV Cache 存在的理由——理解推理的串行本质，才能理解为什么需要 Flash Attention、PagedAttention、vLLM 等后续工作。</li>
+</ul>
+<h2 id=完整模型>完整模型<a href=#完整模型 class=header-anchor arialabel=Anchor> # </a></h2>
+<p>将编码器和解码器组合在一起，构成完整的 Transformer 模型：</p>
+<pre tabindex=0><code>class Transformer(nn.Module):
+    def __init__(self, src_vocab_size, tgt_vocab_size, d_model=512,
+                 num_heads=8, num_layers=6, d_ff=2048, max_len=5000,
+                 dropout=0.1):
+        super().__init__()
+        self.encoder = Encoder(src_vocab_size, d_model, num_heads,
+                               num_layers, d_ff, max_len, dropout)
+        self.decoder = Decoder(tgt_vocab_size, d_model, num_heads,
+                               num_layers, d_ff, max_len, dropout)
+        self.output_linear = nn.Linear(d_model, tgt_vocab_size)
+
+    def forward(self, src, tgt, src_mask=None, tgt_mask=None):
+        encoder_output = self.encoder(src, src_mask)
+        decoder_output = self.decoder(tgt, encoder_output, src_mask, tgt_mask)
+        return self.output_linear(decoder_output)
+</code></pre><h3 id=encoder-和-decoder-的-wqwkwv-是如何更新的>Encoder 和 Decoder 的 W^Q、W^K、W^V 是如何更新的？<a href=#encoder-和-decoder-的-wqwkwv-是如何更新的 class=header-anchor arialabel=Anchor> # </a></h3>
+<p>很多读者看完前向计算后会追问：这些权重矩阵到底是怎么学出来的？它们在前向时做的事已经很清楚了，但反向传播时梯度怎么流，Encoder 和 Decoder 各自的参数又是怎么被更新的？</p>
+<p><strong>一套 Loss，全模型共享</strong>。Transformer 只在 Decoder 的最终输出处计算 loss——通常是预测下一个 token 的交叉熵：</p>
+<p>$$
+\mathcal{L} = -\sum_{t} \log P(y_t | y_{&lt;t}, \text{src})
+$$</p>
+<p>这个单一的 loss 通过链式法则一路反传，更新模型里的<strong>所有</strong>参数，包括 Encoder 和 Decoder 各自的 W^Q、W^K、W^V。</p>
+<p><strong>各套参数各司其职，靠梯度自动分工</strong>：</p>
+<pre tabindex=0><code>                    ┌─────────────────────────┐
+                    │    Decoder 最终输出       │
+                    │   预测下一个 token        │
+                    │   Loss 在这里计算         │
+                    └──────────┬──────────────┘
+                               │ 梯度反传
+           ┌───────────────────┼───────────────────┐
+           ▼                   ▼                   ▼
+   Decoder W^Q_dec      Decoder W^Q_cross     Decoder FFN
+   Decoder W^K_dec      Decoder W^K_cross     Decoder LayerNorm
+   Decoder W^V_dec      Decoder W^V_cross
+           │
+           │ Cross-Attention 的梯度继续反传
+           ▼
+   ┌───────────────────────────────────────────┐
+   │         Encoder 输出 (被 Decoder 查阅)       │
+   │         梯度回传到 Encoder                   │
+   └───────────────────────────────────────────┘
+           │
+           ▼
+   Encoder W^Q_enc
+   Encoder W^K_enc      ←  这些参数的梯度来自
+   Encoder W^V_enc          &quot;Encoder 输出对 Decoder
+   Encoder FFN              预测质量的贡献&quot;
+   Encoder LayerNorm
+</code></pre><p><strong>总结一句话</strong>：所有参数都是<strong>联合训练</strong>的，不存在"先训 Encoder 再训 Decoder"。Encoder 的 W^Q 好不好，取决于它的输出被 Decoder 的 Cross-Attention 查阅后，能不能帮 Decoder 更好地预测下一个词。梯度从 Loss 出发，穿过 Decoder，穿过 Cross-Attention，最终抵达 Encoder 的每一层。</p>
+<p><strong>为什么 Encoder 和 Decoder 不共享 W^Q、W^K、W^V？</strong> 因为它们面对的数据分布不同——Encoder 看源语言（如英文），Decoder 看目标语言（如中文），两者的 Embedding 不同、语法结构不同，共享权重反而会让优化互相掣肘。Cross-Attention 的 W^Q_cross / W^K_cross / W^V_cross 更是必须独立——Q 来自 Decoder 的语义空间，K/V 来自 Encoder 的语义空间，三个投影各干各的活。</p>
+<h2 id=transformer-的核心创新总结>Transformer 的核心创新总结<a href=#transformer-的核心创新总结 class=header-anchor arialabel=Anchor> # </a></h2>
+<p>回顾整个架构，Transformer 的关键创新可以归纳为以下几点：</p>
+<table>
+<thead>
+<tr>
+<th style=text-align:left>创新点</th>
+<th style=text-align:left>解决的问题</th>
+<th style=text-align:left>实现方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style=text-align:left><strong>Self-Attention</strong></td>
+<td style=text-align:left>长距离依赖</td>
+<td style=text-align:left>每个词直接与所有词计算注意力</td>
+</tr>
+<tr>
+<td style=text-align:left><strong>Multi-Head</strong></td>
+<td style=text-align:left>单一关注模式</td>
+<td style=text-align:left>多个并行的注意力子空间</td>
+</tr>
+<tr>
+<td style=text-align:left><strong>Positional Encoding</strong></td>
+<td style=text-align:left>序列顺序信息</td>
+<td style=text-align:left>正弦/余弦位置编码</td>
+</tr>
+<tr>
+<td style=text-align:left><strong>Scaled Dot-Product</strong></td>
+<td style=text-align:left>Softmax 梯度消失</td>
+<td style=text-align:left>除以 $\sqrt{d_k}$ 控制方差</td>
+</tr>
+<tr>
+<td style=text-align:left><strong>残差连接 + LayerNorm</strong></td>
+<td style=text-align:left>深层网络训练困难</td>
+<td style=text-align:left>每个子层后 Add & Norm</td>
+</tr>
+<tr>
+<td style=text-align:left><strong>完全并行化</strong></td>
+<td style=text-align:left>RNN 串行瓶颈</td>
+<td style=text-align:left>所有位置同时计算</td>
+</tr>
+</tbody>
+</table>
+<p>正是这些设计的巧妙组合，使得 Transformer 不仅在机器翻译任务上超越了当时的所有模型，更成为了后续 GPT、BERT、T5 等里程碑式模型的基础架构，真正开启了 NLP 乃至整个 AI 领域的"大模型时代"。</p>
+<h2 id=参考资料>参考资料<a href=#参考资料 class=header-anchor arialabel=Anchor> # </a></h2>
+<ol>
+<li>Vaswani et al., <em><a href=https://arxiv.org/abs/1706.03762 target=_blank rel="noreferrer noopener">Attention Is All You Need</a>
+</em>, NeurIPS 2017</li>
+<li><em><a href=https://jalammar.github.io/illustrated-transformer/ target=_blank rel="noreferrer noopener">The Illustrated Transformer</a>
+</em> by Jay Alammar</li>
+<li><em><a href=https://nlp.seas.harvard.edu/2018/04/03/attention.html target=_blank rel="noreferrer noopener">The Annotated Transformer</a>
+</em> by Harvard NLP</li>
+</ol>
+<p style=color:#777>Last modified on 2026-07-01</p>
+</div>
+<a href=#top><i class="fa fa-chevron-up" style=font-size:30px;color:#000></i></a>
+</main>
+<footer class=footer>
+<script type=text/javascript src="//rf.revolvermaps.com/0/0/6.js?i=5sz67w4rqwe&m=0&c=ff0000&cr1=ffffff&f=times_new_roman&l=1" async></script>
+<ul class=footer-links>
+<li><a href=/en/posts/index.xml type=application/rss+xml title="RSS feed">
+Subscribe </a>
+</li>
+<li>
+<a href=http://creativecommons.org/licenses/by-nc-sa/4.0/ target=_blank>
+License
+<i class="fa fa-cc" aria-hidden=true title="Attribution-NonCommercial-ShareAlike 4.0 International"></i>
+</a>
+</li>
+</ul>
+<span id=busuanzi_container_site_pv> 本站访问量：<span id=busuanzi_value_site_pv></span>次</span>&nbsp;
+<span id=busuanzi_container_site_uv> 您是本站第 <span id=busuanzi_value_site_uv></span> 位访问者</span>
+</footer>

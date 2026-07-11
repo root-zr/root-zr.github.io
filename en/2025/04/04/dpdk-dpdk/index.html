@@ -1,0 +1,288 @@
+<a name=top></a><!doctype html>
+<html lang=en-us>
+<head>
+<script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<title> DPDK ｜ DPDK - Albert Wang</title>
+<link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css>
+<link rel=stylesheet href=/css/style.css>
+<link rel=stylesheet href=/css/font.css>
+<link href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css rel=stylesheet>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/vega@5.17.0></script>
+<script src=https://cdn.jsdelivr.net/npm/vega-lite@4.17.0></script>
+<script src=https://cdn.jsdelivr.net/npm/vega-embed@6.12.2></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</head>
+<body>
+<div class=wrapper>
+<header class=header>
+<nav class=nav>
+<a href=/ class=nav-logo>
+<img src=/media/logo.JPG width=50 height=50 alt=Hugo-ht>
+</a>
+<ul class=nav-links>
+<li><a href=/>Home</a></li>
+<li><a href=/en/posts/>Blog</a></li>
+<li><a href=/en/gallery/>Gallery</a></li>
+<li><a href=/en/project/>Project</a></li>
+<li><a href=/en/about/>About</a></li>
+</ul>
+</nav>
+<script type=text/x-mathjax-config>
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\\[','\\]']],
+    processEscapes: false,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+  },
+  TeX: {
+    equationNumbers: { autoNumber: "AMS" },
+    extensions: ["AMSmath.js", "AMSsymbols.js"]
+  },
+  "HTML-CSS": {
+    linebreaks: { automatic: true, width: "container" }
+  }
+});
+</script>
+<script type=text/javascript async src="https://cdn.bootcss.com/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>MathJax.Hub.Queue(function(){for(var b=MathJax.Hub.getAllJax(),a=0;a<b.length;a+=1)b[a].SourceElement().parentNode.className+=' has-jax'})</script>
+<style>code.has-jax{font:inherit;font-size:100%;background:inherit;border:inherit;color:inherit}</style>
+</header>
+<main class=content role=main>
+<div style=text-align:center>
+<h1> DPDK ｜ DPDK </h1>
+<p>Albert Wang
+/ 2025-04-04
+/ 300 Words/has been Read <span id=busuanzi_value_page_pv></span>&nbsp;&nbsp;Times
+</p>
+<hr>
+</div>
+<span class=article-toolbar>
+<a href=https://github.com/root-zren/posts/2025/dpdk.md style=font-size:24px;color:#000 target=_blank><i class="fa fa-edit" aria-hidden=true title="Suggest an edit of this page"></i>
+</a>
+</span>
+<aside class=toc>
+Table of Contents:
+<nav id=TableOfContents>
+<ol>
+<li><a href=#dpdk-简介与背景>DPDK 简介与背景</a>
+<ol>
+<li><a href=#传统网络包处理的瓶颈>传统网络包处理的瓶颈：</a></li>
+</ol>
+</li>
+<li><a href=#dpdk-技术栈结构>DPDK 技术栈结构</a>
+<ol>
+<li><a href=#core-libraries核心库><strong>Core Libraries（核心库）</strong></a></li>
+<li><a href=#pmdpoll-mode-driver><strong>PMD（Poll Mode Driver）</strong></a></li>
+<li><a href=#classify-libraries><strong>Classify Libraries</strong></a></li>
+<li><a href=#qosquality-of-service><strong>QoS（Quality of Service）</strong></a></li>
+</ol>
+</li>
+<li><a href=#内核绕过原理uio--mmap--pmd>内核绕过原理：UIO + mmap + PMD</a></li>
+<li><a href=#dpdk-应用架构模式>DPDK 应用架构模式</a></li>
+</ol>
+</nav>
+</aside>
+<div class="body-text list-text">
+<h2 id=dpdk-简介与背景>DPDK 简介与背景<a href=#dpdk-简介与背景 class=header-anchor arialabel=Anchor> # </a></h2>
+<p>随着网络硬件技术的飞速发展，网络接口卡（NIC）的带宽已经从 2009 年的 1Gbps 发展到如今常见的 100Gbps，甚至更高。然而，与之相比，CPU 的主频提升却相对缓慢，大多仍停留在 5GHz 以下。在这种“网卡快、CPU慢”的情况下，传统的内核网络协议栈架构已难以满足高性能网络转发的需求。</p>
+<h3 id=传统网络包处理的瓶颈>传统网络包处理的瓶颈：<a href=#传统网络包处理的瓶颈 class=header-anchor arialabel=Anchor> # </a></h3>
+<p><strong>内存拷贝瓶颈</strong>：传统数据包从网卡到用户态应用需要经过 DMA 传输到内核态，再拷贝到用户态缓冲区，这个过程包括多次内存复制和上下文切换，耗时巨大。在 Linux 内核网络协议栈中，这部分内存复制操作可能占据整个处理流程的一半时间。</p>
+<p><strong>中断处理开销</strong>：高带宽网卡带来的大量数据包会触发频繁中断，导致 CPU 被中断“轰炸”，增加上下文切换开销，影响整体性能。</p>
+<ul>
+<li>在高带宽、高并发的网络环境中，频繁的数据包到来会产生大量中断；</li>
+<li>中断不仅会打断当前正在执行的低优先级任务，还会引发频繁的上下文切换；</li>
+<li>多线程服务框架中，线程调度也带来显著的性能开销和锁竞争问题。</li>
+</ul>
+<p><strong>TLB(Translation Lookaside Buffer) Miss 和缓存失效</strong>：</p>
+<ul>
+<li>多连接并发访问会消耗大量内存，导致缓存失效；</li>
+<li>CPU 与内存之间的速度差距进一步放大了访问延迟；</li>
+<li>最终导致 CPU 出现“空转”现象，等待内存数据到来。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style=text-align:left>页大小</th>
+<th style=text-align:left>TLB条目</th>
+<th style=text-align:left>内存覆盖范围</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style=text-align:left>4KB</td>
+<td style=text-align:left>512</td>
+<td style=text-align:left>2MB</td>
+</tr>
+<tr>
+<td style=text-align:left>2MB</td>
+<td style=text-align:left>512</td>
+<td style=text-align:left>1GB</td>
+</tr>
+<tr>
+<td style=text-align:left>1GB</td>
+<td style=text-align:left>512</td>
+<td style=text-align:left>512GB</td>
+</tr>
+</tbody>
+</table>
+<p>DPDK（Data Plane Development Kit）就是在这种背景下诞生的。它最初由 Intel 开源，并在 2013 年由 dpdk.org 社区进行维护和推广。其目标是通过绕过内核协议栈，在用户态实现高速数据包处理，最大限度地发挥硬件性能。</p>
+<h2 id=dpdk-技术栈结构>DPDK 技术栈结构<a href=#dpdk-技术栈结构 class=header-anchor arialabel=Anchor> # </a></h2>
+<h3 id=core-libraries核心库><strong>Core Libraries（核心库）</strong><a href=#core-libraries核心库 class=header-anchor arialabel=Anchor> # </a></h3>
+<p>提供系统抽象层、内存管理（如大页内存）、缓存池（Mempool）、定时器、无锁环形队列（Ring buffer）等功能模块，是 DPDK 应用开发的基础支撑。</p>
+<p><strong>内存池(Mempool)</strong></p>
+<p>采用三级缓存体系：</p>
+<ol>
+<li>Per-Core本地缓存：L1 Cache级别访问</li>
+<li>内存通道缓存：NUMA节点内共享</li>
+<li>全局内存池：跨NUMA节点分配</li>
+</ol>
+<pre tabindex=0><code>struct rte_mempool *mp = rte_mempool_create_anon(
+    &quot;my_pool&quot;, 
+    8192,        // 元素数量
+    MBUF_SIZE,   // 元素大小
+    256,         // 缓存大小
+    RTE_MEMPOOL_F_NO_SPREAD // NUMA优化标志
+);
+</code></pre><p><strong>大页内存管理</strong>：用于减少页表访问次数，降低 TLB Miss。</p>
+<pre tabindex=0><code># 1GB大页配置
+echo 1024 &gt; /sys/kernel/mm/hugepages/hugepages-1048576kB/nr_hugepages
+mount -t hugetlbfs nodev /mnt/huge_1GB -o pagesize=1GB
+</code></pre><table>
+<thead>
+<tr>
+<th style=text-align:left>内存类型</th>
+<th style=text-align:left>TLB条目数</th>
+<th style=text-align:left>覆盖范围</th>
+<th style=text-align:left>TLB Miss率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style=text-align:left>4KB</td>
+<td style=text-align:left>512</td>
+<td style=text-align:left>2MB</td>
+<td style=text-align:left>12.5%</td>
+</tr>
+<tr>
+<td style=text-align:left>2MB</td>
+<td style=text-align:left>512</td>
+<td style=text-align:left>1GB</td>
+<td style=text-align:left>0.6%</td>
+</tr>
+<tr>
+<td style=text-align:left>1GB</td>
+<td style=text-align:left>512</td>
+<td style=text-align:left>512GB</td>
+<td style=text-align:left>0.0002%</td>
+</tr>
+</tbody>
+</table>
+<p><strong>无锁环形队列</strong>：DPDK 提供了无锁环形缓冲区（<code>rte_ring</code>），用于多线程间的高速通信：</p>
+<ul>
+<li>支持单/多生产者和单/多消费者模式；</li>
+<li>避免锁开销，提升并发性能；</li>
+<li>可用于包处理队列、任务分发、日志缓冲等场景。</li>
+</ul>
+<pre tabindex=0><code>struct rte_ring *ring = rte_ring_create(
+    &quot;msg_ring&quot;, 
+    1024, 
+    SOCKET_ID_ANY,
+    RING_F_SP_ENQ | RING_F_SC_DEQ  // 单生产者单消费者标记
+);
+</code></pre><h3 id=pmdpoll-mode-driver><strong>PMD（Poll Mode Driver）</strong><a href=#pmdpoll-mode-driver class=header-anchor arialabel=Anchor> # </a></h3>
+<p>DPDK 的核心特性之一是采用**轮询模式驱动（PMD）**替代传统中断方式。用户态线程持续轮询网卡收发队列，避免中断带来的性能损耗。</p>
+<ul>
+<li>支持 Intel、Mellanox、VirtIO、vhost 等多种物理和虚拟网卡。</li>
+<li>网络收发过程完全用户态实现，不进入内核态。</li>
+</ul>
+<h3 id=classify-libraries><strong>Classify Libraries</strong><a href=#classify-libraries class=header-anchor arialabel=Anchor> # </a></h3>
+<p>DPDK 提供基于多种匹配方式的表项查找能力，用于实现防火墙、ACL、路由器、流量调度器等功能。</p>
+<ul>
+<li>提供基于哈希表、前缀树（Longest Prefix Match）、掩码等方式的流分类能力；</li>
+<li>用于实现防火墙、ACL、路由、流量识别等应用中的查表操作。</li>
+</ul>
+<h3 id=qosquality-of-service><strong>QoS（Quality of Service）</strong><a href=#qosquality-of-service class=header-anchor arialabel=Anchor> # </a></h3>
+<p>用于实现网络服务质量保障，</p>
+<ul>
+<li>提供速率限制、调度器、优先级队列等网络流控机制；</li>
+<li>支持 DiffServ、Token Bucket 等模型。</li>
+</ul>
+<h2 id=内核绕过原理uio--mmap--pmd>内核绕过原理：UIO + mmap + PMD<a href=#内核绕过原理uio--mmap--pmd class=header-anchor arialabel=Anchor> # </a></h2>
+<p>DPDK 通过 Linux 提供的 <code>UIO</code>（用户空间 I/O）机制，使得用户态程序可以直接通过 <code>mmap</code> 将设备内存映射到用户空间。</p>
+<p>简化的包处理路径如下：ß</p>
+<ul>
+<li><strong>传统路径</strong>：网卡 → Kernel 驱动 → Kernel TCP/IP 协议栈 → Socket 接口 → 应用程序</li>
+<li><strong>DPDK 路径</strong>：网卡 → UIO 驱动（如 igb_uio） → DPDK PMD 驱动（用户态） → 应用程序</li>
+</ul>
+<p>DPDK 中使用轮询替代中断，同时避免了系统调用和上下文切换，性能大幅提升。</p>
+<p>中断机制 vs 主动轮询：</p>
+<table>
+<thead>
+<tr>
+<th style=text-align:left>模式</th>
+<th style=text-align:left>延迟</th>
+<th style=text-align:left>CPU占用</th>
+<th style=text-align:left>适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style=text-align:left>中断</td>
+<td style=text-align:left>低(μs级)</td>
+<td style=text-align:left>低</td>
+<td style=text-align:left>低负载</td>
+</tr>
+<tr>
+<td style=text-align:left>轮询</td>
+<td style=text-align:left>稳定(ns级)</td>
+<td style=text-align:left>高</td>
+<td style=text-align:left>高吞吐</td>
+</tr>
+<tr>
+<td style=text-align:left>混合模式</td>
+<td style=text-align:left>自适应</td>
+<td style=text-align:left>动态调整</td>
+<td style=text-align:left>波动负载</td>
+</tr>
+</tbody>
+</table>
+<h2 id=dpdk-应用架构模式>DPDK 应用架构模式<a href=#dpdk-应用架构模式 class=header-anchor arialabel=Anchor> # </a></h2>
+<p>DPDK 的高性能应用常见设计模式包括：</p>
+<ul>
+<li><strong>共享队列 + 多核轮询模型</strong>：
+<ul>
+<li>一组 Core 作为收包线程（RX），接收网卡数据；</li>
+<li>数据进入共享队列（Ring/Mempool）；</li>
+<li>另一组 Core 做包处理或发包（TX）；</li>
+<li>所有操作均在用户态完成，无需内核参与。</li>
+</ul>
+</li>
+</ul>
+<p style=color:#777>Last modified on 2025-04-04</p>
+</div>
+<a href=#top><i class="fa fa-chevron-up" style=font-size:30px;color:#000></i></a>
+</main>
+<footer class=footer>
+<script type=text/javascript src="//rf.revolvermaps.com/0/0/6.js?i=5sz67w4rqwe&m=0&c=ff0000&cr1=ffffff&f=times_new_roman&l=1" async></script>
+<ul class=footer-links>
+<li><a href=/en/posts/index.xml type=application/rss+xml title="RSS feed">
+Subscribe </a>
+</li>
+<li>
+<a href=http://creativecommons.org/licenses/by-nc-sa/4.0/ target=_blank>
+License
+<i class="fa fa-cc" aria-hidden=true title="Attribution-NonCommercial-ShareAlike 4.0 International"></i>
+</a>
+</li>
+</ul>
+<span id=busuanzi_container_site_pv> 本站访问量：<span id=busuanzi_value_site_pv></span>次</span>&nbsp;
+<span id=busuanzi_container_site_uv> 您是本站第 <span id=busuanzi_value_site_uv></span> 位访问者</span>
+</footer>

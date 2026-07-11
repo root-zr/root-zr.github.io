@@ -1,0 +1,227 @@
+<a name=top></a><!doctype html>
+<html lang=en-us>
+<head>
+<script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<title>Linear Regression 2 ｜ 线性回归 2 - Albert Wang</title>
+<link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css>
+<link rel=stylesheet href=/css/style.css>
+<link rel=stylesheet href=/css/font.css>
+<link href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css rel=stylesheet>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/vega@5.17.0></script>
+<script src=https://cdn.jsdelivr.net/npm/vega-lite@4.17.0></script>
+<script src=https://cdn.jsdelivr.net/npm/vega-embed@6.12.2></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</head>
+<body>
+<div class=wrapper>
+<header class=header>
+<nav class=nav>
+<a href=/ class=nav-logo>
+<img src=/media/logo.JPG width=50 height=50 alt=Hugo-ht>
+</a>
+<ul class=nav-links>
+<li><a href=/>Home</a></li>
+<li><a href=/en/posts/>Blog</a></li>
+<li><a href=/en/gallery/>Gallery</a></li>
+<li><a href=/en/project/>Project</a></li>
+<li><a href=/en/about/>About</a></li>
+</ul>
+</nav>
+<script type=text/x-mathjax-config>
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\\[','\\]']],
+    processEscapes: false,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+  },
+  TeX: {
+    equationNumbers: { autoNumber: "AMS" },
+    extensions: ["AMSmath.js", "AMSsymbols.js"]
+  },
+  "HTML-CSS": {
+    linebreaks: { automatic: true, width: "container" }
+  }
+});
+</script>
+<script type=text/javascript async src="https://cdn.bootcss.com/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>MathJax.Hub.Queue(function(){for(var b=MathJax.Hub.getAllJax(),a=0;a<b.length;a+=1)b[a].SourceElement().parentNode.className+=' has-jax'})</script>
+<style>code.has-jax{font:inherit;font-size:100%;background:inherit;border:inherit;color:inherit}</style>
+</header>
+<main class=content role=main>
+<div style=text-align:center>
+<h1>Linear Regression 2 ｜ 线性回归 2</h1>
+<p>Albert Wang
+/ 2025-07-12
+/ 400 Words/has been Read <span id=busuanzi_value_page_pv></span>&nbsp;&nbsp;Times
+</p>
+<hr>
+</div>
+<span class=article-toolbar>
+<a href=https://github.com/root-zren/posts/2025/%e7%ba%bf%e6%80%a7%e5%9b%9e%e5%bd%922.md style=font-size:24px;color:#000 target=_blank><i class="fa fa-edit" aria-hidden=true title="Suggest an edit of this page"></i>
+</a>
+</span>
+<aside class=toc>
+Table of Contents:
+<nav id=TableOfContents>
+<ol>
+<li><a href=#线性回归的从零开始实现>线性回归的从零开始实现</a></li>
+<li><a href=#线性回归的简洁实现><strong>线性回归的简洁实现</strong></a></li>
+</ol>
+</nav>
+</aside>
+<div class="body-text list-text">
+<p>上一篇博客主要推导了线性回归的概念，这篇博客从 0 开始实现线性回归。这里的例子来自于李沐老师的动手学机器学习。</p>
+<h2 id=线性回归的从零开始实现>线性回归的从零开始实现<a href=#线性回归的从零开始实现 class=header-anchor arialabel=Anchor> # </a></h2>
+<p>在开始之前我们首先需要导入一些依赖的库</p>
+<pre tabindex=0><code>%matplotlib inline
+import random
+import torch
+from IPython import display
+from matplotlib import pyplot as plt
+from matplotlib_inline import backend_inline
+</code></pre><p>根据带有噪声的线性模型构造一个人造数据集。 我们使用线性模型参数<strong>𝐰</strong>=[2,−3.4]⊤、𝑏=4.2 和噪声项ϵ生成数据集及其标签：</p>
+<pre tabindex=0><code>def synthetic_data(w, b, num_examples):  
+    &quot;&quot;&quot;生成 y = Xw + b + 噪声。&quot;&quot;&quot;
+    X = torch.normal(0, 1, (num_examples, len(w)))
+    y = torch.matmul(X, w) + b
+    y += torch.normal(0, 0.01, y.shape)
+    return X, y.reshape((-1, 1))
+
+true_w = torch.tensor([2, -3.4])
+true_b = 4.2
+features, labels = synthetic_data(true_w, true_b, 1000)
+</code></pre><p>然后使用下面的代码块就可以把随机生成的数据显示出来</p>
+<pre tabindex=0><code>def set_figsize(figsize=(3.5, 2.5)):
+    backend_inline.set_matplotlib_formats('svg')
+    plt.rcParams['figure.figsize'] = figsize
+
+set_figsize()
+plt.scatter(features[:, (1)].detach().numpy(),
+                labels.detach().numpy(), 1);
+plt.show() 
+</code></pre><p>显示的效果如下图，</p>
+<p><img src=/img/2025/07/01.png alt=image-20240309030246676 loading=lazy>
+</p>
+<p>定义一个<code>data_iter</code> 函数， 该函数接收批量大小、特征矩阵和标签向量作为输入，生成大小为<code>batch_size</code>的小批量。</p>
+<p>下面代码中使用了 shuffle 函数把所有的样本数据进行随机打乱，这里的打乱是按照行去做打乱，然后便利这些样本，每次从中取出一小批的数据来做训练。 yield 类似于一个迭代器，会不停地从特征和标签中迭代数据出来。</p>
+<pre tabindex=0><code>def data_iter(batch_size, features, labels):
+    num_examples = len(features)
+    indices = list(range(num_examples))
+    random.shuffle(indices)
+    for i in range(0, num_examples, batch_size):
+        batch_indices = torch.tensor(indices[i:min(i +
+                                                   batch_size, num_examples)])
+        yield features[batch_indices], labels[batch_indices]
+
+batch_size = 10
+</code></pre><p>到目前为止数据就已经准备好了，然后就可以开始定义模型。因为是反向传播，所以我们需要事先给定一个梯度，损失函数就采用最小二乘法的均方误差。同样因为梯度的方向指向增长最快的方向，所以我们需要按照梯度的反方向来进行梯度下降，从而保证损失函数最小。</p>
+<p>在 sgd 函数中需要知道的是梯度就保存在 grad 中，并且每次执行完都要把梯度设为 0，这样才能保证每次训练都不会产生相关。batch_size 就是最小二乘法中的 n</p>
+<pre tabindex=0><code>w = torch.normal(0, 0.01, size=(2, 1), requires_grad=True)
+b = torch.zeros(1, requires_grad=True)
+
+def linreg(X, w, b):  
+    &quot;&quot;&quot;线性回归模型。&quot;&quot;&quot;
+    return torch.matmul(X, w) + b
+
+def squared_loss(y_hat, y):  
+    &quot;&quot;&quot;均方损失。&quot;&quot;&quot;
+    return (y_hat - y.reshape(y_hat.shape))**2 / 2
+
+def sgd(params, lr, batch_size):  
+    &quot;&quot;&quot;小批量随机梯度下降。&quot;&quot;&quot;
+    with torch.no_grad():
+        for param in params:
+            param -= lr * param.grad / batch_size
+            param.grad.zero_()
+
+</code></pre><p>在训练开始之前我们还需要指定一些超参数。首先是学习率，因为要沿着梯度的反方向进行训练，但是每次沿着这个方向走多远需要事先由我们认为指定，这个就是学习率 lr；然后是训练的轮数 epoch，这里训练 3 轮。</p>
+<pre tabindex=0><code>lr = 0.03
+num_epochs = 3
+net = linreg
+loss = squared_loss
+
+for epoch in range(num_epochs):
+    for X, y in data_iter(batch_size, features, labels):
+        l = loss(net(X, w, b), y)
+        l.sum().backward()
+        sgd([w, b], lr, batch_size)
+    with torch.no_grad():
+        train_l = loss(net(features, w, b), labels)
+        print(f'epoch {epoch + 1}, loss {float(train_l.mean()):f}')
+</code></pre><p>训练的结果如下，</p>
+<p><img src=/img/2025/07/02.png alt=image-20240309030246676 loading=lazy>
+</p>
+<h2 id=线性回归的简洁实现><strong>线性回归的简洁实现</strong><a href=#线性回归的简洁实现 class=header-anchor arialabel=Anchor> # </a></h2>
+<p>下面主要根据 pytorch 中已有的库来简化线性回归的实现。首先调用框架中现有的API来读取数据，只需要导入 data 的库</p>
+<pre tabindex=0><code>from torch.utils import data
+
+def load_array(data_arrays, batch_size, is_train=True):  
+    &quot;&quot;&quot;构造一个PyTorch数据迭代器。&quot;&quot;&quot;
+    dataset = data.TensorDataset(*data_arrays)
+    return data.DataLoader(dataset, batch_size, shuffle=is_train)
+
+batch_size = 10
+data_iter = load_array((features, labels), batch_size)
+
+next(iter(data_iter))
+</code></pre><p>执行结果如下，</p>
+<p><img src=/img/2025/07/03.png alt=image-20240309030246676 loading=lazy>
+</p>
+<p>然后模型定义基本也都有现成的实现，我们可以直接调用接口。这里 Linear 是调用了神经网络里的一个全连接层，它的输入纬度是 2，输出维度是 1.所以也可以认为线性回归是一个层数为 1 的神经网络。然后把它放到 Sequential 的容器里，</p>
+<pre tabindex=0><code>from torch import nn
+
+net = nn.Sequential(nn.Linear(2, 1))
+
+#初始化模型参数
+net[0].weight.data.normal_(0, 0.01)
+
+loss = nn.MSELoss()
+
+trainer = torch.optim.SGD(net.parameters(), lr=0.03)
+net[0].bias.data.fill_(0)
+</code></pre><p>最后训练过程和之前类似</p>
+<pre tabindex=0><code>num_epochs = 3
+for epoch in range(num_epochs):
+    for X, y in data_iter:
+        l = loss(net(X), y)
+        trainer.zero_grad()
+        l.backward()
+        trainer.step()
+    l = loss(net(features), labels)
+    print(f'epoch {epoch + 1}, loss {l:f}')
+
+w = net[0].weight.data
+print('w的估计误差：', true_w - w.reshape(true_w.shape))
+b = net[0].bias.data
+print('b的估计误差：', true_b - b)
+</code></pre><p>我们比较拟合出的参数和真实的结果，发现误差也很接近，如下图。</p>
+<p><img src=/img/2025/07/04.png alt=image-20240309030246676 loading=lazy>
+</p>
+<p style=color:#777>Last modified on 2025-07-12</p>
+</div>
+<a href=#top><i class="fa fa-chevron-up" style=font-size:30px;color:#000></i></a>
+</main>
+<footer class=footer>
+<script type=text/javascript src="//rf.revolvermaps.com/0/0/6.js?i=5sz67w4rqwe&m=0&c=ff0000&cr1=ffffff&f=times_new_roman&l=1" async></script>
+<ul class=footer-links>
+<li><a href=/en/posts/index.xml type=application/rss+xml title="RSS feed">
+Subscribe </a>
+</li>
+<li>
+<a href=http://creativecommons.org/licenses/by-nc-sa/4.0/ target=_blank>
+License
+<i class="fa fa-cc" aria-hidden=true title="Attribution-NonCommercial-ShareAlike 4.0 International"></i>
+</a>
+</li>
+</ul>
+<span id=busuanzi_container_site_pv> 本站访问量：<span id=busuanzi_value_site_pv></span>次</span>&nbsp;
+<span id=busuanzi_container_site_uv> 您是本站第 <span id=busuanzi_value_site_uv></span> 位访问者</span>
+</footer>

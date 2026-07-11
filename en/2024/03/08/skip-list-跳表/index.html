@@ -1,0 +1,390 @@
+<a name=top></a><!doctype html>
+<html lang=en-us>
+<head>
+<script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<title>Skip List | 跳表 - Albert Wang</title>
+<link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css>
+<link rel=stylesheet href=/css/style.css>
+<link rel=stylesheet href=/css/font.css>
+<link href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css rel=stylesheet>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/vega@5.17.0></script>
+<script src=https://cdn.jsdelivr.net/npm/vega-lite@4.17.0></script>
+<script src=https://cdn.jsdelivr.net/npm/vega-embed@6.12.2></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</head>
+<body>
+<div class=wrapper>
+<header class=header>
+<nav class=nav>
+<a href=/ class=nav-logo>
+<img src=/media/logo.JPG width=50 height=50 alt=Hugo-ht>
+</a>
+<ul class=nav-links>
+<li><a href=/>Home</a></li>
+<li><a href=/en/posts/>Blog</a></li>
+<li><a href=/en/gallery/>Gallery</a></li>
+<li><a href=/en/project/>Project</a></li>
+<li><a href=/en/about/>About</a></li>
+</ul>
+</nav>
+<script type=text/x-mathjax-config>
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\\[','\\]']],
+    processEscapes: false,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+  },
+  TeX: {
+    equationNumbers: { autoNumber: "AMS" },
+    extensions: ["AMSmath.js", "AMSsymbols.js"]
+  },
+  "HTML-CSS": {
+    linebreaks: { automatic: true, width: "container" }
+  }
+});
+</script>
+<script type=text/javascript async src="https://cdn.bootcss.com/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>MathJax.Hub.Queue(function(){for(var b=MathJax.Hub.getAllJax(),a=0;a<b.length;a+=1)b[a].SourceElement().parentNode.className+=' has-jax'})</script>
+<style>code.has-jax{font:inherit;font-size:100%;background:inherit;border:inherit;color:inherit}</style>
+</header>
+<main class=content role=main>
+<div style=text-align:center>
+<h1>Skip List | 跳表</h1>
+<p>Albert Wang
+/ 2024-03-08
+/ 900 Words/has been Read <span id=busuanzi_value_page_pv></span>&nbsp;&nbsp;Times
+</p>
+<hr>
+</div>
+<span class=article-toolbar>
+<a href=https://github.com/root-zren/posts/2024/%e8%b7%b3%e8%a1%a8.md style=font-size:24px;color:#000 target=_blank><i class="fa fa-edit" aria-hidden=true title="Suggest an edit of this page"></i>
+</a>
+</span>
+<aside class=toc>
+Table of Contents:
+<nav id=TableOfContents>
+<ol>
+<li><a href=#概念>概念</a></li>
+<li><a href=#leveldb-跳表实现>leveldb 跳表实现</a>
+<ol>
+<li><a href=#节点查找---findgreaterorequal>节点查找 - FindGreaterOrEqual()</a></li>
+<li><a href=#节点插入---insert>节点插入 - Insert()</a></li>
+<li><a href=#高度随机化---randomheight>高度随机化 - RandomHeight()</a></li>
+</ol>
+</li>
+</ol>
+</nav>
+</aside>
+<div class="body-text list-text">
+<h2 id=概念>概念<a href=#概念 class=header-anchor arialabel=Anchor> # </a></h2>
+<p>跳表是一种基于链表的动态数据结构，它允许快速地进行查找、插入和删除操作，且实现相对简单。跳表通过在链表的不同层级上建立索引，从而提高了查找效率。跳表的基本思想是在原始链表的基础上建立多层索引，每一层索引都是原始链表的子集，且越高层的索引节点越稀疏。</p>
+<p><img src=/img/2024/03/skip_list.PNG alt=image-20240309030246676 loading=lazy>
+</p>
+<p>跳表的节点结构如下面代码中所示，每个节点包含一个键值对以及指向下一层的指针数组，其中 forward[ i ] 表示这个 node 指向跳表第 i 层的下一个节点，也就说说普通的链表 node 都是只有一个 next 节点，而跳表的 node 每一层都有一个 next 节点。跳表的层级是动态的，随着插入操作的进行而逐渐增加。在跳表中，每个节点都包含一个层级属性，表示它在跳表中所处的层数。</p>
+<pre tabindex=0><code>#define MAX_LEVEL 6
+
+typedef struct SkipListNode {
+    int key;
+    int value;
+    struct SkipListNode *forward[MAX_LEVEL + 1];
+} SkipListNode;
+
+typedef struct SkipList {
+    int level;
+    SkipListNode *header;
+} SkipList;
+
+SkipListNode *createNode(int key, int value, int level) {
+    SkipListNode *newNode = (SkipListNode *)malloc(sizeof(SkipListNode));
+    newNode-&gt;key = key;
+    newNode-&gt;value = value;
+    for (int i = 0; i &lt;= level; i++) {
+        newNode-&gt;forward[i] = NULL;
+    }
+    return newNode;
+}
+
+SkipList *createSkipList() {
+    SkipList *skipList = (SkipList *)malloc(sizeof(SkipList));
+    skipList-&gt;level = 0;
+    skipList-&gt;header = createNode(-1, -1, MAX_LEVEL);
+    return skipList;
+}
+</code></pre><p>跳表的插入操作通过随机生成一个层数，并将新节点插入到对应的层级链表中。</p>
+<pre tabindex=0><code>int randomLevel() {
+    int level = 0;
+    while (rand() &lt; RAND_MAX / 2 &amp;&amp; level &lt; MAX_LEVEL) {
+        level++;
+    }
+    return level;
+}
+</code></pre><p>下面的代码中 insert 函数首先从最高层开始往下查找，对于第 i 层来说，如果当前节点的 key 小于要插入节点的 key，就在这一层往下查找。这一层最后遍历到的节点的值要么是 NULL， 要么 key 的值是第一个大于要插入的 key 的值，同时把这个 key 对应的 node 更新到 update 数组中。</p>
+<p>然后调用 randomLevel() 函数得到了新的层数去插入，完整的函数如下：</p>
+<pre tabindex=0><code>void insert(SkipList *skipList, int key, int value) {
+    SkipListNode *update[MAX_LEVEL + 1];
+    SkipListNode *current = skipList-&gt;header;
+
+    for (int i = skipList-&gt;level; i &gt;= 0; i--) {
+        while (current-&gt;forward[i] != NULL &amp;&amp; current-&gt;forward[i]-&gt;key &lt; key) {
+            current = current-&gt;forward[i];
+        }
+        update[i] = current;
+    }
+	
+    // 这里是指向了第 0 层的数据，也就是真实的数据，其他层都是索引
+    current = current-&gt;forward[0];
+
+    if (current == NULL || current-&gt;key != key) {
+        int newLevel = randomLevel();
+        if (newLevel &gt; skipList-&gt;level) {
+            for (int i = skipList-&gt;level + 1; i &lt;= newLevel; i++) {
+                update[i] = skipList-&gt;header;
+            }
+            skipList-&gt;level = newLevel;
+        }
+        SkipListNode *newNode = createNode(key, value, newLevel);
+        for (int i = 0; i &lt;= newLevel; i++) {
+            newNode-&gt;forward[i] = update[i]-&gt;forward[i];
+            update[i]-&gt;forward[i] = newNode;
+        }
+    }
+}
+</code></pre><p>查找操作从顶层开始，逐层向下查找，直到找到目标节点或者到达最底层。跳表的时间复杂度为 O(log n)，其中 n 表示跳表中的节点数。</p>
+<pre tabindex=0><code>SkipListNode *search(SkipList *skipList, int key) {
+    SkipListNode *current = skipList-&gt;header;
+    for (int i = skipList-&gt;level; i &gt;= 0; i--) {
+        while (current-&gt;forward[i] != NULL &amp;&amp; current-&gt;forward[i]-&gt;key &lt; key) {
+            current = current-&gt;forward[i];
+        }
+    }
+    current = current-&gt;forward[0];
+    if (current != NULL &amp;&amp; current-&gt;key == key) {
+        return current;
+    } else {
+        return NULL;
+    }
+}
+</code></pre><p>为了方便验证，这里增加跳表的打印程序，因为初始化跳表的时候都加了一个值为 -1 的 dummy 节点，所以这里也特别打印出来，以便于理解。</p>
+<pre tabindex=0><code>void printSkipList(SkipList *skipList) {
+    printf(&quot;Skip List:\n&quot;);
+    for (int i = skipList-&gt;level; i &gt;= 0; i--) {
+        SkipListNode *current = skipList-&gt;header-&gt;forward[i];
+        printf(&quot;Level %d: %-4d&quot;, i, -1);
+        while (current != NULL) {
+            printf(&quot;%-4d&quot;, current-&gt;key);
+            current = current-&gt;forward[i];
+        }
+        printf(&quot;\n&quot;);
+    }
+}
+
+int main() {
+    SkipList *skipList = createSkipList();
+    
+    insert(skipList, 3, 3);
+    insert(skipList, 6, 6);
+    insert(skipList, 7, 7);
+    insert(skipList, 9, 9);
+    insert(skipList, 12, 12);
+    insert(skipList, 19, 19);
+    insert(skipList, 17, 17);
+    insert(skipList, 26, 26);
+    insert(skipList, 21, 21);
+    insert(skipList, 25, 25);
+    insert(skipList, 29, 29);
+    insert(skipList, 37, 37);
+    insert(skipList, 31, 31);
+    insert(skipList, 42, 42);
+    insert(skipList, 39, 39);
+    insert(skipList, 49, 49);
+    insert(skipList, 46, 46);
+    insert(skipList, 38, 38);
+
+    printSkipList(skipList);
+
+    return 0;
+}
+</code></pre><p>然后构造测试用例，执行效果如下：</p>
+<p><img src=/img/2024/03/image-20240309030246676.png alt=image-20240309030246676 loading=lazy>
+</p>
+<p>然后我们站在巨人的肩膀上了解一下 leveldb 中关于跳表的实现。</p>
+<h2 id=leveldb-跳表实现>leveldb 跳表实现<a href=#leveldb-跳表实现 class=header-anchor arialabel=Anchor> # </a></h2>
+<p>Leveldb 本身是一个基于 LSM tree 的 KVDB，其中调表是它 memtable 在内存中的存放方式，它的源代码位于(https://github.com/google/leveldb/blob/main/db/skiplist.h)。</p>
+<p>首先Node 结构和 SkipList 模板类如下， Node 本身用了 explicit 修饰，防止隐式转换。next_[1] 实际会根据节点高度动态分配更大空间。</p>
+<p>Leveldb 本身实现了内存池 Arena，这里不做过多介绍。</p>
+<pre tabindex=0><code>struct Node {
+  explicit Node(const Key&amp; k) : key(k) {}
+  Key const key;  // 不可变的键值
+  std::atomic&lt;Node*&gt; next_[1];  // 柔性数组，存储各级指针
+};
+
+template &lt;typename Key, class Comparator&gt;
+class SkipList {
+ private:
+  enum { kMaxHeight = 12 };  // 最大高度限制
+  Node* const head_;  // 头节点
+  std::atomic&lt;int&gt; max_height_;  // 当前最大高度
+  Random rnd_;  // 随机数生成器
+};
+
+template &lt;typename Key, class Comparator&gt;
+SkipList&lt;Key, Comparator&gt;::SkipList(Comparator cmp, Arena* arena)
+    : compare_(cmp),
+      arena_(arena),
+      head_(NewNode(0 /* any key will do */, kMaxHeight)),
+      max_height_(1),
+      rnd_(0xdeadbeef) {
+  for (int i = 0; i &lt; kMaxHeight; i++) {
+    head_-&gt;SetNext(i, nullptr);
+  }
+}
+</code></pre><h3 id=节点查找---findgreaterorequal>节点查找 - FindGreaterOrEqual()<a href=#节点查找---findgreaterorequal class=header-anchor arialabel=Anchor> # </a></h3>
+<p>找到第一个键值 ≥ 目标值的节点。</p>
+<ol>
+<li>从最高层开始搜索</li>
+<li>在当前层向右移动，直到下一个节点的键值 ≥ 目标值</li>
+<li>记录每层的前驱节点到 prev 数组（用于插入）</li>
+<li>下降到下一层继续搜索</li>
+<li>到达第 0 层时返回找到的节点</li>
+</ol>
+<pre tabindex=0><code>template &lt;typename Key, class Comparator&gt;
+typename SkipList&lt;Key, Comparator&gt;::Node*
+SkipList&lt;Key, Comparator&gt;::FindGreaterOrEqual(const Key&amp; key,
+                                              Node** prev) const {
+  Node* x = head_;
+  int level = GetMaxHeight() - 1;
+  while (true) {
+    Node* next = x-&gt;Next(level);
+    if (KeyIsAfterNode(key, next)) {
+      // Keep searching in this list
+      x = next;
+    } else {
+      if (prev != nullptr) prev[level] = x;
+      if (level == 0) {
+        return next;
+      } else {
+        // Switch to next list
+        level--;
+      }
+    }
+  }
+}
+</code></pre><h3 id=节点插入---insert>节点插入 - Insert()<a href=#节点插入---insert class=header-anchor arialabel=Anchor> # </a></h3>
+<ol>
+<li>
+<p><strong>查找插入位置</strong>：获取每层的前驱节点，并确认没有重复键</p>
+</li>
+<li>
+<p><strong>确定新节点高度</strong>：以 1/4 的概率增加高度（kBranching = 4）</p>
+</li>
+<li>
+<p><strong>更新最大高度</strong>：
+如果新节点高度超过当前最大高度，更新 max_height_ 并设置高层前驱为头节点</p>
+</li>
+<li>
+<p><strong>链接新节点</strong>：</p>
+<p>当设置 x->next_[i] 时，节点 x 还未对其他线程可见。</p>
+<p>只有当我们通过 prev[i]->SetNext(i, x) 发布节点 x 时，才需要内存屏障，在这之前使用无屏障操作是安全的</p>
+</li>
+</ol>
+<pre tabindex=0><code>template &lt;typename Key, class Comparator&gt;
+void SkipList&lt;Key, Comparator&gt;::Insert(const Key&amp; key) {
+  Node* prev[kMaxHeight];
+  Node* x = FindGreaterOrEqual(key, prev);
+
+  // Our data structure does not allow duplicate insertion
+  assert(x == nullptr || !Equal(key, x-&gt;key));
+
+  int height = RandomHeight();
+  if (height &gt; GetMaxHeight()) {
+    for (int i = GetMaxHeight(); i &lt; height; i++) {
+      prev[i] = head_;
+    }
+    max_height_.store(height, std::memory_order_relaxed);
+  }
+
+  x = NewNode(key, height);
+  for (int i = 0; i &lt; height; i++) {
+    x-&gt;NoBarrier_SetNext(i, prev[i]-&gt;NoBarrier_Next(i));
+    prev[i]-&gt;SetNext(i, x);
+  }
+}
+</code></pre><h3 id=高度随机化---randomheight>高度随机化 - RandomHeight()<a href=#高度随机化---randomheight class=header-anchor arialabel=Anchor> # </a></h3>
+<pre tabindex=0><code>template &lt;typename Key, class Comparator&gt;
+int SkipList&lt;Key, Comparator&gt;::RandomHeight() {
+  static const unsigned int kBranching = 4;
+  int height = 1;
+  while (height &lt; kMaxHeight &amp;&amp; rnd_.OneIn(kBranching)) {
+    height++;
+  }
+
+  return height;
+}
+</code></pre><ul>
+<li>高度为 1 的概率：<code>P(h=1) = 3/4 = 0.75</code></li>
+<li>高度为 2 的概率：<code>P(h=2) = (1/4) × (3/4) = 3/16 = 0.1875</code></li>
+<li>高度为 3 的概率：<code>P(h=3) = (1/4)² × (3/4) = 3/64 = 0.046875</code></li>
+<li>高度为 4 的概率：<code>P(h=4) = (1/4)³ × (3/4) = 3/256 = 0.01171875</code></li>
+<li>&mldr;</li>
+<li>高度为 kMaxHeight(12) 的概率：<code>P(h=12) = (1/4)^11 = 很小</code></li>
+</ul>
+<p><strong>LevelDB 选择 4 的原因</strong>：</p>
+<p>减少指针内存占用，搜索性能降低不多（log₄n = ½ log₂n，只差常数因子）</p>
+<table>
+<thead>
+<tr>
+<th style=text-align:left>分支因子</th>
+<th style=text-align:left>期望高度</th>
+<th style=text-align:left>平均指针数</th>
+<th style=text-align:left>搜索比较次数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style=text-align:left>2</td>
+<td style=text-align:left>log₂n</td>
+<td style=text-align:left>n 个节点 ≈ 2n 指针</td>
+<td style=text-align:left>较少</td>
+</tr>
+<tr>
+<td style=text-align:left>4</td>
+<td style=text-align:left>log₄n</td>
+<td style=text-align:left>n 个节点 ≈ 1.33n 指针</td>
+<td style=text-align:left>稍多</td>
+</tr>
+<tr>
+<td style=text-align:left>8</td>
+<td style=text-align:left>log₈n</td>
+<td style=text-align:left>n 个节点 ≈ 1.14n 指针</td>
+<td style=text-align:left>更多</td>
+</tr>
+</tbody>
+</table>
+<p style=color:#777>Last modified on 2026-01-24</p>
+</div>
+<a href=#top><i class="fa fa-chevron-up" style=font-size:30px;color:#000></i></a>
+</main>
+<footer class=footer>
+<script type=text/javascript src="//rf.revolvermaps.com/0/0/6.js?i=5sz67w4rqwe&m=0&c=ff0000&cr1=ffffff&f=times_new_roman&l=1" async></script>
+<ul class=footer-links>
+<li><a href=/en/posts/index.xml type=application/rss+xml title="RSS feed">
+Subscribe </a>
+</li>
+<li>
+<a href=http://creativecommons.org/licenses/by-nc-sa/4.0/ target=_blank>
+License
+<i class="fa fa-cc" aria-hidden=true title="Attribution-NonCommercial-ShareAlike 4.0 International"></i>
+</a>
+</li>
+</ul>
+<span id=busuanzi_container_site_pv> 本站访问量：<span id=busuanzi_value_site_pv></span>次</span>&nbsp;
+<span id=busuanzi_container_site_uv> 您是本站第 <span id=busuanzi_value_site_uv></span> 位访问者</span>
+</footer>

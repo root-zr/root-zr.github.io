@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>大数据 on Albert Wang</title><link>https://root-zr.github.io/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/</link><description>Recent content in 大数据 on Albert Wang</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 15 Feb 2026 13:39:37 +0800</lastBuildDate><atom:link href="https://root-zr.github.io/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/index.xml" rel="self" type="application/rss+xml"/><item><title>Replica System | 复制系统</title><link>https://root-zr.github.io/en/2026/02/15/replica-system-%E5%A4%8D%E5%88%B6%E7%B3%BB%E7%BB%9F/</link><pubDate>Sun, 15 Feb 2026 13:39:37 +0800</pubDate><guid>https://root-zr.github.io/en/2026/02/15/replica-system-%E5%A4%8D%E5%88%B6%E7%B3%BB%E7%BB%9F/</guid><description>为什么构建大型分布式存储系统很难
+需要高性能。解决方案 sharding，把完整的任务通过 sharding 分给多台服务器去做。 故障。 多台服务器会导致系统故障变得很频繁，解决方案 容错 容错。 要保证容错，一个解决方案就是多做几个备份 备份。 如果有了多个副本，就会遇到各种奇怪的不一致问题 一致性。 要保证数据的一致性，就会导致性能会变低 复制系统主要有两种实现：
+状态转移：主定期把自己内存的状态同步给备。状态转移在处理多核问题时更为高效。 复制状态机：主和备之需要处理来自 client 的操作，比如 add 1. 对于复制状态机来说，我们必须要问的一个问题就是该去复制什么状态？它的答案是复制所有状态。
+大多数团队做的复制是应用程序级别的复制，复制的功能实现在应用程序内部。还有一种复制是机器级别的复制，它不需要考虑上面运行的是什么软件，但它相对低效。
+一个完整的消息传播流程应该是：数据输入 - 数据包 - 数据 + 网卡中断 - 接收数据。虽然主备都是执行 client 的消息，但是主备同步的时候总会有些非确定性事件，比如下面的场景
+指令执行不一样：例如随机数生成。 多核并行：多核也是非确定性的一个来源。master 上 core 1 比 core2 先拿到锁，slave 上刚好相反，可能结果就会不同。</description></item><item><title>Distributed System | 分布式系统</title><link>https://root-zr.github.io/en/2026/01/25/distributed-system-%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/</link><pubDate>Sun, 25 Jan 2026 13:39:37 +0800</pubDate><guid>https://root-zr.github.io/en/2026/01/25/distributed-system-%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/</guid><description>分布式系统是一系列计算机通过网络共同完成单台机器难以胜任的复杂任务。它就像一个由多台计算机组成的“数字团队”，它们通过网络协作。
+为什么需要这样的系统？
+如果一件事一台计算机就能轻松搞定，那我们绝不会动用一整个“团队”，因为管理团队的复杂度远超管理单一个体。单机状态非此即彼：要么工作，要么宕机。但在这个“数字团队”里，情况变得微妙：可能一部分成员运转良好，另一部分却发生了故障，而连接它们的网络也不完全可靠，可能会出现延迟甚至丢包。然而，当任务规模庞大到单机无法承载，或者对可靠性与性能有极高要求时，我们就必须组建并管理好这个“团队”。
+核心挑战：不只是人多力量大
+我们自然希望“团队”能实现“1+1&amp;gt;2”的效果，但现实中，让两台机器完美协作以达到双倍性能，往往需要精心的设计。这涉及到对三大核心资源的高效调度：
+存储：怎么构建可复制容错的，高性能存储系统。如何像保管重要档案一样，将数据复制多份并妥善分布，确保即使个别副本丢失，信息也永不湮灭？ 计算：如何将一个大任务，像拆分项目模块一样，分配给多台机器并行处理（例如MapReduce模式），再整合结果？ 通信：如何确保机器之间能够像团队成员一样清晰、可靠地传递信息与状态？ 一个优秀分布式系统的最高目标，是将其内部的复杂性封装起来。它对外呈现出一个如同单机般简单统一的界面。用户无需关心数据存放在哪台机器、计算由谁执行，他们面对的是一个逻辑上单一且强大的整体。
+在实现该抽象时，需要关注以下关键技术：
+远程过程调用（RPC） 多线程机制 锁（Lock）与同步 想象一个起初只为少量用户服务的网站。随着用户量激增，单台服务器很快会成为瓶颈。直观的解决方案是增加服务器，但事情并非简单的数量叠加。如何在上千台服务器已在线的情况下，平滑地加入另外一千台，并让整体处理能力接近翻倍？这极具挑战。系统的瓶颈可能会从计算转移到网络、再到数据存储。良好的可扩展性设计，意味着系统架构能像有机体一样，通过增加“细胞”来增强能力，而非无脑堆砌。
+容错
+一台个人电脑可以稳定运行多年，但一个由成千上万台机器构成的集群中，硬件故障、网络中断几乎每时每刻都在发生。因此，分布式系统必须将容错视为设计的核心前提，主要围绕三个目标构建：
+可用性：核心目标是服务“尽量不停机”。通常通过数据冗余备份来实现，且备份应地理隔离，避免因局部灾害（如断电、地震）导致数据全军覆没。 可恢复性：当故障真的发生时，系统必须能恢复到某个一致的状态。这依赖于详尽的操作日志、定期的状态检查点以及使用磁盘等非易失性存储来持久化关键信息。 一致性：这是最微妙的挑战。当数据存在多个副本时，如何确保它们看起来总像是“同一份”？例如，一次更新操作在主数据库成功后，若同步至备份时网络中断，就会导致数据不一致。维护强一致性往往意味着性能的权衡。（关于一致性与共识的深入探讨，可参考这篇博客 。） 总而言之，分布式系统是一门在不确定性与局部故障中，通过协作、冗余与协议来构建可靠、可扩展服务的工程艺术。它不是为了制造复杂，而是为了用复杂的手段，最终化繁为简，突破单机世界的物理边界。</description></item><item><title>A Slide for Zookeeper Learning | zookeeper学习中的PPT分享</title><link>https://root-zr.github.io/en/2022/07/07/a-slide-for-zookeeper-learning-zookeeper%E5%AD%A6%E4%B9%A0%E4%B8%AD%E7%9A%84ppt%E5%88%86%E4%BA%AB/</link><pubDate>Thu, 07 Jul 2022 13:39:37 +0800</pubDate><guid>https://root-zr.github.io/en/2022/07/07/a-slide-for-zookeeper-learning-zookeeper%E5%AD%A6%E4%B9%A0%E4%B8%AD%E7%9A%84ppt%E5%88%86%E4%BA%AB/</guid><description>这是一篇用来测试共享文件的博客，分享了一篇关于 zookeeper 分布式组件学习的PPT。
+zookeeper 可以用来解决哪些问题？
+test_and_set 机制：当一台服务器挂掉之后，其他服务器能接手它的工作 config_info：通过它来管理的信息 master elect：选主 zookeeper 采用复制系统来做系统容灾。因为同样是一主多备，随着服务器数量的增加，主将会成为系统瓶颈，并不能保证系统对外提供的性能也随着服务器数量的增加而增加。
+zookeeper 为了保证性能，它允许 client 端从任意一台服务器上读取数据。虽然会让读的性能大幅度提升，但是同样也带来了一些新的问题。比如刚好 client 去读的那台服务器并不属于“大多数'' 服务器中的一台，这就可能会导致读到旧的数据。
+zookeeper 怎么保证线形一致性？
+对于写的请求，client 对提供 seq_id 到服务端，服务端会线形去执行这些请求。
+对于读的请求，它并不能提供线形一致性，但它能保证后读的请求一定不会比先读的请求读到更老的数据。具体做法而言，在持久化 log 的时候，所有的服务器都会同时持久化 zxid，在读的时候服务器端会把 zxid 返回给 client。client 每次请求都会把 zxid 带下来，不管新的读请求发给了哪个 zk，这台服务器都能根据 zxid 提供更新的 log 信息。
+zookeeper 提供的配置管理服务。
+Zookeeper 采用非锁的方式对外提供锁服务，因为 zookeeper 提供了写的线形一致性。当需要修改配置的时候，客户端需要先删读 ready 文件，然后去修改配置，修改完成之后再创建 ready 文件，整个过程中只有写操作，没有读操作。
+delete(&amp;quot;ready&amp;quot;) write f1 write f2 create(&amp;quot;ready&amp;quot;) 假如需要读取配置，首先 worker 需要取检查配置文件是否存在，如果文件存在，就会读取 f1 和 f2 这两个配置。因为如果 ready 文件存在，那说明更新配置操作一定完成了。
+exists(&amp;quot;ready&amp;quot;) read f1 read f2 读取可能操作可能会遇到下面这种场景，假如读先获取到了 ready 文件，然后写去更新配置，就可能会导致配置获取不一致。</description></item><item><title>Distributed System and MapReduce 02 | 分布式系统和MapReduce 02</title><link>https://root-zr.github.io/en/2022/06/15/distributed-system-and-mapreduce-02-%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%92%8Cmapreduce-02/</link><pubDate>Wed, 15 Jun 2022 13:39:37 +0800</pubDate><guid>https://root-zr.github.io/en/2022/06/15/distributed-system-and-mapreduce-02-%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%92%8Cmapreduce-02/</guid><description>这篇博客主要是关于 MIT 的公开课 6.824 分布式系统 的 lab 1相关内容，lab 1 要求我们实现一个分布式的mapreduce系统，并且已经为我们提供了一些基础的代码，lab 的地址请点击这里 。下面让我们从文件的架构开始一点点去了解我们所要做的事情。下面是一个精简了的代码结构图，它可以帮助我们理解 lab 1的内容。
+单机mapreduce任务 首先我们需要明确的是main目录下的文件是我们的程序入口处， 如果我们执行mrsequential.go 文件将会启动一个单机的mapreduce任务，执行的命令如下
+go run -race mrsequential.go wc.so pg*.txt 可以看到在执行的时候还传了两个参数，这两个参数的作用是什么呢？我们从代码中来观察一下，
+if len(os.Args) &amp;lt; 3 { fmt.Fprintf(os.Stderr, &amp;quot;Usage: mrsequential xxx.so inputfiles...\n&amp;quot;) os.Exit(1) } mapf, reducef := loadPlugin(os.Args[1]) 可以看到 wc.so 是用来加载 map 和 reduce 函数的， 而 wc.so 文件则是由下面这个命令生成的，通过-buildmode=plugin可以以插件的形式将wc.go 文件里的函数封装起来，然后通过loadPlugin 函数重新加载出来。
+go build -race -buildmode=plugin ../mrapps/wc.go loadPlugin 函数是作者自己编写的，具体是封装了plugin.Open 和 p.Lookup两个函数的功能，最终的结果是获取到map 和 reduce 两个函数。
+func loadPlugin(filename string) (func(string, string) []mr.</description></item><item><title>Distributed System and MapReduce 01 | 分布式系统和MapReduce 01</title><link>https://root-zr.github.io/en/2022/04/20/distributed-system-and-mapreduce-01-%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%92%8Cmapreduce-01/</link><pubDate>Wed, 20 Apr 2022 13:39:37 +0800</pubDate><guid>https://root-zr.github.io/en/2022/04/20/distributed-system-and-mapreduce-01-%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%92%8Cmapreduce-01/</guid><description>这篇博客主要是学习MIT的公开课6.824分布式系统 的学习笔记，在课程一开始老师主要介绍了分布式系统的和MapReduce的基本概念，后续有关于实现一个具体的MapReduce的实验。
+MapReduce MapReduce是谷歌大数据三驾马车中的其中一篇论文，它被提出的目的是用来解决海量网页数据索引和排序之类的问题。它包含Map和Reduce两个过程，以WordCount为例，它的计算过程如下图所示：
+当我们面临着一个大文件的时候，谷歌的文件系统GFS(Google File System)会把它差分成多个64kb的块，用来做任务分配的master服务器知道它们具体在哪台机器上，然后它会指定work machine去执行Map的操作。加入这些文件块的存放位置和work machine不是同一台机器，那就需要通过网络通信来进行数据交换，可是这样会导致效率下降，所以一般都会将它们放在同一台机器上，work machine只需要做一个文件读取的操作就可以了。Map(k,v)的v指的就是某一个块的全部文字，所以下面只需要将单词拆分开然后变成key,1的形式就可以了。
+图片来源：Google MapReduce论文
+在整个Map的过程中master是不需要去一致盯着每台机器去做运算的，每个work machine会将自己运算的中间结果保存在自己的本地磁盘上。以上图中的INPUT 1为例，它最终会保存（a,1)和(b,1)两个值。
+然后是Reduce的过程，MapReduce worker通过网络收集所有完成了map worker中&amp;lt;key(i), 1&amp;gt;的任务task，从存储在各个Map worker磁盘上收集数据。这里并不要求每一个Map的所有任务都完成，如果只请求(a,1)这个Map过程，只要work machine完成了这一个任务，就可以将结果返回，不用等全部工作完成。Reduce的伪代码可以表示如下：
+图片来源：Google MapReduce论文
+它的实现相对简单一点，只是对这些收集到的信息做一个加总的操作，计算出长度就行了。</description></item></channel></rss>

@@ -1,0 +1,16 @@
+body {
+	font-family: 'Alegreya',Charter, Georgia, 'Helvetica Neue', Arial,
+	'Songti SC', 'SimSun', 'Hiragino Sans GB','宋体', 'Microsoft YaHei',
+	'STKaiti', 'Kai', 'Kaiti SC', 'KaiTi', 'KaiTi_GB2312', '楷体', sans-serif;
+	font-weight: 400;
+	src: local('Alegreya'), local('Alegreya-Regular'),
+       url('../fonts/alegreya-regular.woff2') format('woff2'),
+       url('../fonts/alegreya-regular.woff') format('woff');
+}
+
+/*-apple-system, Avenir Next, */
+
+code {
+  font-family: 'Menlo', 'Monaco', 'Courier New',  'Courier', monospace;
+  font-size: 14px;
+}
